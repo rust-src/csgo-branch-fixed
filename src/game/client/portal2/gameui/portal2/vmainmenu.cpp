@@ -32,7 +32,7 @@
 #include "vgui_controls/Image.h"
 
 #include "filesystem.h"
-#include "cegclientwrapper.h"
+//#include "cegclientwrapper.h"
 
 #ifndef NO_STEAM
 #include "steam/isteamremotestorage.h"
@@ -104,14 +104,14 @@ void CPlaySPSelectStorageDevice::DeviceChangeCompleted( bool bChanged )
 
 //=============================================================================
 char const * MainMenu::m_szPreferredControlName = "BtnPlaySolo";
-CEG_NOINLINE MainMenu::MainMenu( Panel *parent, const char *panelName ):
+MainMenu::MainMenu( Panel *parent, const char *panelName ):
 	BaseClass( parent, panelName, true, true, false, false )
 {
 	SetProportional( true );
 	SetDeleteSelfOnClose( true );
 	SetPaintBackgroundEnabled( true );
 
-	CEG_PROTECT_MEMBER_FUNCTION( MainMenu_MainMenu );
+	//CEG_PROTECT_MEMBER_FUNCTION( MainMenu_MainMenu );
 
 	SetTitle( "", false );
 	SetMoveable( false );
@@ -137,7 +137,7 @@ MainMenu::~MainMenu()
 }
 
 //=============================================================================
-CEG_NOINLINE void MainMenu::OnCommand( const char *command )
+void MainMenu::OnCommand( const char *command )
 {
 	int iUserSlot = CBaseModPanel::GetSingleton().GetLastActiveUserId();
 
@@ -149,7 +149,7 @@ CEG_NOINLINE void MainMenu::OnCommand( const char *command )
 
 	bool bOpeningFlyout = false;
 
-	CEG_PROTECT_MEMBER_FUNCTION( MainMenu_OnCommand );
+	//CEG_PROTECT_MEMBER_FUNCTION( MainMenu_OnCommand );
 
 	if ( char const *szQuickMatch = StringAfterPrefix( command, "QuickMatch_" ) )
 	{
@@ -303,7 +303,7 @@ CEG_NOINLINE void MainMenu::OnCommand( const char *command )
 	{
 		m_szPreferredControlName = "BtnCoOp";
 
-		if ( !IsGameConsole() || g_pFullFileSystem->IsSpecificDLCPresent( 1 ) )
+		if ( !IsGameConsole() )//g_pFullFileSystem->IsSpecificDLCPresent( 1 ) ) theaperturecat
 		{
 			// They have the DLC!
 			MsgOpenCoopMode();
@@ -829,14 +829,14 @@ void MainMenu::OnFlyoutMenuCancelled()
 }
 
 //=============================================================================
-CEG_NOINLINE void MainMenu::OnKeyCodePressed( KeyCode code )
+void MainMenu::OnKeyCodePressed( KeyCode code )
 {
 	BaseModUI::CBaseModPanel::GetSingleton().ResetAttractDemoTimeout();
 
 	int userId = GetJoystickForCode( code );
 	BaseModUI::CBaseModPanel::GetSingleton().SetLastActiveUserId( userId );
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( MainMenu_OnKeyCodePressed );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( MainMenu_OnKeyCodePressed );
 
 	switch( GetBaseButtonCode( code ) )
 	{
@@ -991,9 +991,9 @@ void MainMenu::RunFrame()
 }
 
 //=============================================================================
-CEG_NOINLINE void MainMenu::Activate()
+void MainMenu::Activate()
 {
-	CEG_PROTECT_MEMBER_FUNCTION( MainMenu_Activate );
+	//CEG_PROTECT_MEMBER_FUNCTION( MainMenu_Activate );
 
 	BaseClass::Activate();
 
@@ -1058,7 +1058,7 @@ void MainMenu::SetFooterState()
 }
 
 //=============================================================================
-CEG_NOINLINE void MainMenu::ApplySchemeSettings( IScheme *pScheme )
+void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -1078,7 +1078,7 @@ CEG_NOINLINE void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 
 	LoadControlSettings( pSettings );
 
-	CEG_PROTECT_MEMBER_FUNCTION( MainMenu_ApplySchemeSettings );
+	//CEG_PROTECT_MEMBER_FUNCTION( MainMenu_ApplySchemeSettings );
 
 #ifdef _GAMECONSOLE
 	if ( !XBX_GetPrimaryUserIsGuest() )
@@ -1148,12 +1148,12 @@ CEG_NOINLINE void MainMenu::ApplySchemeSettings( IScheme *pScheme )
 			bool bUsesCloud = false;
 
 #ifndef NO_STEAM
-			ISteamRemoteStorage *pRemoteStorage =
+			ISteamRemoteStorage* pRemoteStorage = NULL;
 #ifdef _PS3
 				::SteamRemoteStorage();
 #else
-				SteamClient()?(ISteamRemoteStorage *)SteamClient()->GetISteamGenericInterface(
-				SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(), STEAMREMOTESTORAGE_INTERFACE_VERSION ):NULL;
+				//SteamClient()?(ISteamRemoteStorage *)SteamClient()->GetISteamGenericInterface(
+				//SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(), STEAMREMOTESTORAGE_INTERFACE_VERSION ):NULL; theaperturecat
 #endif
 
 			int32 availableBytes, totalBytes = 0;
@@ -1389,7 +1389,7 @@ void MainMenu::MsgOpenSinglePlayer()
 }
 
 #if !defined( _GAMECONSOLE )
-CEG_NOINLINE void MainMenu::OnMousePressed( vgui::MouseCode code )
+void MainMenu::OnMousePressed( vgui::MouseCode code )
 {
 	BaseClass::OnMousePressed( code );
 
@@ -1406,6 +1406,6 @@ CEG_NOINLINE void MainMenu::OnMousePressed( vgui::MouseCode code )
 		}
 	}
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( MainMenu_OnMousePressed );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( MainMenu_OnMousePressed );
 }
 #endif

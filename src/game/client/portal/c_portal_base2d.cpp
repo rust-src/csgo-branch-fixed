@@ -25,7 +25,7 @@
 #include "materialsystem/imaterialvar.h"
 #include "c_baseprojectedentity.h"
 #include "c_basetempentity.h"
-#include "c_combatweaponworldclone.h"
+//#include "c_combatweaponworldclone.h"
 #include "C_Portal_Player.h"
 #include "prediction.h"
 #include "tier1/callqueue.h"

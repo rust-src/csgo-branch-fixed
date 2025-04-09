@@ -150,14 +150,14 @@ void LoadingProgress::EvictImages()
 
 void LoadingProgress::UpdateWorkingAnim()
 {
-	if ( m_pWorkingAnim && m_bDrawSpinner )
+	if ( false)//m_pWorkingAnim && m_bDrawSpinner )
 	{
 		// clock the anim at 10hz
 		float time = Plat_FloatTime();
 		if ( ( m_flLastEngineTime + 0.1f ) < time )
 		{
 			m_flLastEngineTime = time;
-			m_pWorkingAnim->SetFrame( m_pWorkingAnim->GetFrame() + 1 );
+			//m_pWorkingAnim->SetFrame( m_pWorkingAnim->GetFrame() + 1 );// theaperturecat
 		}
 	}
 }
@@ -230,7 +230,7 @@ void LoadingProgress::PaintBackground()
 	}
 
 	Panel *pWaitscreen = CBaseModPanel::GetSingleton().GetWindow( WT_GENERICWAITSCREEN );
-	bool bRenderSpinner = m_bDrawSpinner && m_pWorkingAnim;
+	bool bRenderSpinner = false;//m_bDrawSpinner && m_pWorkingAnim;
 	if ( pWaitscreen && pWaitscreen->IsVisible() )
 	{
 		// Don't render spinner if the progress screen is displaying progress
@@ -241,7 +241,7 @@ void LoadingProgress::PaintBackground()
 		int x, y, wide, tall;
 
 		m_pWorkingAnim->GetBounds( x, y, wide, tall );
-		m_pWorkingAnim->GetImage()->SetFrame( m_pWorkingAnim->GetFrame() );
+		//m_pWorkingAnim->GetImage()->SetFrame( m_pWorkingAnim->GetFrame());// theaperturecat
 
 		surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
 		surface()->DrawSetTexture( m_pWorkingAnim->GetImage()->GetID() );

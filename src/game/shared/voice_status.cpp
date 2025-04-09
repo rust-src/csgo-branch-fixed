@@ -118,8 +118,8 @@ void ClientVoiceMgr_LevelShutdown()
 // ---------------------------------------------------------------------- //
 
 static CVoiceStatus *g_pInternalVoiceStatus = NULL;
-
-bool __MsgFunc_VoiceMask(const CCSUsrMsg_VoiceMask &msg)
+#ifdef CSTRIKE15
+bool __MsgFunc_VoiceMask(const CUsrMsg_VoiceMask &msg)
 {
 	if(g_pInternalVoiceStatus)
 		return g_pInternalVoiceStatus->HandleVoiceMaskMsg(msg);
@@ -127,14 +127,14 @@ bool __MsgFunc_VoiceMask(const CCSUsrMsg_VoiceMask &msg)
 	return true;
 }
 
-bool __MsgFunc_RequestState(const CCSUsrMsg_RequestState &msg)
+bool __MsgFunc_RequestState(const CUsrMsg_RequestState &msg)
 {
 	if(g_pInternalVoiceStatus)
 		return g_pInternalVoiceStatus->HandleReqStateMsg(msg);
 
 	return true;
 }
-
+#endif
 
 // ---------------------------------------------------------------------- //
 // CVoiceStatus.
@@ -204,14 +204,14 @@ int CVoiceStatus::Init(
 
 	m_pHelper = pHelper;
 	m_pParentPanel = pParentPanel;
-
+#ifdef CSTRIKE15
 	for ( int hh = 0; hh < MAX_SPLITSCREEN_PLAYERS; ++hh )
 	{
 		ACTIVE_SPLITSCREEN_PLAYER_GUARD( hh );
 		HOOK_MESSAGE(VoiceMask);
 		HOOK_MESSAGE(RequestState);
 	}
-
+#endif
 	return 1;
 }
 
@@ -528,7 +528,8 @@ void CVoiceStatus::UpdateSpeakerStatus(int entindex, int iSsSlot, bool bTalking)
 #if defined( PORTAL2 ) && !defined( _GAMECONSOLE )
 			if ( m_flTalkTime[ iClient ] > 0.0f )
 			{
-				g_PortalGameStats.Event_MicUsage( entindex, m_flTalkTime[ iClient ], gpGlobals->curtime - m_flTalkTime[ iClient ] );
+				//theaperturecat
+				//g_PortalGameStats.Event_MicUsage( entindex, m_flTalkTime[ iClient ], gpGlobals->curtime - m_flTalkTime[ iClient ] );
 			}
 #endif //!defined( _GAMECONSOLE )
 			m_flTalkTime[ iClient ] = 0.0f;
@@ -630,8 +631,8 @@ void CVoiceStatus::UpdateServerState(bool bForce)
 	
 	m_LastUpdateServerState = gpGlobals->curtime;
 }
-
-bool CVoiceStatus::HandleVoiceMaskMsg(const CCSUsrMsg_VoiceMask &msg)
+#ifdef CSTRIKE15
+bool CVoiceStatus::HandleVoiceMaskMsg(const CUsrMsg_VoiceMask &msg)
 {
 	unsigned long dw;
 	for(dw=0; dw < VOICE_MAX_PLAYERS_DW; dw++)
@@ -652,7 +653,7 @@ bool CVoiceStatus::HandleVoiceMaskMsg(const CCSUsrMsg_VoiceMask &msg)
 	return true;
 }
 
-bool CVoiceStatus::HandleReqStateMsg(const CCSUsrMsg_RequestState &msg)
+bool CVoiceStatus::HandleReqStateMsg(const CUsrMsg_RequestState &msg)
 {
 	if( voice_clientdebug.GetInt() == 1 )
 	{
@@ -663,7 +664,7 @@ bool CVoiceStatus::HandleReqStateMsg(const CCSUsrMsg_RequestState &msg)
 
 	return true;
 }
-
+#endif
 void CVoiceStatus::StartSquelchMode()
 {
 	if(m_bInSquelchMode)
@@ -718,7 +719,7 @@ bool CVoiceStatus::IsPlayerBlocked(int iPlayer)
 	return m_BanMgr.GetPlayerBan( pi.guid );
 }
 
-
+#ifdef CSTRIKE15
 bool IsPartyMember( XUID xuidPlayer )
 {
 	if ( IMatchSession *pMatchSession = g_pMatchFramework->GetMatchSession() )
@@ -727,7 +728,7 @@ bool IsPartyMember( XUID xuidPlayer )
 	}
 	return false;
 }
-
+#endif
 
 bool CVoiceStatus::ShouldHideCommunicationFromPlayer( int iPlayerIndex )
 {

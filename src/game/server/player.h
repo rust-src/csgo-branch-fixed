@@ -293,6 +293,9 @@ public:
 	void					MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
 	void					DoImpactEffect( trace_t &tr, int nDamageType );
 
+	virtual bool IsFullyConnected() { return m_bIsFullyConnected; }
+	virtual void OnFullyConnected();
+
 	// If a map clean up has been done after a respawn, this function will reassign the entity pointers to those map entities that were deleted.
 	void					UpdateMapEntityPointers( void );
 
@@ -558,7 +561,7 @@ public:
 	void					ItemPreFrame( void );
 	virtual void			ItemPostFrame( void );
 
-	virtual CBaseEntity		*GiveNamedItem( const char *pchName, int iSubType = 0, CEconItemView *pScriptItem = NULL, bool bForce = false );
+	virtual CBaseEntity		*GiveNamedItem( const char *pchName, int iSubType = 0, bool bForce = false );
 
 	void					EnableControl(bool fControl);
 	virtual void			CheckTrainUpdate( void );
@@ -981,6 +984,7 @@ public:
 	int						m_afButtonDisabled;	// A mask of input flags that are cleared automatically
 	int						m_afButtonForced;	// These are forced onto the player's inputs
 
+	bool					m_bIsFullyConnected;
 	CNetworkVar( bool, m_fOnTarget );		//Is the crosshair on a target?
 
 	char					m_szAnimExtension[32];

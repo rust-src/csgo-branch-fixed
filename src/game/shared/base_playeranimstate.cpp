@@ -657,6 +657,7 @@ void CBasePlayerAnimState::ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr )
 		{
 			vCurMovePose.x = cos( DEG2RAD( flYaw ) );
 			vCurMovePose.y = -sin( DEG2RAD( flYaw ) );
+#ifdef CSTRIKE15 //theaperturecat - come back
 			// movement pose parameters on the diagonals are encoded at 1 instead of 0.707 (cos 45)
 			// scale to the outside of a box instead of the outside of a circle.
 			float scale = fabs( vCurMovePose.x );
@@ -724,7 +725,10 @@ void CBasePlayerAnimState::ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr )
 #endif
 			vCurMovePose.x *= m_flPoseParamTargetDampenedScaleIdeal;
 			vCurMovePose.y *= m_flPoseParamTargetDampenedScaleIdeal;
-
+#else
+			vCurMovePose.x *= flPlaybackRate;
+			vCurMovePose.y *= flPlaybackRate;
+#endif
 		}
 
 

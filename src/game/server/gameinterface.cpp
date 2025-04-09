@@ -110,6 +110,7 @@
 #include "fmtstr.h"
 #include "mathlib/aabb.h"
 #include "env_cascade_light.h"
+#include "netmessages.h"
 #if defined( CSTRIKE15 )
 #include "cstrike15/cs_player.h"
 #include "gametypes/igametypes.h"
@@ -146,6 +147,8 @@
 #ifdef _WIN32
 #include "IGameUIFuncs.h"
 #endif
+
+//#include "server_log_http_dispatcher.h"
 
 extern IToolFrameworkServer *g_pToolFrameworkServer;
 extern IParticleSystemQuery *g_pParticleSystemQuery;
@@ -1582,7 +1585,7 @@ void CServerGameDLL::Think( bool finalTick )
 	// TODO: would have liked this to be totally event driven... currently needs a tick.
 	if ( engine->IsDedicatedServer() && steamgameserverapicontext->SteamHTTP() )
 	{
-		DedicatedServerWorkshop().Update();	
+		//DedicatedServerWorkshop().Update();	
 	}
 }
 
@@ -2017,21 +2020,6 @@ void CServerGameDLL::InvalidateMdlCache()
 	CStudioHdr::CActivityToSequenceMapping::ResetMappings();
 }
 
-static KeyValues * FindLaunchOptionByValue( KeyValues *pLaunchOptions, char const *szLaunchOption )
-{
-	if ( !pLaunchOptions || !szLaunchOption || !*szLaunchOption )
-		return NULL;
-
-	for ( KeyValues *val = pLaunchOptions->GetFirstSubKey(); val; val = val->GetNextKey() )
-	{
-		char const *szValue = val->GetString();
-		if ( szValue && *szValue && !Q_stricmp( szValue, szLaunchOption ) )
-			return val;
-	}
-
-	return NULL;
-}
-
 bool CServerGameDLL::ShouldPreferSteamAuth()
 {
 	return true;
@@ -2066,90 +2054,19 @@ bool CServerGameDLL::IsValveDS()
 
 KeyValues*	CServerGameDLL::GetExtendedServerInfoForNewClient()
 {
-	static KeyValues *s_pExtendedServerInfo = NULL;
+	static KeyValues* s_pExtendedServerInfo = NULL;
 	static char s_szExtendedHashKey[256] = {0};
 
-	int iGameType = g_pGameTypes->GetCurrentGameType();
-	int iGameMode = g_pGameTypes->GetCurrentGameMode();
-	int nNumSlots = g_pGameTypes->GetMaxPlayersForTypeAndMode( iGameType, iGameMode );
-	uint32 uiOfficialReservationGameType = 0;
+	if (s_pExtendedServerInfo)
+		s_pExtendedServerInfo->deleteThis();
 
-	char szHashKey[256] = {0};
-	V_snprintf( szHashKey, sizeof( szHashKey ), "%u:%d:%d:%d:%s", uiOfficialReservationGameType, iGameType, iGameMode, nNumSlots, gpGlobals->mapname.ToCStr() );
+	s_pExtendedServerInfo = new KeyValues("ExtendedServerInfo");
 
-	if ( Q_strcmp( s_szExtendedHashKey, szHashKey ) )
-	{
-		V_strncpy( s_szExtendedHashKey, szHashKey, ARRAYSIZE( s_szExtendedHashKey ) );
-		if ( s_pExtendedServerInfo )
-			s_pExtendedServerInfo->deleteThis();
-		
-		s_pExtendedServerInfo = new KeyValues( "ExtendedServerInfo" );
+	const char* mapGroupName = gpGlobals->mapGroupName.ToCStr();
+	s_pExtendedServerInfo->SetString("map", gpGlobals->mapname.ToCStr());
+	s_pExtendedServerInfo->SetString("mapgroup", mapGroupName);
 
-		const char* mapGroupName = gpGlobals->mapGroupName.ToCStr();
-		s_pExtendedServerInfo->SetString( "map", gpGlobals->mapname.ToCStr() );
-		s_pExtendedServerInfo->SetString( "mapgroup", mapGroupName );
-
-		s_pExtendedServerInfo->SetString( "requires_attr", g_pGameTypes->GetRequiredAttrForMap( STRING( gpGlobals->mapname ) ) );
-		s_pExtendedServerInfo->SetInt( "requires_attr_value", g_pGameTypes->GetRequiredAttrValueForMap( STRING( gpGlobals->mapname ) ) );
-		s_pExtendedServerInfo->SetString( "requires_attr_reward", g_pGameTypes->GetRequiredAttrRewardForMap( STRING( gpGlobals->mapname ) ) );
-		s_pExtendedServerInfo->SetInt( "reward_drop_list", g_pGameTypes->GetRewardDropListForMap( STRING( gpGlobals->mapname ) ) );
-		if ( IsValveDedicated() )
-		{
-			s_pExtendedServerInfo->SetInt( "official", 1 );
-		}
-
-		s_pExtendedServerInfo->SetInt( "numSlots", nNumSlots );
-		s_pExtendedServerInfo->SetInt( "c_game_type", iGameType );
-		s_pExtendedServerInfo->SetInt( "c_game_mode", iGameMode );
-		s_pExtendedServerInfo->SetInt( "default_game_type", g_pGameTypes->GetDefaultGameTypeForMap( gpGlobals->mapname.ToCStr() ) );
-		s_pExtendedServerInfo->SetInt( "default_game_mode", g_pGameTypes->GetDefaultGameModeForMap( gpGlobals->mapname.ToCStr() ) );
-		s_pExtendedServerInfo->SetString( "ct_arms", g_pGameTypes->GetCTViewModelArmsForMap( gpGlobals->mapname.ToCStr() ) );
-		s_pExtendedServerInfo->SetString( "t_arms", g_pGameTypes->GetTViewModelArmsForMap( gpGlobals->mapname.ToCStr() ) );
-
-		if ( const CUtlStringList *pCTModelNames = g_pGameTypes->GetCTModelsForMap( gpGlobals->mapname.ToCStr() ) )
-		{
-			FOR_EACH_VEC( *pCTModelNames, iModel )
-			{
-				const char *modelName = (*pCTModelNames)[iModel];
-				if ( modelName )
-				{
-					KeyValues *val = new KeyValues( "" );
-					val->SetString( NULL, modelName );
-					s_pExtendedServerInfo->FindKey( "ct_models", true )->AddSubKey( val );
-				}
-			}
-		}
-		if ( const CUtlStringList *pTModelNames = g_pGameTypes->GetTModelsForMap( gpGlobals->mapname.ToCStr() ) )
-		{
-			FOR_EACH_VEC( *pTModelNames, iModel )
-			{
-				const char *modelName = (*pTModelNames)[iModel];
-				if ( modelName )
-				{
-					KeyValues *val = new KeyValues( "" );
-					val->SetString( NULL, modelName );
-					s_pExtendedServerInfo->FindKey( "t_models", true )->AddSubKey( val );
-				}
-			}
-		}
-		
-		if ( const CUtlStringList* mapsInGroup = g_pGameTypes->GetMapGroupMapList( mapGroupName ) )
-		{
-			FOR_EACH_VEC( *mapsInGroup, i )
-			{
-				const char *sz = (*mapsInGroup)[i];
-				if ( sz )
-				{
-					KeyValues *val = new KeyValues( "" );
-					val->SetString( NULL, sz );
-					s_pExtendedServerInfo->FindKey( "maplist", true )->AddSubKey( val );
-				}
-			}
-		}
-
-		KeyValuesDumpAsDevMsg( s_pExtendedServerInfo, 1, 1 );
-	}
-	return s_pExtendedServerInfo;
+	return NULL;//s_pExtendedServerInfo;
 }
 
 void CServerGameDLL::GetMatchmakingTags( char *buf, size_t bufSize )
@@ -2237,8 +2154,8 @@ void LoadMOTDFile( const char *stringname, ConVar *pConvarFilename )
 	g_pStringTableInfoPanel->AddString( CBaseEntity::IsServer(), stringname, length+1, data );
 }
 
-extern ConVar sv_server_graphic1;
-extern ConVar sv_server_graphic2;
+//extern ConVar sv_server_graphic1;
+//extern ConVar sv_server_graphic2;
 
 void LoadServerImageFile( const char *stringname )
 {
@@ -2269,29 +2186,29 @@ void CServerGameDLL::LoadMessageOfTheDay()
 {
 	LoadMOTDFile( "motd", &motdfile );
 	LoadMOTDFile( "hostfile", &hostfile );
-	LoadServerImageFile( sv_server_graphic1.GetString() );
-	LoadServerImageFile( sv_server_graphic2.GetString() );
+	//LoadServerImageFile( sv_server_graphic1.GetString() );
+	//LoadServerImageFile( sv_server_graphic2.GetString() );
 }
 
 PublishedFileId_t CServerGameDLL::GetUGCMapFileID( const char* szMapPath )
 {
-	return DedicatedServerWorkshop().GetUGCMapPublishedFileID( szMapPath );
+	return -1;//DedicatedServerWorkshop().GetUGCMapPublishedFileID( szMapPath );
 }
 
 bool CServerGameDLL::GetNewestSubscribedFiles( void )
 {
-	DedicatedServerWorkshop().GetNewestSubscribedFiles();
+	//DedicatedServerWorkshop().GetNewestSubscribedFiles();
 	return true;
 }
 
 void CServerGameDLL::UpdateUGCMap( PublishedFileId_t id )
 {
-	DedicatedServerWorkshop().CheckForNewVersion( id );
+	//DedicatedServerWorkshop().CheckForNewVersion( id );
 }
 
 bool CServerGameDLL::HasPendingMapDownloads( void ) const
 {
-	return DedicatedServerWorkshop().HasPendingMapDownloads();
+	return false;//DedicatedServerWorkshop().HasPendingMapDownloads();
 }
 
 // keeps track of which chapters the user has unlocked
@@ -3650,12 +3567,12 @@ void CServerGameClients::ClientEarPosition( edict_t *pEdict, Vector *pEarOrigin 
 
 bool CServerGameClients::ClientReplayEvent( edict_t *pEdict, const ClientReplayEventParams_t &params )
 {
-	CCSPlayer *pPlayer = ( CCSPlayer * )CBaseEntity::Instance( pEdict );
-	if ( pPlayer )
-	{
-		return pPlayer->StartHltvReplayEvent( params );
-	}
-	else
+	//CCSPlayer *pPlayer = ( CCSPlayer * )CBaseEntity::Instance( pEdict );
+	//if ( pPlayer )
+	//{
+	//	return pPlayer->StartHltvReplayEvent( params );
+	//}
+	//else
 	{
 		return 0.0f;
 	}
@@ -3756,11 +3673,11 @@ int CServerGameClients::GetMaxSplitscreenPlayers()
 
 int CServerGameClients::GetMaxHumanPlayers()
 {
-	if ( g_pGameRules )
-	{
-		return g_pGameRules->GetMaxHumanPlayers();
-	}
-	return -1;
+	//if ( g_pGameRules )
+	//{
+	//	return g_pGameRules->GetMaxHumanPlayers();
+	//}
+	return 32;//-1;
 }
 
 // The client has submitted a keyvalues command
@@ -4041,3 +3958,196 @@ CON_COMMAND_F( give_promo_helmet, "Gives the gamestop promo helmets for coop bot
 	g_nPortal2PromoFlags |= PORTAL2_PROMO_HELMETS;
 }
 #endif
+
+void CServerGameClients::NetworkIDValidated(const char* pszUserName, const char* pszNetworkID, CSteamID steamID)
+{
+
+}
+
+const char* CServerGameClients::ClientNameHandler(uint64 xuid, const char* pchName)
+{
+	return pchName;
+}
+
+void CServerGameClients::ClientSvcUserMessage(edict_t* pEntity, int nType, int nPassthrough, uint32 cbSize, const void* pvBuffer)
+{
+
+}
+
+void CServerGameDLL::UpdateGCInformation()
+{
+
+}
+
+EncryptedMessageKeyType_t CServerGameDLL::GetMessageEncryptionKey(INetMessage*pMessage)
+{
+	switch (pMessage->GetType())
+	{
+	case svc_VoiceData:
+	{
+		// check the voice data packets for being from an active caster and add the caster flag and use the public key
+		CSVCMsg_VoiceData_t* pVoiceData = (CSVCMsg_VoiceData_t*)pMessage;
+		CSteamID steamID(static_cast<uint64>(pVoiceData->xuid()));
+		//if (steamID.GetAccountID())
+		//{
+		//	for (int j = 0; j < CSGameRules()->m_arrTournamentActiveCasterAccounts.Count(); j++)
+		//	{
+		//		if (steamID.GetAccountID() == CSGameRules()->m_arrTournamentActiveCasterAccounts[j])
+		//		{
+		//			pVoiceData->set_caster(true);
+		//			return kEncryptedMessageKeyType_Public;
+		//		}
+		//	}
+		//}
+	}
+	return kEncryptedMessageKeyType_Private;
+
+	case svc_UserMessage:
+	{
+		CSVCMsg_UserMessage_t* pUsrMessageHeader = (CSVCMsg_UserMessage_t*)pMessage;
+		switch (pUsrMessageHeader->msg_type())
+		{
+		case UM_SayText:
+		{
+			CUsrMsg_SayText usrMsg;
+			if (usrMsg.ParseFromArray(&pUsrMessageHeader->msg_data().at(0), pUsrMessageHeader->msg_data().size()))
+			{
+				if (usrMsg.textallchat())
+					return kEncryptedMessageKeyType_Public;
+			}
+		}
+		return kEncryptedMessageKeyType_Private;
+
+		case UM_SayText2:
+		{
+			CUsrMsg_SayText2 usrMsg;
+			if (usrMsg.ParseFromArray(&pUsrMessageHeader->msg_data().at(0), pUsrMessageHeader->msg_data().size()))
+			{
+				if (usrMsg.textallchat())
+					return kEncryptedMessageKeyType_Public;
+			}
+		}
+		return kEncryptedMessageKeyType_Private;
+
+		case UM_TextMsg:
+		case UM_RadioText:
+		case UM_RawAudio:
+		case UM_SendAudio:
+			return kEncryptedMessageKeyType_Private;
+
+		default:
+			return kEncryptedMessageKeyType_None;
+		}
+	}
+	return kEncryptedMessageKeyType_None;
+
+	case svc_EncryptedData:
+	default:
+		return kEncryptedMessageKeyType_None;
+	}
+}
+
+void CServerGameDLL::ReportGCQueuedMatchStart(int32 iReservationStage, uint32* puiConfirmedAccounts, int numConfirmedAccounts)
+{
+
+}
+
+void CServerGameDLL::GetMatchmakingGameData(char* buf, size_t bufSize)
+{
+	char* const bufBase = buf;
+
+#ifdef TERROR
+	int len = 0;
+
+	// Put the game key
+	Q_snprintf(buf, bufSize, "g:l4d2,");
+	len = strlen(buf);
+	buf += len;
+	bufSize -= len;
+
+	// Supported l4d2 game types
+	static ConVarRef sv_gametypes("sv_gametypes");
+	if (sv_gametypes.IsValid() && sv_gametypes.GetString()[0])
+	{
+		Q_snprintf(buf, bufSize, "%s,", sv_gametypes.GetString());
+		len = strlen(buf);
+		buf += len;
+		bufSize -= len;
+	}
+
+	// Additional "game data" that L4D matchmaking wants to know about
+	KeyValues* pAllMissions = g_pMatchExtL4D->GetAllMissions();
+
+	// Build a list of missions
+	int numMissions = 0;
+	for (KeyValues* pMission = pAllMissions ? pAllMissions->GetFirstTrueSubKey() : NULL;
+		pMission;
+		pMission = pMission->GetNextTrueSubKey())
+	{
+		if (pMission->GetInt("BuiltIn"))
+			continue;
+
+		char const* szMission = pMission->GetString("CfgTag");
+		int len = strlen(szMission);
+
+		if (bufSize <= len + 1)
+		{
+			Warning("GameData: Too many missions installed, not advertising for mission \"%s\"\n", pMission->GetString("Name"));
+			continue;
+		}
+
+		Q_strncpy(buf, szMission, len + 1);
+		buf += len;
+		*(buf++) = ',';
+		bufSize -= len + 1;
+
+		++numMissions;
+	}
+#endif
+
+	// Trim the last comma if anything was written
+	if (buf > bufBase)
+		buf[-1] = 0;
+}
+
+//theaperturecat
+bool CServerGameDLL::ShouldHoldGameServerReservation(float flTimeElapsedWithoutClients)
+{
+	return false;
+}
+
+void CServerGameDLL::OnPureServerFileValidationFailure(edict_t* edictClient, const char* path, const char* fileName, uint32 crc, int32 hashType, int32 len, int packNumber, int packFileID)
+{
+
+}
+
+char const* CServerGameDLL::ClientConnectionValidatePreNetChan(bool bGameServer, char const* adr, int nAuthProtocol, uint64 ullSteamID)
+{
+	return NULL;
+}
+
+// validate if player is a caster and add them to the active caster list
+bool CServerGameDLL::ValidateAndAddActiveCaster(const CSteamID& steamID)
+{
+	return false;
+}
+
+bool CServerGameDLL::OnEngineClientProxiedRedirect(uint64 ullClient, const char* adrProxiedRedirect, const char* adrRegular)
+{
+	return false;
+}
+
+void CServerGameDLL::OnEngineClientNetworkEvent(edict_t* edictClient, uint64 ullSteamID, int nEventType, void* pvParam)
+{
+
+}
+
+void CServerGameDLL::EngineGotvSyncPacket(const CEngineGotvSyncPacket* pPkt)
+{
+
+}
+
+bool CServerGameDLL::LogForHTTPListeners(const char* szLogLine)
+{
+	return false;//GetServerLogHTTPDispatcher()->LogForHTTPListeners(szLogLine);
+}

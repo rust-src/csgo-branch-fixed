@@ -149,12 +149,12 @@ void CTeam::ResetTeamLeaders()
 //-----------------------------------------------------------------------------
 void CTeam::Think( void )
 {
-	if ( m_flLastPlayerSortTime + 0.025f < gpGlobals->curtime )
-	{
-		DetermineGGLeaderAndSort();
-	}
+	//if ( m_flLastPlayerSortTime + 0.025f < gpGlobals->curtime )
+	//{
+	//	//DetermineGGLeaderAndSort();
+	//}
 }
-
+#ifdef CSTRIKE15
 void CTeam::DetermineGGLeaderAndSort( void )
 {
 	CUtlVector< CCSPlayer* >	playerList_CT;
@@ -270,7 +270,7 @@ int CTeam::TeamGGSortFunction( CCSPlayer* const *entry1, CCSPlayer* const *entry
 
 	return 0;
 }
-
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: Teams are always transmitted to clients
 //-----------------------------------------------------------------------------
@@ -577,9 +577,9 @@ void CTeam::AwardAchievement( int iAchievement )
 		}
 	}
 
-	CCSUsrMsg_AchievementEvent msg;
+	CUsrMsg_AchievementEvent msg;
 	msg.set_achievement( iAchievement );
-	SendUserMessage( filter, CS_UM_AchievementEvent, msg );
+	SendUserMessage( filter, UM_AchievementEvent, msg );
 }
 
 int CTeam::GetAliveMembers( void )

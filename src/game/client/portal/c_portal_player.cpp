@@ -374,6 +374,14 @@ BEGIN_RECV_TABLE_NOBASE( CPortalPlayerShared, DT_PortalPlayerShared )
 	RecvPropInt( RECVINFO( m_nPlayerCond ) ),
 END_RECV_TABLE()
 
+BEGIN_RECV_TABLE_NOBASE(PortalPlayerStatistics_t, DT_PortalPlayerStatistics)
+RecvPropInt(RECVINFO(iNumPortalsPlaced)),
+RecvPropInt(RECVINFO(iNumStepsTaken)),
+RecvPropFloat(RECVINFO(fNumSecondsTaken)),
+RecvPropFloat(RECVINFO(fDistanceTaken)),
+
+END_RECV_TABLE()
+
 IMPLEMENT_CLIENTCLASS_DT(C_Portal_Player, DT_Portal_Player, CPortal_Player)
 	
 	RecvPropDataTable( RECVINFO_DT(m_PortalLocal),0, &REFERENCE_RECV_TABLE(DT_PortalLocal) ),
@@ -1320,7 +1328,7 @@ void C_Portal_Player::ClientThink( void )
 		GetViewModel()->SetRenderColor( color.r(), color.g(), color.b() );
 	}
 
-	RANDOM_CEG_TEST_SECRET();
+	//RANDOM_CEG_TEST_SECRET();
 
 	if( IsLocalPlayer() )
 	{
@@ -2448,7 +2456,7 @@ Vector C_Portal_Player::GetAutoaimVector( float flDelta )
 {
 	// Never autoaim a predicted weapon (for now)
 	Vector	forward;
-	AngleVectors( EyeAngles() + m_Local.m_vecPunchAngle, &forward );
+	AngleVectors( EyeAngles() + m_Local.m_viewPunchAngle, &forward );
 	return	forward;
 }
 
@@ -2668,11 +2676,11 @@ void C_Portal_Player::CreatePingPointer( Vector vecDestintaion )
 	}
 }
 
-CEG_NOINLINE void C_Portal_Player::DestroyPingPointer( void )
+void C_Portal_Player::DestroyPingPointer( void )
 {
 	if ( m_PointLaser )
 	{
-		CEG_PROTECT_MEMBER_FUNCTION( C_Portal_Player_DestroyPingPointer )
+		//CEG_PROTECT_MEMBER_FUNCTION( C_Portal_Player_DestroyPingPointer )
 
 		// stop the effect
 		m_PointLaser->StopEmission( false, true, false );
@@ -2971,7 +2979,7 @@ void C_Portal_Player::CalcPortalView( Vector &eyeOrigin, QAngle &eyeAngles, floa
 		}
 	}
 
-	VectorAdd( eyeAngles, m_Local.m_vecPunchAngle, eyeAngles );
+	VectorAdd( eyeAngles, m_Local.m_viewPunchAngle, eyeAngles );
 
 	if ( !prediction->InPrediction() )
 	{
@@ -3143,7 +3151,7 @@ static ConVar portal_deathcam_gib_pitch( "portal_deathcam_gib_pitch", "25.f", FC
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-CEG_NOINLINE void C_Portal_Player::TurnOnTauntCam( void )
+void C_Portal_Player::TurnOnTauntCam( void )
 {
 	if ( !IsLocalPlayer( this ) )
 		return;
@@ -3178,7 +3186,7 @@ CEG_NOINLINE void C_Portal_Player::TurnOnTauntCam( void )
 		m_TauntCameraData.m_vecHullMin.Init( -1.0f, -1.0f, -1.0f );
 		m_TauntCameraData.m_vecHullMax.Init( 1.0f, 1.0f, 1.0f );
 
-		CEG_PROTECT_MEMBER_FUNCTION( C_Portal_Player_TurnOnTauntCam )
+		//CEG_PROTECT_MEMBER_FUNCTION( C_Portal_Player_TurnOnTauntCam )
 
 		QAngle vecCameraOffset( m_vecRemoteViewAngles.x, m_vecRemoteViewAngles.y, flDist );
 		input->CAM_ToThirdPerson();
@@ -3238,7 +3246,7 @@ void C_Portal_Player::TurnOffTauntCam( void )
 
 	ACTIVE_SPLITSCREEN_PLAYER_GUARD_ENT( this );
 
-	CEG_PROTECT_MEMBER_FUNCTION( C_Portal_Player_TurnOffTauntCam )
+	//CEG_PROTECT_MEMBER_FUNCTION( C_Portal_Player_TurnOffTauntCam )
 
 	if ( m_bTauntRemoteView )
 	{
@@ -3298,7 +3306,7 @@ void C_Portal_Player::TurnOffTauntCam_Finish()
 		angles = vec3_angle;
 	}
 
-	RANDOM_CEG_TEST_SECRET_PERIOD( 12, 19 )
+	//RANDOM_CEG_TEST_SECRET_PERIOD( 12, 19 )
 
 	input->CAM_SetCameraThirdData( NULL, angles );
 
@@ -3901,7 +3909,7 @@ void C_Portal_Player::InvalidatePaintEffects()
 	if( m_PaintScreenSpaceEffect.IsValid() )
 	{
 		m_PaintScreenSpaceEffect->StopEmission();
-		STEAMWORKS_TESTSECRETALWAYS();
+		//STEAMWORKS_TESTSECRETALWAYS();
 		m_PaintScreenSpaceEffect = NULL;
 	}
 
@@ -3962,7 +3970,7 @@ void C_Portal_Player::ClientPlayerRespawn()
 		//	gameeventmanager->FireEventClientSide( event );
 		//}
 
-		RANDOM_CEG_TEST_SECRET();
+		//RANDOM_CEG_TEST_SECRET();
 
 		CPortalMPGameRules *pRules = PortalMPGameRules();
 		// we want to force the screen to not be split on the credits, but we want to keep the other player connected

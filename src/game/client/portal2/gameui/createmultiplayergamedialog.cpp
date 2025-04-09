@@ -142,3 +142,8 @@ bool CCreateMultiplayerGameDialog::OnOK(bool applyOnly)
 
 	return true;
 }
+void CCreateMultiplayerGameDialog::OnKeyCodePressed(vgui::KeyCode code)
+{
+
+		BaseClass::OnKeyCodePressed(code);
+}

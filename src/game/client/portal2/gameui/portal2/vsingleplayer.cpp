@@ -18,7 +18,7 @@
 #include "sysutil/sysutil_savedata.h"
 #endif
 
-#include "cegclientwrapper.h"
+//#include "cegclientwrapper.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -30,7 +30,7 @@ using namespace BaseModUI;
 CPS3SaveRestoreAsyncStatus CSinglePlayer::m_PS3SaveRestoreAsyncStatus;
 #endif
 
-CEG_NOINLINE CSinglePlayer::CSinglePlayer( vgui::Panel *pParent, const char *pPanelName ) : BaseClass( pParent, pPanelName, false, true )
+CSinglePlayer::CSinglePlayer( vgui::Panel *pParent, const char *pPanelName ) : BaseClass( pParent, pPanelName, false, true )
 {
 	SetProportional( true );
 	SetDeleteSelfOnClose( true );
@@ -47,7 +47,7 @@ CEG_NOINLINE CSinglePlayer::CSinglePlayer( vgui::Panel *pParent, const char *pPa
 #endif
 	m_bHasAnySaveGame = false;
 
-	CEG_PROTECT_MEMBER_FUNCTION( CSinglePlayer_CSinglePlayer );
+	//CEG_PROTECT_MEMBER_FUNCTION( CSinglePlayer_CSinglePlayer );
 
 	m_bWaitingToLoadFromContainer = false;
 	m_bLoadingFromContainer = false;
@@ -73,9 +73,9 @@ void CSinglePlayer::SetDataSettings( KeyValues *pSettings )
 	m_bHasAnySaveGame = pSettings->GetBool( "foundsavegame", false );
 }
 
-CEG_NOINLINE void CSinglePlayer::OnCommand( char const *pCommand )
+void CSinglePlayer::OnCommand( char const *pCommand )
 {
-	CEG_PROTECT_MEMBER_FUNCTION( CSinglePlayer_OnCommand );
+	//CEG_PROTECT_MEMBER_FUNCTION( CSinglePlayer_OnCommand );
 
 	if ( !V_stricmp( pCommand, "BtnContinueGame" ) )
 	{
@@ -136,7 +136,7 @@ CEG_NOINLINE void CSinglePlayer::OnCommand( char const *pCommand )
 	BaseClass::OnCommand( pCommand );
 }
 
-CEG_NOINLINE void CSinglePlayer::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CSinglePlayer::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -163,16 +163,16 @@ CEG_NOINLINE void CSinglePlayer::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	UpdateFooter();
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( CSinglePlayer_ApplySchemeSettings );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( CSinglePlayer_ApplySchemeSettings );
 
 	m_bFullySetup = true;
 }
 
-CEG_NOINLINE void CSinglePlayer::Activate()
+void CSinglePlayer::Activate()
 {
 	BaseClass::Activate();
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( CSinglePlayer_Activate );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( CSinglePlayer_Activate );
 
 	// Only want to check when we had save games and we just got re-activated
 	// from a child menu closing that has deleted all saves. Saves cannot be

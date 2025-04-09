@@ -17,6 +17,7 @@
 
 #include "matchmaking/portal2/imatchext_portal2.h"
 #include "matchmaking/mm_helpers.h"
+#include "netmessages_signon.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -163,7 +164,7 @@ int CMatchTitle::GetTotalNumPlayersSupported()
 // Get a guest player name
 char const * CMatchTitle::GetGuestPlayerName( int iUserIndex )
 {
-	if ( vgui::IVGUILocalize *pLocalize = g_pMatchExtensions->GetILocalize() )
+	if ( vgui::ILocalize *pLocalize = g_pMatchExtensions->GetILocalize() )
 	{
 		if ( wchar_t* wStringTableEntry = pLocalize->Find( "#L4D360UI_Character_Guest" ) )
 		{

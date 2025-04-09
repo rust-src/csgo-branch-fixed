@@ -31,8 +31,10 @@ CPredictedViewModel::CPredictedViewModel() : m_LagAnglesHistory("CPredictedViewM
 	m_vLagAngles.Init();
 	m_LagAnglesHistory.Setup( &m_vLagAngles, INTERPOLATE_LINEAR_ONLY );
 	m_vPredictedOffset.Init();
+#ifdef CSTRIKE15
 	m_flInaccuracyTilt = 0;
 	m_flOldAccuracyDiffSmoothed = 0;
+#endif
 }
 #else
 CPredictedViewModel::CPredictedViewModel()
@@ -127,7 +129,8 @@ void CPredictedViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAng
 ConVar cl_gunlowerangle( "cl_gunlowerangle", "2", FCVAR_CLIENTDLL );
 ConVar cl_gunlowerspeed( "cl_gunlowerspeed", "0.1", FCVAR_CLIENTDLL );
 #endif //CLIENT_DLL
-
+#ifdef CSTRIKE15 
+//theaperturecat - check
 void CPredictedViewModel::ApplyViewModelPitchAndDip( CBasePlayer *owner, Vector& vecNewOrigin, QAngle& vecNewAngles )
 {
 	//orients and moves weapon to provide visual feedback on weapon accuracy and player motion (like jumping and landing)
@@ -240,7 +243,7 @@ void CPredictedViewModel::ApplyViewModelPitchAndDip( CBasePlayer *owner, Vector&
 // 	}
 #endif
 }
-
+#endif
 #ifdef CSTRIKE15
 
 void CPredictedViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePosition, const QAngle& eyeAngles )

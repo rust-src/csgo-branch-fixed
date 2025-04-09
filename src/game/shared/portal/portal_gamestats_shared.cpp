@@ -14,7 +14,7 @@
 
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
-
+/*
 //=============================================================================
 //
 // Helper functions for creating key values
@@ -104,5 +104,5 @@ void IGameStatTracker::PrintGamestatMemoryUsage( void )
 		pStatList->operator []( i )->PrintMemoryUsage();
 	}
 }
-
+*/
 #endif // _GAMECONSOLE

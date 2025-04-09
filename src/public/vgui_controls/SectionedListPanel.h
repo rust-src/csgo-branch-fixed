@@ -221,7 +221,9 @@ protected:
 	virtual void OnSizeChanged(int wide, int tall);
 	virtual void OnMouseWheeled(int delta);
 	virtual void OnMousePressed( MouseCode code);
+	public:
 	virtual void NavigateTo( void );
+	protected:
 	virtual void OnKeyCodePressed( KeyCode code );
 	virtual void OnSetFocus();						// called after the panel receives the keyboard focus
 

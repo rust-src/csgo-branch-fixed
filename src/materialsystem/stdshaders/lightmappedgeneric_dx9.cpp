@@ -14,7 +14,7 @@
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
 
-
+ConVar r_twopasspaint("r_twopasspaint", "1", 0, "HAZARD: Only change this outside a map. Enable two-pass paint method. You will need to reload all materials when changing this convar");
 static LightmappedGeneric_DX9_Vars_t s_info;
 
 
@@ -76,6 +76,13 @@ BEGIN_VS_SHADER( LightmappedGeneric,
 
 				 SHADER_PARAM( ENVMAPLIGHTSCALE, SHADER_PARAM_TYPE_FLOAT, "0.0", "How much the lightmap effects environment map reflection, 0.0 is off, 1.0 will allow complete blackness of the environment map if the lightmap is black" )
 				 SHADER_PARAM( ENVMAPLIGHTSCALEMINMAX, SHADER_PARAM_TYPE_VEC2, "[0.0 1.0]", "Thresholds for the lightmap envmap effect.  Setting the min higher increases the minimum light amount at which the envmap gets nerfed to nothing." )
+
+				 SHADER_PARAM(PAINTSPLATNORMALMAP, SHADER_PARAM_TYPE_TEXTURE, "paint/splatnormal_default", "How much the lightmap effects environment map reflection, 0.0 is off, 1.0 will allow complete blackness of the environment map if the lightmap is black")
+				 SHADER_PARAM(PAINTENVMAP, SHADER_PARAM_TYPE_TEXTURE, "paint/bubblelayout", "Thresholds for the lightmap envmap effect.  Setting the min higher increases the minimum light amount at which the envmap gets nerfed to nothing.")
+				 SHADER_PARAM(PAINTSPLATBUBBLELAYOUT, SHADER_PARAM_TYPE_TEXTURE, "paint/bubble", "How much the lightmap effects environment map reflection, 0.0 is off, 1.0 will allow complete blackness of the environment map if the lightmap is black")
+				 SHADER_PARAM(PAINTSPLATBUBBLE, SHADER_PARAM_TYPE_TEXTURE, "paint/paint_envmap_hdr", "Thresholds for the lightmap envmap effect.  Setting the min higher increases the minimum light amount at which the envmap gets nerfed to nothing.")
+
+
 
 				 SHADER_PARAM( PHONG, SHADER_PARAM_TYPE_BOOL, "1", "Phong" )
 				 SHADER_PARAM( PHONGEXPONENT, SHADER_PARAM_TYPE_FLOAT, "5.0", "Phong exponent for Key (CSM Casting) Light - on $basetexture" )
@@ -171,6 +178,11 @@ END_SHADER_PARAMS
 		info.m_nEnvMapLightScale = ENVMAPLIGHTSCALE;
 		info.m_nEnvMapLightScaleMinMax = ENVMAPLIGHTSCALEMINMAX;
 
+		info.m_nPaintSplatNormal = PAINTSPLATNORMALMAP;
+		info.m_nPaintEnvmap = PAINTENVMAP;
+		info.m_nPaintSplatBubbleLayout = PAINTSPLATBUBBLELAYOUT;
+		info.m_nPaintSplatBubble = PAINTSPLATBUBBLE;
+
 		info.m_nPhong = PHONG;
 		info.m_nPhongExp = PHONGEXPONENT;
 		info.m_nPhongExp2 = PHONGEXPONENT2;
@@ -224,7 +236,15 @@ END_SHADER_PARAMS
 
 	SHADER_DRAW
 	{
-		DrawLightmappedGeneric_DX9( this, params, pShaderAPI, pShaderShadow, s_info, pContextDataPtr );
+		if (!IsRenderingPaint(params))
+		{
+			DrawLightmappedGeneric_DX9(this, params, pShaderAPI, pShaderShadow, s_info, pContextDataPtr);
+		}
+		else
+		{
+			DrawLightmappedPaint_DX9(this, params, pShaderAPI, pShaderShadow, s_info, pContextDataPtr);
+		}
+
 	}
 
 	void ExecuteFastPath( int *dynVSIdx, int *dynPSIdx,  IMaterialVar** params, IShaderDynamicAPI * pShaderAPI, 
@@ -233,6 +253,6 @@ END_SHADER_PARAMS
 		*dynVSIdx = -1;
 		*dynPSIdx = -1;
 
-		DrawLightmappedGeneric_DX9_FastPath( dynVSIdx, dynPSIdx, this, params, pShaderAPI, s_info, pContextDataPtr, bCSMEnabled );
+		DrawLightmappedGeneric_DX9_FastPath(dynVSIdx, dynPSIdx, this, params, pShaderAPI, s_info, pContextDataPtr, bCSMEnabled);
 	}
 END_SHADER

@@ -11,14 +11,14 @@
 #include "decals.h"
 #include "coordsize.h"
 #include "rumble_shared.h"
-#include "cstrike15/basecsgrenade_projectile.h"
+//#include "cstrike15/basecsgrenade_projectile.h"
 
 #if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
 	#include "hl_movedata.h"
 #endif
 
 #if defined(HL2_EP3) && !defined(CLIENT_DLL)
-	#include "ep3/weapon_icegun.h"
+	//#include "ep3/weapon_icegun.h"
 #endif
 
 #if (PREDICTION_ERROR_CHECK_LEVEL > 0) && (PREDICTION_ERROR_CHECK_STACKS_FOR_MISSING > 0)
@@ -4229,7 +4229,7 @@ void CGameMovement::CategorizePosition( void )
 		float flStandableZ = 0.7;
 
 #if defined(HL2_EP3) && !defined(CLIENT_DLL)
-		if ( Icegun_IsPlayerIceSurfing() )
+		if ( false)//Icegun_IsPlayerIceSurfing() )
 		{
 			flStandableZ = 0;
 		}
@@ -4256,7 +4256,8 @@ void CGameMovement::CategorizePosition( void )
 			else
 			{
 
-#ifndef CLIENT_DLL
+#if 0
+				//ndef CLIENT_DLL
 				CBaseCSGrenadeProjectile* pGrenadeProjectile = dynamic_cast<CBaseCSGrenadeProjectile*>( pm.m_pEnt );
 				if ( pGrenadeProjectile )
 				{
@@ -4271,7 +4272,8 @@ void CGameMovement::CategorizePosition( void )
 		}
 		else
 		{
-#ifndef CLIENT_DLL
+#if 0
+			//ndef CLIENT_DLL
 			CBaseCSGrenadeProjectile* pGrenadeProjectile = dynamic_cast<CBaseCSGrenadeProjectile*>( pm.m_pEnt );
 			if ( pGrenadeProjectile )
 			{
@@ -4315,7 +4317,8 @@ void CGameMovement::CategorizePosition( void )
 		pm.fraction > 0.0f &&			// must go somewhere
 		pm.fraction < 1.0f ) 			// must hit something
 	{
-#ifndef CLIENT_DLL
+#if 0
+		//ndef CLIENT_DLL
 		CBaseCSGrenadeProjectile* pGrenadeProjectile = dynamic_cast<CBaseCSGrenadeProjectile*>( pm.m_pEnt );
 		if ( pGrenadeProjectile )
 		{

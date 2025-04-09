@@ -12,12 +12,12 @@
 #include "materialsystem/itexture.h"
 #include "materialsystem/imaterialsystem.h"
 #include "functionproxy.h"
-#include "c_cs_player.h"
-#include "weapon_csbase.h"
+//#include "c_cs_player.h"
+//#include "weapon_csbase.h"
 #include "predicted_viewmodel.h"
-#include "cs_client_gamestats.h"
-#include "econ/econ_item_schema.h"
-#include "cstrike15_gcconstants.h"
+//#include "cs_client_gamestats.h"
+//#include "econ/econ_item_schema.h"
+//#include "cstrike15_gcconstants.h"
 
 #include "imaterialproxydict.h"
 // memdbgon must be the last include file in a .cpp file!!!
@@ -325,8 +325,8 @@ bool CStatTrakDigitProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
 	return true;
 }
 
-#include "c_cs_player.h"
-#include "weapon_csbase.h"
+//#include "c_cs_player.h"
+//#include "weapon_csbase.h"
 #include "predicted_viewmodel.h"
 
 bool CStatTrakDigitProxy::HelperOnBindGetStatTrakScore( void *pC_BaseEntity, int *piScore )
@@ -336,8 +336,8 @@ bool CStatTrakDigitProxy::HelperOnBindGetStatTrakScore( void *pC_BaseEntity, int
 
 	if ( !piScore )
 		return false;
-
-	C_BaseEntity *pEntity = BindArgToEntity( pC_BaseEntity );
+#ifdef CSTRIKE15
+	C_BaseEntity* pEntity = BindArgToEntity(pC_BaseEntity);
 	if ( pEntity )
 	{
 		// StatTrak modules are children of their accompanying viewmodels
@@ -359,6 +359,7 @@ bool CStatTrakDigitProxy::HelperOnBindGetStatTrakScore( void *pC_BaseEntity, int
 			}
 		}
 	}
+#endif
 	return true;
 }
 
@@ -573,12 +574,12 @@ bool CWeaponLabelTextProxy::HelperOnBindGetLabel( void *pC_BaseEntity, const cha
 			CBaseCombatWeapon *pWeapon = pViewModel->GetWeapon();
 			if ( pWeapon )
 			{
-				CEconItemView *pItem = pWeapon->GetEconItemView();
-				if ( pItem )
-				{
-					*p_szLabel = pItem->GetCustomName();
-					return true;
-				}
+				//CEconItemView *pItem = pWeapon->GetEconItemView();
+				//if ( pItem )
+				//{
+				//	*p_szLabel = pItem->GetCustomName();
+				//	return true;
+				//}
 			}
 		}
 	}
@@ -741,7 +742,7 @@ EXPOSE_MATERIAL_PROXY(CStickerPeelProxy, StickerPeel);
 //-----------------------------------------------------------------------------
 // CrosshairColor proxy
 //-----------------------------------------------------------------------------
-extern ConVar cl_crosshaircolor_r;
+/* extern ConVar cl_crosshaircolor_r;
 extern ConVar cl_crosshaircolor_g;
 extern ConVar cl_crosshaircolor_b;
 class CCrossHairColorProxy : public CResultProxy
@@ -779,7 +780,7 @@ void CCrossHairColorProxy::OnBind(void *pC_BaseEntity)
 }
 
 EXPOSE_MATERIAL_PROXY(CCrossHairColorProxy, CrossHairColor);
-
+*/
 
 float g_flEconInspectPreviewTime = 0;
 

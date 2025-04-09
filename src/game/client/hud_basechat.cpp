@@ -20,7 +20,7 @@
 #include <keyvalues.h>
 #include "ienginevgui.h"
 #include "c_playerresource.h"
-#include "cstrike15/c_cs_playerresource.h"
+//#include "cstrike15/c_cs_playerresource.h"
 #include "ihudlcd.h"
 #include "vgui/IInput.h"
 #include "vgui/ILocalize.h"
@@ -279,6 +279,7 @@ static CUtlLinkedList<const char *> *ParseTokens( char *szString)
 //-----------------------------------------------------------------------------
 wchar_t* ReadChatTextString( const char *szString, wchar_t *pOut, int outSize, bool stripBugData )
 {
+#ifdef CSTRIKE15
 	if ( outSize <= 0 )
 		return pOut;
 
@@ -299,6 +300,7 @@ wchar_t* ReadChatTextString( const char *szString, wchar_t *pOut, int outSize, b
 	}
 
 	if ( !pOut[0] )
+#endif
 	{
 		g_pVGuiLocalize->ConvertANSIToUnicode( szString, pOut, outSize );
 		StripEndNewlineFromString( pOut );
@@ -898,7 +900,7 @@ void CBaseHudChat::Init( void )
 //			iSize - 
 //			*pbuf - 
 //-----------------------------------------------------------------------------
-bool CBaseHudChat::MsgFunc_SayText( const CCSUsrMsg_SayText &msg )
+bool CBaseHudChat::MsgFunc_SayText( const CUsrMsg_SayText &msg )
 {
 	int client = msg.ent_idx();
 	const char *szString =  msg.text().c_str();
@@ -938,7 +940,7 @@ int CBaseHudChat::GetFilterForString( const char *pString )
 //-----------------------------------------------------------------------------
 // Purpose: Reads in a player's Chat text from the server
 //-----------------------------------------------------------------------------
-bool CBaseHudChat::MsgFunc_SayText2( const CCSUsrMsg_SayText2 &msg )
+bool CBaseHudChat::MsgFunc_SayText2( const CUsrMsg_SayText2 &msg )
 {
 	// Got message during connection
 	if ( !g_PR )
@@ -1002,7 +1004,7 @@ bool CBaseHudChat::MsgFunc_SayText2( const CCSUsrMsg_SayText2 &msg )
 // any string that starts with the character '#' is a message name, and is used to look up the real message in titles.txt
 // the next ( optional) one to four strings are parameters for that string ( which can also be message names if they begin with '#')
 //-----------------------------------------------------------------------------
-bool CBaseHudChat::MsgFunc_TextMsg( const CCSUsrMsg_TextMsg &msg )
+bool CBaseHudChat::MsgFunc_TextMsg( const CUsrMsg_TextMsg &msg )
 {
 	char szString[2048] = {};
 	int msg_dest = msg.msg_dst();
@@ -1012,6 +1014,7 @@ bool CBaseHudChat::MsgFunc_TextMsg( const CCSUsrMsg_TextMsg &msg )
 
 	for ( int i=0; i<5; ++i )
 	{
+#ifdef CSTRIKE15
 		// Allow localizing player names
 		if ( const char *pszEntIndex = StringAfterPrefix( msg.params(i).c_str(), "#ENTNAME[" ) )
 		{
@@ -1036,6 +1039,7 @@ bool CBaseHudChat::MsgFunc_TextMsg( const CCSUsrMsg_TextMsg &msg )
 			}
 		}
 		else
+#endif
 		{
 			V_strcpy_safe( szString, msg.params(i).c_str() );
 		}

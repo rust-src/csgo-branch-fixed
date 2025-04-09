@@ -8,26 +8,26 @@ $Macro GAMENAME 			"portal2"
 $Macro GENERATED_PROTO_DIR	"$SRCDIR\game\client\portal2\generated_proto"
 
 $Include "client_portal_base.vpc"
-$Include "client_econ_base.vpc"		[ ($WIN32 || $OSXALL ) && !$NO_STEAM ]
+//$Include "client_econ_base.vpc"		[ ($WIN32 || $OSXALL ) && !$NO_STEAM ]
+$include "$SRCDIR\game\shared\portal\portal_usermessages_include.vpc"
 
 $Configuration
 {
 	$Compiler
 	{
 		$AdditionalIncludeDirectories	".\hl2;.\hl2\elements;$SRCDIR\game\shared\hl2;$SRCDIR\game\shared\episodic;..\..\public;;$SRCDIR\game\shared\multiplayer;$SRCDIR\game\shared\portal;;.\portal;.\portal2;$BASE;$SRCDIR\public\meshutils;$SRCDIR\game\client\portal2\gameui;$SRCDIR\game\shared\portal2"
-		$PreprocessorDefinitions		"$BASE;PORTAL2;PORTAL;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;VERSION_SAFE_STEAM_API_INTERFACES"
+		$PreprocessorDefinitions		"$BASE;GAMEUI_EMBEDDED;GAMEUI_EXPORTS;PORTAL2;PORTAL;VERSION_SAFE_STEAM_API_INTERFACES"//
 		$PreprocessorDefinitions		"$BASE;USE_CEG"								[ $WIN32 && !$NO_CEG ]		
 		$ForceIncludes					"tier0\platform.h"							[ $WIN32 ||  $POSIX  ]
 
 		// The PuzzleMaker is loaded as a DLL during development (on WIN32), but for public builds it is linked as a static LIB:
 		// Always link as a static library in this branch
 		// $PreprocessorDefinitions		"$BASE;PUZZLEMAKER_DLL_IMPORT"				[ $WIN32 ]
-		$PreprocessorDefinitions		"$BASE;PORTAL2_PUZZLEMAKER"					[ $WIN32 ||  $OSXALL ]
+		//$PreprocessorDefinitions		"$BASE;PORTAL2_PUZZLEMAKER"					[ $WIN32 ||  $OSXALL ]
 	}
 
 	$Linker
 	{
-		$AdditionalDependencies			"$BASE Imm32.lib" [$WIN32]
 		$AdditionalDependencies			"$BASE libspurs_stub.a libspurs_jq_stub.a libsysutil_stub.a libsysutil_game_stub.a libnetctl_stub.a"						[$PS3]
 		$AdditionalDependencies			"$BASE $LIBCOMMON\ceglib.lib"				[ $WIN32 && !$NO_CEG ]
 		//$FunctionOrder				"$(IntDir)\functionorder.txt" 				[ $WIN32 && !$NO_CEG ]
@@ -37,12 +37,12 @@ $Configuration
 
 	$PreBuildEvent	[$WIN32 && !$NO_CEG]
 	{
-		$CommandLine		"del $(IntDir)\*.temp" "\n" \ 
-							"del $(IntDir)\*.substitutions*" "\n" \
-							"if EXIST $OUTBINDIR\$(TargetFileName) for /f $QUOTEdelims=$QUOTE %%A in ('attrib $QUOTE$OUTBINDIR\$(TargetFileName)$QUOTE') do set valveTmpIsReadOnly=$QUOTE%%A$QUOTE" "\n" \
-							"set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%" "\n" \
-							"if $QUOTE%valveTmpIsReadOnlyLetter%$QUOTE==$QUOTER$QUOTE del /q $QUOTE$(TargetDir)$QUOTE$(TargetFileName)" "\n" \
-							"$CRCCHECK"						
+		//$CommandLine		"del $(IntDir)\*.temp" "\n" \ 
+		//					"del $(IntDir)\*.substitutions*" "\n" \
+		//					"if EXIST $OUTBINDIR\$(TargetFileName) for /f $QUOTEdelims=$QUOTE %%A in ('attrib $QUOTE$OUTBINDIR\$(TargetFileName)$QUOTE') do set valveTmpIsReadOnly=$QUOTE%%A$QUOTE" "\n" \
+		//					"set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%" "\n" \
+		//					"if $QUOTE%valveTmpIsReadOnlyLetter%$QUOTE==$QUOTER$QUOTE del /q $QUOTE$(TargetDir)$QUOTE$(TargetFileName)" "\n" //\
+		//					"$CRCCHECK"						
 	}
 	
 	$PreLinkEvent	[$WIN32 && !$NO_CEG]
@@ -141,7 +141,7 @@ $Project "Client (Portal 2)"
 		-$File	"hud_numericdisplay.cpp"
 		-$File	"hud_vehicle.cpp"
 		-$File	"c_mod_lesson_stubs.cpp"
-		
+
 		$Folder "Workshop"
 		{
 			$File	"$SRCDIR\game\shared\ugc_request_manager.cpp"
@@ -163,23 +163,23 @@ $Project "Client (Portal 2)"
 			$File	"$SRCDIR\game\shared\portal\portal_mp_gamerules.cpp"
 			$File	"$SRCDIR\game\shared\portal\portal_mp_gamerules.h"
 
-			$Folder "Economy"	[ ($WIN32 || $OSXALL ) && !$NO_STEAM ]
-			{
-				$File	"portal2\portal2_econ_ui.cpp"
-				$File	"portal2\portal2_playermodelpanel.cpp"
-				$File	"portal2\portal2_playermodelpanel.h"
-				$File	"portal2\portal2_store_preview_item.cpp"
-				$File	"portal2\portal2_store_preview_item.h"
-				$File	"portal2\portal2_item_selection_panel.cpp"
-				$File	"portal2\portal2_item_selection_panel.h"
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_inventory.cpp"
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_inventory.h"
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_schema.cpp"
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_schema.h"
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_system.cpp"
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_system.h"
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_constants.h"
-			}
+			//$Folder "Economy"	[ ($WIN32 || $OSXALL ) && !$NO_STEAM ]
+			//{
+			//	$File	"portal2\portal2_econ_ui.cpp"
+			//	$File	"portal2\portal2_playermodelpanel.cpp"
+			//	$File	"portal2\portal2_playermodelpanel.h"
+			//	$File	"portal2\portal2_store_preview_item.cpp"
+			//	$File	"portal2\portal2_store_preview_item.h"
+			//	$File	"portal2\portal2_item_selection_panel.cpp"
+			//	$File	"portal2\portal2_item_selection_panel.h"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_inventory.cpp"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_inventory.h"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_schema.cpp"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_schema.h"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_system.cpp"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_system.h"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_constants.h"
+			//}
 
 			$Folder "gameui" [$IFDEF_GAMEUI_UISYSTEM2_ENABLED]
 			{
@@ -281,6 +281,7 @@ $Project "Client (Portal 2)"
 								"portal2\gameui\rungameengine.h" \
 								"portal2\gameui\scriptobject.h" \
 								"portal2\gameui\sys_utils.h" \
+								"portal2\gameui\tgaimagepanel.h" \
 								"portal2\gameui\textentrybox.h" \
 								"portal2\gameui\urlbutton.h" \
 								"portal2\gameui\vcontrolslistpanel.h" \
@@ -327,6 +328,7 @@ $Project "Client (Portal 2)"
 							"portal2\gameui\playerlistdialog.cpp" \
 							"portal2\gameui\rungameengine.cpp" \
 							"portal2\gameui\scriptobject.cpp" \
+							"portal2\gameui\tgaimagepanel.cpp" \
 							"portal2\gameui\sys_utils.cpp" \
 							"portal2\gameui\textentrybox.cpp" \
 							"portal2\gameui\urlbutton.cpp" \
@@ -785,19 +787,19 @@ $Project "Client (Portal 2)"
 		}
 	}
 
-	$Folder "Protobuf Files"	[ ( $WIN32 || $OSXALL ) && !$NO_STEAM]
-	{
-		$DynamicFile "$GENERATED_PROTO_DIR\steammessages.pb.cc"
-		{
-			$Configuration
-			{
-				$Compiler 
-				{
-					$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
-				}
-			}
-		}
-	}
+	//$Folder "Protobuf Files"	[ ( $WIN32 || $OSXALL ) && !$NO_STEAM]
+	//{
+		//$DynamicFile "$GENERATED_PROTO_DIR\steammessages.pb.cc"
+		//{
+		//	$Configuration
+		//	{
+		//		$Compiler 
+		//		{
+		//			$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
+		//		}
+		//	}
+		//}
+	//}
 
 	$Folder	"Additional Link Libraries"
 	{
@@ -810,6 +812,6 @@ $Project "Client (Portal 2)"
 
 		// The PuzzleMaker is loaded as a DLL during development (on WIN32), but for public builds it is linked as a static LIB:
 		// $Lib	"$LIBCOMMON\puzzlemaker_dll"		[  $WIN32 ]
-		$Lib	"$LIBCOMMON\puzzlemaker_lib"		[ $WIN32 || $OSXALL ]
+		//$Lib	"$LIBCOMMON\puzzlemaker_lib"		[ $WIN32 || $OSXALL ]
 	}
 }

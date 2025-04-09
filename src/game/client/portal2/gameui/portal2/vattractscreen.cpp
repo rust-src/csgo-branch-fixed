@@ -19,7 +19,7 @@
 #include "tier0/icommandline.h"
 #include "filesystem.h"
 #include "bitmap/tgaloader.h"
-#include "filesystem/IXboxInstaller.h"
+//#include "filesystem/IXboxInstaller.h"
 #ifdef _X360
 #include "xbox/xbox_launch.h"
 #elif defined(_PS3)

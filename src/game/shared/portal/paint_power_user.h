@@ -388,7 +388,7 @@ void PaintPowerUser<BaseEntityType>::UpdatePaintPowers()
 				case ACTIVATING_PAINT_POWER:
 					m_PaintPowers[i].m_State = ActivatePaintPower( m_PaintPowers[i] );
 #if defined CLIENT_DLL
-					RANDOM_CEG_TEST_SECRET_PERIOD( 127, 1023 );
+					//RANDOM_CEG_TEST_SECRET_PERIOD( 127, 1023 );
 #endif
 					break;
 
@@ -398,7 +398,7 @@ void PaintPowerUser<BaseEntityType>::UpdatePaintPowers()
 
 				case DEACTIVATING_PAINT_POWER:
 #if defined GAME_DLL
-					RANDOM_CEG_TEST_SECRET_PERIOD( 937, 3821 );
+					//RANDOM_CEG_TEST_SECRET_PERIOD( 937, 3821 );
 #endif
 					m_PaintPowers[i].m_State = DeactivatePaintPower( m_PaintPowers[i] );
 					break;

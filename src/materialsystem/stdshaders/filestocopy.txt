@@ -1,0 +1,11 @@
+..\..\..\game\bin\d3dx9_33.dll 
+..\..\..\game\bin\d3dx9_43.dll 
+..\..\..\game\bin\d3dx10_33.dll 
+..\..\..\game\bin\d3dx10_43.dll 
+..\..\..\game\bin\d3dcompiler_41.dll 
+..\..\..\game\bin\d3dcompiler_43.dll 
+..\..\dx10sdk\utilities\dx9_30\dx_proxy.dll 
+..\..\..\game\bin\shadercompile.exe 
+..\..\..\game\bin\shadercompile_dll.dll 
+..\..\..\game\bin\vstdlib.dll 
+..\..\..\game\bin\tier0.dll 

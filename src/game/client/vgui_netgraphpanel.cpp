@@ -27,8 +27,8 @@
 #include "materialsystem/imesh.h"
 #include "materialsystem/imaterial.h"
 #include "matchmaking/imatchframework.h"
-
-#include "cs_gamerules.h"
+#include "cdll_client_int.h"
+#include "cdll_util.h"
 
 #ifdef _PS3
 #include "ps3/ps3_core.h"
@@ -337,6 +337,8 @@ CNetGraphPanel::~CNetGraphPanel( void )
 {
 	g_pNetGraphPanel = NULL;
 }
+
+ConVar sv_max_allowed_net_graph("sv_max_allowed_net_graph","100");//theaperturecat some random value
 
 extern ConVar sv_max_allowed_net_graph;
 void NetgraphChangeCallback( IConVar *var, const char *pOldValue, float flOldValue )
@@ -1192,9 +1194,9 @@ void CNetGraphPanel::DrawServerType( int xright, int y )
 	}
 	else if ( engine->IsInGame() )
 	{
-		INetChannelInfo *pInfo = engine->GetNetChannelInfo();
+		INetChannelInfo* pInfo = engine->GetNetChannelInfo();
 		bool bP2P = ( netadr_t( pInfo ? pInfo->GetAddress() : "127.0.0.1" ).GetPort() == 1 );
-		if ( engine->IsHLTV() )
+		/*if (engine->IsHLTV())
 		{
 			if ( CSGameRules() && CSGameRules()->IsValveDS() )
 				psz = bLiveBroadcast ? "Official GOTV+" : "Official GOTV";
@@ -1211,7 +1213,11 @@ void CNetGraphPanel::DrawServerType( int xright, int y )
 				psz = "P2P";
 			else
 				psz = "online";
-		}
+		}*/
+		if (bP2P)
+			psz = "P2P";
+		else
+			psz = "online";
 	}
 	else if ( engine->IsConnected() )
 		psz = "loading";

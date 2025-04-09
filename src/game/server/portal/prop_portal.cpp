@@ -34,6 +34,7 @@
 #include "tier1/convar.h"
 #include "iextpropportallocator.h"
 #include "matchmaking/imatchframework.h"
+#include "portal_usermessages.pb.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -85,9 +86,9 @@ CProp_Portal::CProp_Portal( void )
 	if( !ms_DefaultPortalSizeInitialized )
 	{
 		ms_DefaultPortalSizeInitialized = true; // for CEG protection
-		CEG_GCV_PRE();
-		ms_DefaultPortalHalfHeight = CEG_GET_CONSTANT_VALUE( DefaultPortalHalfHeight ); // only protecting one to reduce the cost of first-portal check
-		CEG_GCV_POST();
+		//CEG_GCV_PRE();
+		ms_DefaultPortalHalfHeight = DEFAULT_PORTAL_HALF_HEIGHT;//CEG_GET_CONSTANT_VALUE( DefaultPortalHalfHeight ); // only protecting one to reduce the cost of first-portal check
+		//CEG_GCV_POST();
 	}
 	m_FizzleEffect = PORTAL_FIZZLE_KILLED;
 	CProp_Portal_Shared::AllPortals.AddToTail( this );
@@ -468,7 +469,7 @@ void CProp_Portal::CreatePortalEffect( CBasePlayer* pPlayer, int iEffect, Vector
 		filter.RemoveRecipient( pPlayer );
 	}
 
-	UserMessageBegin( filter, "PortalFX_Surface" );
+	/*UserMessageBegin(filter, "PortalFX_Surface");
 	WRITE_SHORT( entindex() );
 	WRITE_SHORT( pPlayer->entindex() );
 	WRITE_BYTE( nTeam );
@@ -476,7 +477,20 @@ void CProp_Portal::CreatePortalEffect( CBasePlayer* pPlayer, int iEffect, Vector
 	WRITE_BYTE( iEffect );
 	WRITE_VEC3COORD( vecOrigin );
 	WRITE_ANGLES( qAngles );
-	MessageEnd();
+	MessageEnd();*/
+
+	CUsrMsg_PortalFX_Surface msg;
+	msg.set_portalent(entindex());
+	msg.set_ownerent(pPlayer->entindex());
+	msg.set_team(nTeam);
+	msg.set_portalnum(nPortalNum);
+	msg.set_effect(iEffect);
+	msg.set_origin_x(vecOrigin.x);
+	msg.set_origin_y(vecOrigin.y);
+	msg.set_origin_z(vecOrigin.z);
+	msg.set_angles_pitch(qAngles.x);
+	msg.set_angles_yaw(qAngles.y);
+	msg.set_angles_roll(qAngles.z);
 }
 
 //-----------------------------------------------------------------------------

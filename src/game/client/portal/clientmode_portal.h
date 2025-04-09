@@ -63,6 +63,8 @@ private:
 	float m_BlurFadeScale;
 
 	CRadialMenu	*m_pRadialMenu;
+
+	CUserMessageBinder m_UMCMsgTransitionFade;
 };
 
 

@@ -20,7 +20,7 @@
 #include "gameui/igameconsole.h"
 #include "inputsystem/iinputsystem.h"
 #include "FileSystem.h"
-#include "filesystem/IXboxInstaller.h"
+//#include "filesystem/IXboxInstaller.h"
 
 #ifdef _X360
 	#include "xbox/xbox_launch.h"
@@ -137,7 +137,7 @@ using namespace vgui;
 
 //setup in GameUI_Interface.cpp
 extern class IMatchSystem *matchsystem;
-extern IGameConsole *IGameConsole();
+//extern IGameConsole *IGameConsole();
 
 extern CBaseModFrame *OpenPortal2EconUI( vgui::Panel *pParent );
 
@@ -328,7 +328,8 @@ CBaseModPanel::CBaseModPanel(): BaseClass(0, "CBaseModPanel"),
 	m_FooterPanel = new CBaseModFooterPanel( this, "FooterPanel" );
 
 	m_pTransitionPanel = new CBaseModTransitionPanel( "TransitionPanel" );
-	m_pTransitionPanel->SetParent( enginevguifuncs->GetPanel( PANEL_TRANSITIONEFFECT ) );
+	m_pTransitionPanel->SetParent(this->GetVPanel());
+	//m_pTransitionPanel->SetParent(enginevguifuncs->GetPanel(PANEL_ROOT));// PANEL_TRANSITIONEFFECT ) );// theaperturecat
 
 	m_hOptionsDialog = NULL;
 
@@ -1878,7 +1879,7 @@ static void ChatRestrictionsAcknowledged()
 
 
 //=============================================================================
-CEG_NOINLINE void CBaseModPanel::OnLevelLoadingStarted( char const *levelName, bool bShowProgressDialog )
+void CBaseModPanel::OnLevelLoadingStarted( bool bShowProgressDialog )
 {
 	Assert( !m_LevelLoading );
 
@@ -1916,12 +1917,12 @@ CEG_NOINLINE void CBaseModPanel::OnLevelLoadingStarted( char const *levelName, b
 	if ( UI_IsDebug() )
 	{
 		Msg( "[GAMEUI] OnLevelLoadingStarted - opening loading progress (%s)...\n",
-			levelName ? levelName : "<< no level specified >>" );
+			"<< no level specified >>" );
 	}
 
 	LoadingProgress *pLoadingProgress = static_cast<LoadingProgress*>( OpenWindow( WT_LOADINGPROGRESS, 0 ) );
 
-	CEG_PROTECT_MEMBER_FUNCTION( CBaseModPanel_OnLevelLoadingStarted );
+	//CEG_PROTECT_MEMBER_FUNCTION( CBaseModPanel_OnLevelLoadingStarted );
 
 	KeyValues *pMissionInfo = NULL;
 	KeyValues *pChapterInfo = NULL;
@@ -1929,11 +1930,13 @@ CEG_NOINLINE void CBaseModPanel::OnLevelLoadingStarted( char const *levelName, b
 	char chGameMode[64] = {0};
 	bool bIsCoop = false;
 
+	char* levelName = NULL;
+
 	//
 	// If playing on listen server then "levelName" is set to the map being loaded,
 	// so it is authoritative - it might be a background map or a real level.
 	//
-	if ( levelName )
+	if ( levelName )//no level name theaperturecat
 	{
 		//Check if this is a coop map:
 		//Playing a campaign map, check the map prefix
@@ -2081,7 +2084,7 @@ void CBaseModPanel::OnEngineLevelLoadingSession( KeyValues *pEvent )
 }
 
 //=============================================================================
-CEG_NOINLINE void CBaseModPanel::OnLevelLoadingFinished( KeyValues *kvEvent )
+void CBaseModPanel::OnLevelLoadingFinished( KeyValues *kvEvent )
 {
 	int bError = kvEvent->GetInt( "error" );
 	const char *failureReason = kvEvent->GetString( "reason" );
@@ -2112,7 +2115,7 @@ CEG_NOINLINE void CBaseModPanel::OnLevelLoadingFinished( KeyValues *kvEvent )
 
 	m_LevelLoading = false;
 
-	CEG_PROTECT_MEMBER_FUNCTION( CBaseModPanel_OnLevelLoadingFinished );
+	//CEG_PROTECT_MEMBER_FUNCTION( CBaseModPanel_OnLevelLoadingFinished );
 
 	CBaseModFrame *pFrame = CBaseModPanel::GetSingleton().GetWindow( WT_GENERICCONFIRMATION );
 	if ( !pFrame )
@@ -2537,7 +2540,7 @@ void CBaseModPanel::OnEvent( KeyValues *pEvent )
 			}
 		}
 	}
-#if !defined( NO_STEAM )
+#if !defined( NO_STEAM ) && defined( PORTAL2_PUZZLEMAKER )
 	else if ( !V_stricmp( "CommunityMap_Added", szEvent ) )
 	{
 #if !defined( _PS3 )		
@@ -4571,7 +4574,7 @@ char const * CBaseModPanel::GetPartnerDescKey()
 	return szResult;
 }
 
-#if !defined( NO_STEAM )
+#if !defined( NO_STEAM ) && defined( PORTAL2_PUZZLEMAKER )
 
 //-----------------------------------------------------------------------------
 // Purpose: Callback for completion of enumerating the subscribed puzzles for the user
@@ -5243,7 +5246,7 @@ bool CBaseModPanel::MarkCommunityMapCompletionTime( PublishedFileId_t nMapID, ui
 bool CBaseModPanel::CreateThumbnailFileRequest( const PublishedFileInfo_t &info ) 
 {
 	// Grab the thumbnail file
-	return WorkshopManager().CreateFileDownloadRequest(	info.m_hPreviewFile,
+	return WorkshopManager().CreateFileDownloadRequest(	info.m_hPreviewFile,info.m_nPublishedFileId,
 														CFmtStr( "%s/%llu", COMMUNITY_MAP_PATH, info.m_hFile ),
 														CFmtStr( "%s%llu.jpg", COMMUNITY_MAP_THUMBNAIL_PREFIX, info.m_nPublishedFileId ),
 														UGC_PRIORITY_THUMBNAIL,
@@ -5259,11 +5262,11 @@ bool CBaseModPanel::CreateMapFileRequest( const PublishedFileInfo_t &info, bool 
 	V_StrSubst( V_GetFileName( info.m_pchFileName ), " ", "_", szFixedFilename, sizeof(szFixedFilename) );
 
 	// Grab the map file
-	return WorkshopManager().CreateFileDownloadRequest(	info.m_hFile,
+	return WorkshopManager().CreateFileDownloadRequest(	info.m_hFile, info.m_nPublishedFileId,
 														CFmtStr( "%s/%llu", COMMUNITY_MAP_PATH, info.m_hFile ),
 														szFixedFilename,
 														( bUserMadeMap ) ? UGC_PRIORITY_USER_MAP : UGC_PRIORITY_BSP,
-														info.m_rtimeUpdated );	
+														info.m_rtimeUpdated );
 }
 
 //-----------------------------------------------------------------------------
@@ -5443,7 +5446,7 @@ void CBaseModPanel::Steam_OnEnumerateWorkshopFiles( RemoteStorageEnumerateWorksh
 		}
 		ConColorMsg( rgbaCommunityDebug, "-------END MY HISTORY\n" );
 
-		g_CommunityCoopManager.Dev_SpewParterHistory();
+		//g_CommunityCoopManager.Dev_SpewParterHistory(); theaperturecat
 	}
 		
 	// Work through all the returned entries we received
@@ -5462,11 +5465,11 @@ void CBaseModPanel::Steam_OnEnumerateWorkshopFiles( RemoteStorageEnumerateWorksh
 			}
 
 			// Filter out maps that the partner has already visited
-			if ( g_CommunityCoopManager.IsInPartnerHistoryQueue( fileID ) )
+			/*if (g_CommunityCoopManager.IsInPartnerHistoryQueue(fileID)) theaperturecat
 			{
 				if( cm_community_debug_spew.GetBool() ) ConColorMsg( rgbaCommunityDebug, "DISCARDED - Already in THEIR history\n");
 				continue;
-			}
+			}*/
 		}
 
 		if( cm_community_debug_spew.GetBool() ) ConColorMsg( rgbaCommunityDebug, "ACCEPTED\n");
@@ -6015,5 +6018,10 @@ public:
 CCommunityMapGameSystem g_CommunityMapGameSystem;
 
 #endif // !_GAMECONSOLE
+
+#else
+void CBaseModPanel::ClearCurrentCommunityMapID()
+{
+}
 
 #endif	// !NO_STEAM

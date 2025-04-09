@@ -116,7 +116,7 @@ void CProjectedWallEntity::Paint( PaintPowerType type, const Vector& worldContac
 
 void CProjectedWallEntity::CleansePaint()
 {
-	for( int i = 0; i < m_nNumSegments; ++i )
+	//for( int i = 0; i < m_nNumSegments; ++i )
 	{
 // come back to this - MTW
 		/*
@@ -129,7 +129,7 @@ void CProjectedWallEntity::CleansePaint()
 #endif
 		*/
 
-		m_PaintPowers[i] = NO_POWER;
+		//m_PaintPowers[i] = NO_POWER;
 	}
 }
 
@@ -249,7 +249,7 @@ void CProjectedWallEntity::DisplaceObstructingEntities( void )
 	}
 }
 
-CEG_NOINLINE void CProjectedWallEntity::DisplaceObstructingEntity( CBaseEntity *pEntity, const Vector &vOrigin, const Vector &vWallUp, const Vector &vWallRight, bool bIgnoreStuck )
+void CProjectedWallEntity::DisplaceObstructingEntity( CBaseEntity *pEntity, const Vector &vOrigin, const Vector &vWallUp, const Vector &vWallRight, bool bIgnoreStuck )
 {
 #ifdef CLIENT_DLL
 	if ( !pEntity->GetPredictable() )
@@ -297,7 +297,7 @@ CEG_NOINLINE void CProjectedWallEntity::DisplaceObstructingEntity( CBaseEntity *
 
 		NDebugOverlay::VertArrow( GetAbsOrigin(), GetAbsOrigin() + 50.f*vWallUp, 2, 255, 0, 0, 128, true, wall_debug_time.GetFloat() );
 	}
-	CEG_PROTECT_MEMBER_FUNCTION( CProjectedWallEntity_DisplaceObstructingEntity );
+	//CEG_PROTECT_MEMBER_FUNCTION( CProjectedWallEntity_DisplaceObstructingEntity );
 #endif
 
 	VPlane plWallPlane( vWallUp, DotProduct( vWallUp, vOrigin ) );
@@ -523,7 +523,7 @@ CEG_NOINLINE void CProjectedWallEntity::DisplaceObstructingEntity( CBaseEntity *
 				NDebugOverlay::BoxAngles( vNewPos , vObstructionMins, vObstructionMaxs, pEntity->CollisionProp()->GetCollisionAngles(), 255, 0, 0, 64, wall_debug_time.GetFloat() );
 			}
 
-			STEAMWORKS_SELFCHECK();
+			//STEAMWORKS_SELFCHECK();
 #endif
 
 			return;
@@ -558,7 +558,7 @@ void CProjectedWallEntity::GetExtents( Vector &outMins, Vector &outMaxs, float f
 
 #if defined( GAME_DLL ) && !defined( _PS3 )
 	// we're assuming it's oblong, and that height is the larger
-	COMPILE_TIME_ASSERT( WALL_PROJECTOR_THICKNESS > WALL_PROJECTOR_HEIGHT );
+	//COMPILE_TIME_ASSERT( WALL_PROJECTOR_THICKNESS > WALL_PROJECTOR_HEIGHT );
 #endif
 
 	// Set up mins/maxes to trace along

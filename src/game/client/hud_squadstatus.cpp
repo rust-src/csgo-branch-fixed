@@ -34,7 +34,7 @@ public:
 	virtual void OnThink( void );
 	bool ShouldDraw();
 
-	void MsgFunc_SquadMemberDied(bf_read &msg);
+	bool MsgFunc_SquadMemberDied(const CUsrMsg_SquadMemberDied &msg);
 
 protected:
 	virtual void Paint();
@@ -58,6 +58,8 @@ private:
 	bool m_bSquadMembersFollowing;
 	bool m_bSquadMemberAdded;
 	bool m_bSquadMemberJustDied;
+
+	CUserMessageBinder m_UMCMsgSquadMemberDied;
 };	
 
 
@@ -197,9 +199,10 @@ void CHudSquadStatus::OnThink( void )
 //-----------------------------------------------------------------------------
 // Purpose: Notification of squad member being killed
 //-----------------------------------------------------------------------------
-void CHudSquadStatus::MsgFunc_SquadMemberDied(bf_read &msg)
+bool CHudSquadStatus::MsgFunc_SquadMemberDied(const CUsrMsg_SquadMemberDied &msg)
 {
 	m_bSquadMemberJustDied = true;
+	return true;
 }
 
 //-----------------------------------------------------------------------------

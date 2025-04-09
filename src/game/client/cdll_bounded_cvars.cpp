@@ -26,7 +26,7 @@ public:
 	CBoundedCvar_Predict() :
 	  ConVar_ServerBounded( "cl_predict", 
 		  "1.0", 
-		  FCVAR_USERINFO | FCVAR_NOT_CONNECTED, 
+		  FCVAR_USERINFO, // | FCVAR_NOT_CONNECTED
 		  "Perform client side prediction." )
 	  {
 	  }

@@ -73,6 +73,7 @@ $Configuration
 		$SystemLibraries				"rt" [$LINUXALL]
 		$IgnoreImportLibrary			"TRUE"
 		$AdditionalDependencies			"$BASE winmm.lib"	[$WINDOWS]
+		$AdditionalDependencies			"$BASE Imm32.lib Ws2_32.lib" [$WIN32]
 	}
 }
 
@@ -80,6 +81,77 @@ $Project
 {
 	$Folder	"Source Files"
 	{
+		$File	"$SRCDIR\game\shared\bannedwords.cpp"
+		$File	"$SRCDIR\game\shared\bannedwords.h"
+
+		$Folder "hltvreplay"
+		{
+			$File "hltvreplaysystem.h"
+			$File "hltvreplaysystem.cpp"
+		}
+
+		$File	"$SRCDIR\public\zip\XUnzip.h"
+		$File	"$SRCDIR\public\zip\XZip.h" 
+
+		$File	"$SRCDIR\public\XZip.cpp" \
+				"$SRCDIR\public\XUnzip.cpp"\
+				"$SRCDIR\tier1\fileio.cpp"\
+				"$SRCDIR\utils\common\bsplib.cpp"\
+				"$SRCDIR\public\filesystem_init.cpp"\
+				"$SRCDIR\utils\common\filesystem_tools.cpp"\
+				"$SRCDIR\utils\common\cmdlib.cpp"\
+				"$SRCDIR\utils\common\scriplib.cpp"\
+				"$SRCDIR\public\lumpfiles.cpp"\
+				"$SRCDIR\public\zip_utils.cpp"
+		{
+			$Configuration
+			{
+				$Compiler
+				{
+					$Create/UsePrecompiledHeader	"Not Using Precompiled Headers" // This file compiles into several projects, some of which don't use pch
+					// The 'force include' directive used for this project defines the time_t type and methods before 
+					// we can set the #define to force 32 bit time. Adding it here fixes that.
+					$PreprocessorDefinitions		"$BASE;_USE_32BIT_TIME_T"		[!$WIN64]
+				}
+			}
+		}
+		
+
+		$File	"$SRCDIR\common\platforminputdevice.h"
+		$File	"$SRCDIR\common\platforminputdevice.cpp"
+		{
+			$Configuration
+			{
+				$Compiler
+				{
+					$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
+				}
+			}
+		}
+
+		$File	"$SRCDIR/common/imageutils.h"
+		$File	"$SRCDIR/common/imageutils.cpp"
+		{
+			$Configuration
+			{
+				$Compiler [$WINDOWS]
+				{
+					$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
+				}
+			}
+		}
+
+	$Folder "Link Libraries" [$WINDOWS]
+	{
+		$File		"$SRCDIR\lib\common\libpng$PLATSUBDIR\libpng.lib" [!$VS2015]
+		$File		"$SRCDIR\lib\common\libpng$PLATSUBDIR\2015\libpng.lib" [$VS2015]
+	}
+	$Folder	"Link Libraries"
+	{
+		$Lib	"$LIBCOMMON\jpeglib"
+		$LibExternal	"$LIBPUBLIC\libz" [!$OSXALL]
+	}
+
 		$File	"hl2\C_Func_Monitor.cpp"
 		$File	"geiger.cpp"
 		$File	"history_resource.cpp"		[!$CSGO]

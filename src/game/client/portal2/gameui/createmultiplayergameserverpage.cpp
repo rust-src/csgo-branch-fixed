@@ -59,6 +59,37 @@ CCreateMultiplayerGameServerPage::CCreateMultiplayerGameServerPage(vgui::Panel *
 	}
 }
 
+void CCreateMultiplayerGameServerPage::OnKeyCodePressed(vgui::KeyCode code)
+{
+	if (code == KEY_XBUTTON_LEFT || code == KEY_XSTICK1_LEFT || code == KEY_XSTICK2_LEFT)
+	{
+		int nItem = m_pMapList->GetActiveItem();
+		nItem -= 1;
+		if (nItem < 0)
+		{
+			nItem = m_pMapList->GetItemCount() - 1;
+		}
+
+		m_pMapList->SilentActivateItem(nItem);
+	}
+	else if (code == KEY_XBUTTON_RIGHT || code == KEY_XSTICK1_RIGHT || code == KEY_XSTICK2_RIGHT)
+	{
+		int nItem = m_pMapList->GetActiveItem();
+		nItem += 1;
+		if (nItem >= m_pMapList->GetItemCount())
+		{
+			nItem = 0;
+		}
+
+		m_pMapList->SilentActivateItem(nItem);
+	}
+	else
+	{
+		BaseClass::OnKeyCodePressed(code);
+	}
+}
+
+
 //-----------------------------------------------------------------------------
 // Purpose: Destructor
 //-----------------------------------------------------------------------------
@@ -212,22 +243,22 @@ void CCreateMultiplayerGameServerPage::LoadMapList()
 
 	// iterate the filesystem getting the list of all the files
 	// UNDONE: steam wants this done in a special way, need to support that
-	const char *pathID = "MOD";
-	if ( !stricmp(ModInfo().GetGameName(), "Half-Life" ) ) 
-	{
-		pathID = NULL; // hl is the base dir
-	}
+	//const char *pathID = "MOD";
+	//if ( !stricmp(ModInfo().GetGameName(), "Half-Life" ) ) 
+	//{
+	//	pathID = NULL; // hl is the base dir
+	//}
 
 	// Load the GameDir maps
-	LoadMaps( pathID ); 
+	LoadMaps("GAME");
 
 	// If we're not the Valve directory and we're using a "fallback_dir" in gameinfo.txt then include those maps...
 	// (pathID is NULL if we're "Half-Life")
-	const char *pszFallback = ModInfo().GetFallbackDir();
-	if ( pathID && pszFallback[0] )
-	{
-		LoadMaps( "GAME_FALLBACK" );
-	}
+	//const char *pszFallback = ModInfo().GetFallbackDir();
+	//if ( pathID && pszFallback[0] )
+	//{
+	//	LoadMaps( "GAME_FALLBACK" );
+	//}
 
 	// set the first item to be selected
 	m_pMapList->ActivateItem( 0 );

@@ -44,7 +44,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar mp_verbose_changelevel_spew;
+ConVar mp_verbose_changelevel_spew("mp_verbose_changelevel_spew","0");
 extern ConVar sv_kick_ban_duration;
 extern ConVar mp_autokick;
 
@@ -1189,7 +1189,7 @@ CMultiplayRules::CMultiplayRules()
 		const char* nextMapName = NULL;
 		if ( bRandom )
 		{	
-			nextMapName = g_pGameTypes->GetRandomMap( mapGroupName );
+			nextMapName = "";//g_pGameTypes->GetRandomMap( mapGroupName );
 			if ( mp_verbose_changelevel_spew.GetBool() && nextMapName )
 			{
 				Msg( "CHANGELEVEL: Random map request, choosing '%s'\n", nextMapName );
@@ -1205,7 +1205,7 @@ CMultiplayRules::CMultiplayRules()
 			else
 			{
 				const char* szPrevMap = STRING( gpGlobals->mapname );
-				nextMapName = g_pGameTypes->GetNextMap( mapGroupName, szPrevMap );
+				nextMapName = "";//g_pGameTypes->GetNextMap( mapGroupName, szPrevMap );
 				if ( mp_verbose_changelevel_spew.GetBool() )
 				{
 					if ( nextMapName && szPrevMap )

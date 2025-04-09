@@ -50,7 +50,7 @@
 #include "xbox/xbox_console.h"
 #endif
 #include "matchmaking/imatchframework.h"
-#include "clientmode_csnormal.h"
+//#include "clientmode_csnormal.h"
 
 
 #ifdef PORTAL2
@@ -78,8 +78,8 @@ ConVar spec_cameraman_disable_with_user_control( "spec_cameraman_disable_with_us
 
 
 extern ConVar v_viewmodel_fov;
-extern ConVar spec_show_xray;
-extern ConVar spec_hide_players;
+//extern ConVar spec_show_xray;
+//extern ConVar spec_hide_players;
 
 extern bool IsInCommentaryMode( void );
 
@@ -129,7 +129,7 @@ CON_COMMAND_F( crash, "Crash the client. Optional parameter -- type of crash:\n 
 }
 #endif // _DEBUG
 
-static bool __MsgFunc_Rumble( const CCSUsrMsg_Rumble &msg )
+static bool __MsgFunc_Rumble( const CUsrMsg_Rumble &msg )
 {
 	unsigned char waveformIndex;
 	unsigned char rumbleData;
@@ -146,7 +146,7 @@ static bool __MsgFunc_Rumble( const CCSUsrMsg_Rumble &msg )
 	return true;
 }
 
-static bool __MsgFunc_VGUIMenu( const CCSUsrMsg_VGUIMenu &msg )
+static bool __MsgFunc_VGUIMenu( const CUsrMsg_VGUIMenu &msg )
 {
 	const char* pszPanelName = msg.name().c_str();
 	bool bShow = msg.show();
@@ -161,7 +161,7 @@ static bool __MsgFunc_VGUIMenu( const CCSUsrMsg_VGUIMenu &msg )
 
 		for (int i = 0; i < msg.subkeys_size(); i ++ )
 		{
-			const CCSUsrMsg_VGUIMenu::Subkey& subkey = msg.subkeys( i );
+			const CUsrMsg_VGUIMenu::Subkey& subkey = msg.subkeys( i );
 						
 			keys->SetString( subkey.name().c_str(), subkey.str().c_str() );
 		}
@@ -694,6 +694,7 @@ int ClientModeShared::HandleSpectatorKeyInput( int down, ButtonCode_t keynum, co
 //-----------------------------------------------------------------------------
 int ClientModeShared::HudElementKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding )
 {
+#ifdef CSTRIKE15
 	if ( CSGameRules() && CSGameRules()->IsEndMatchVotingForNextMap() )
 	{
 		// this looks messy, but essentially, if the convar is set to true, use the bindings, if not use the raw keys
@@ -742,7 +743,7 @@ int ClientModeShared::HudElementKeyInput( int down, ButtonCode_t keynum, const c
 			return 0;
 		}
 	}
-
+#endif
 	if ( down && pszCurrentBinding && ContainsBinding( pszCurrentBinding, "radio1" ) )
 	{
 		/* Removed for partner depot */
@@ -1118,11 +1119,11 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 #endif
 		int userID = event->GetInt("userid");
 		C_BasePlayer *pPlayer = USERID2PLAYER( userID );
-
+#ifdef CSTRIKE15
 		// don't show disconnects for bots in coop
 		if ( CSGameRules() && CSGameRules()->IsPlayingCooperativeGametype() && (pPlayer && pPlayer->IsBot()) )
 			return;
-
+#endif
 		if ( !hudChat || !pPlayer )
 			return;
 		if ( PlayerNameNotSetYet(event->GetString("name")) )

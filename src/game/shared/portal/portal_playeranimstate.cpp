@@ -168,7 +168,7 @@ void CPortalPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nDat
 	Activity iWeaponActivity = ACT_INVALID;
 
 #if defined CLIENT_DLL
-	RANDOM_CEG_TEST_SECRET();
+	//RANDOM_CEG_TEST_SECRET();
 #endif
 
 	switch( event )
@@ -297,7 +297,7 @@ void CPortalPlayerAnimState::Update( float eyeYaw, float eyePitch )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-CEG_NOINLINE void CPortalPlayerAnimState::Teleport( const Vector *pNewOrigin, const QAngle *pNewAngles, CPortal_Player* pPlayer )
+void CPortalPlayerAnimState::Teleport( const Vector *pNewOrigin, const QAngle *pNewAngles, CPortal_Player* pPlayer )
 {
 	QAngle absangles = pPlayer->GetAbsAngles();
 	m_angRender = absangles;
@@ -305,7 +305,7 @@ CEG_NOINLINE void CPortalPlayerAnimState::Teleport( const Vector *pNewOrigin, co
 	if ( pPlayer )
 	{
 #if defined GAME_DLL
-		CEG_PROTECT_MEMBER_FUNCTION( CPortalPlayerAnimState_Teleport );
+		//CEG_PROTECT_MEMBER_FUNCTION( CPortalPlayerAnimState_Teleport );
 #endif
 		// Snap the yaw pose parameter lerping variables to face new angles.
 		m_flCurrentFeetYaw = m_flGoalFeetYaw = m_flEyeYaw = pPlayer->EyeAngles()[YAW];
@@ -369,10 +369,10 @@ bool CPortalPlayerAnimState::HandleMoving( Activity &idealActivity )
 	}
 	else
 	{
-		CEG_GCV_PRE();
-		static const int CEG_SPEED_POWER = CEG_GET_CONSTANT_VALUE( PaintSpeedPower );
-		CEG_GCV_POST();
-		bool bHasSpeedPower = pPortalPlayer->GetPaintPower( CEG_SPEED_POWER ).m_State == ACTIVE_PAINT_POWER;
+		//CEG_GCV_PRE();
+		//static const int CEG_SPEED_POWER = CEG_GET_CONSTANT_VALUE( PaintSpeedPower );
+		//CEG_GCV_POST();
+		bool bHasSpeedPower = pPortalPlayer->GetPaintPower( SPEED_POWER ).m_State == ACTIVE_PAINT_POWER;
 
 #ifdef CLIENT_DLL
 		if ( engine->HasPaintmap() && !bHasSpeedPower && !pPortalPlayer->IsLocalPlayer() )
@@ -387,7 +387,7 @@ bool CPortalPlayerAnimState::HandleMoving( Activity &idealActivity )
 			for( PaintPowerConstIter i = activeRange.first; i != activeRange.second; ++i )
 			{
 				const PaintPowerInfo_t &newPower = *i;
-				if ( newPower.m_PaintPowerType == CEG_SPEED_POWER )
+				if ( newPower.m_PaintPowerType == SPEED_POWER )
 				{
 					bHasSpeedPower = true;
 				}
@@ -596,7 +596,7 @@ bool CPortalPlayerAnimState::HandleTractorBeam( Activity &idealActivity )
 	{
 		if ( !m_bFirstTractorBeamFrame )
 		{
-			RANDOM_CEG_TEST_SECRET_PERIOD( 8, 15 );
+			//RANDOM_CEG_TEST_SECRET_PERIOD( 8, 15 );
 			m_bFirstTractorBeamFrame = true;
 		}
 	}
@@ -616,7 +616,7 @@ bool CPortalPlayerAnimState::HandleLanding()
 		m_bWasInTractorBeam = false;
 		m_bBridgeRemovedFromUnder = false;
 		RestartMainSequence();
-		RANDOM_CEG_TEST_SECRET_PERIOD( 91, 172 );
+		//RANDOM_CEG_TEST_SECRET_PERIOD( 91, 172 );
 		RestartGesture( GESTURE_SLOT_JUMP, ACT_MP_JUMP_LAND );
 		return true;
 	}

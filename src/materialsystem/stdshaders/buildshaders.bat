@@ -273,9 +273,9 @@ if exist filelistgen.txt if not "%dynamic_shaders%" == "1" (
 REM ****************
 REM Execute distributed process on work/build list
 REM ****************
-
+echo hi
 set shader_path_cd=%cd%
-if exist "filelist.txt" if exist "uniquefilestocopy.txt" if not "%dynamic_shaders%" == "1" (
+rem if exist "filelist.txt" if exist "uniquefilestocopy.txt" if not "%dynamic_shaders%" == "1" (
 	echo Running distributed shader compilation...
 	cd %ChangeToDir%
 	echo %shadercompilecommand% -mpi_workercount %shadercompileworkers% -allowdebug -shaderpath "%shader_path_cd:/=\%" %x360_args% %ps3_args% %SDKArgs% %ps3_additional_args%
@@ -289,7 +289,7 @@ if exist "filelist.txt" if exist "uniquefilestocopy.txt" if not "%dynamic_shader
 	)
 	
 	cd %shader_path_cd%
-)
+rem )
 
 
 REM ****************
@@ -318,4 +318,3 @@ REM ****************
 
 %TTEXE% -diff %tt_start%
 echo.
-

@@ -60,9 +60,11 @@
 #include "matchmaking/imatchframework.h"
 #include "matchmaking/portal2/imatchext_portal2.h"
 #include "portal2_research_data_tracker.h"
+#include "portal_usermessages.pb.h"
+#include "bone_merge_cache.h"
 
 #if !defined(NO_STEAM) && !defined(_PS3)
-#include "gc_serversystem.h"
+//#include "gc_serversystem.h"
 #endif
 
 #if !defined( NO_STEAM ) && !defined( NO_STEAM_GAMECOORDINATOR )
@@ -290,6 +292,21 @@ END_SEND_TABLE()
 BEGIN_SEND_TABLE_NOBASE( CPortalPlayerShared, DT_PortalPlayerShared )
 	SendPropInt( SENDINFO( m_nPlayerCond ), PORTAL_COND_LAST, (SPROP_UNSIGNED|SPROP_CHANGES_OFTEN) ),
 END_SEND_TABLE()
+
+BEGIN_SEND_TABLE_NOBASE(PortalPlayerStatistics_t, DT_PortalPlayerStatistics)
+SendPropInt(SENDINFO(iNumPortalsPlaced)),
+SendPropInt(SENDINFO(iNumStepsTaken)),
+SendPropFloat(SENDINFO(fNumSecondsTaken)),
+SendPropFloat(SENDINFO(fDistanceTaken)),
+
+END_SEND_TABLE()
+
+BEGIN_SIMPLE_DATADESC(PortalPlayerStatistics_t)
+DEFINE_FIELD(iNumPortalsPlaced,FIELD_INTEGER),
+DEFINE_FIELD(iNumStepsTaken,FIELD_INTEGER),
+DEFINE_FIELD(fNumSecondsTaken,FIELD_FLOAT),
+DEFINE_FIELD(fDistanceTaken,FIELD_FLOAT)
+END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( player, CPortal_Player );
 
@@ -533,8 +550,9 @@ void ClearClientUI()
 {
 	CReliableBroadcastRecipientFilter filter;
 	filter.AddAllPlayers();
-	UserMessageBegin( filter, "ChallengeModeCloseAllUI" );
-	MessageEnd();
+
+	CUsrMsg_ChallengeModeCloseAllUI msg;
+	SendUserMessage(filter, UM_ChallengeModeCloseAllUI, msg);
 }
 
 //disable 'this' : used in base member initializer list
@@ -636,13 +654,13 @@ CPortal_Player::~CPortal_Player( void )
 	}
 }
 
-CEG_NOINLINE CPortal_Player *CPortal_Player::CreatePlayer( const char *className, edict_t *ed )
+CPortal_Player *CPortal_Player::CreatePlayer( const char *className, edict_t *ed )
 {
 	CPortal_Player::s_PlayerEdict = ed;
 	return (CPortal_Player*)CreateEntityByName( className );
 }
 
-CEG_PROTECT_STATIC_MEMBER_FUNCTION( CPortal_Player_CreatePlayer, CPortal_Player::CreatePlayer );
+//CEG_PROTECT_STATIC_MEMBER_FUNCTION( CPortal_Player_CreatePlayer, CPortal_Player::CreatePlayer );
 
 void CPortal_Player::UpdateOnRemove( void )
 {
@@ -1834,11 +1852,12 @@ void CPortal_Player::PlayCoopPingEffect( void )
 		{
 			allplayers.RemoveRecipient( this );
 		}
-		UserMessageBegin( allplayers, "HudPingIndicator" );
-			WRITE_FLOAT( tr.endpos.x );
-			WRITE_FLOAT( tr.endpos.y );
-			WRITE_FLOAT( tr.endpos.z );
-		MessageEnd();
+
+		CUsrMsg_HudPingIndicator msg;
+		msg.set_posx(tr.endpos.x);
+		msg.set_posy(tr.endpos.y);
+		msg.set_posz(tr.endpos.z);
+		SendUserMessage(allplayers, UM_HudPingIndicator, msg);
 	}
 	else
 	{
@@ -2512,15 +2531,15 @@ void CPortal_Player::SetupBones( matrix3x4a_t *pBoneToWorld, int boneMask )
 		CBoneCache *pParentCache = pParent->GetBoneCache();
 		if ( pParentCache )
 		{
-			BuildMatricesWithBoneMerge(
-				pStudioHdr,
-				m_PlayerAnimState->GetRenderAngles(),
-				adjOrigin,
-				pos,
-				q,
-				pBoneToWorld,
-				pParent,
-				pParentCache );
+	//		BuildMatricesWithBoneMerge( theaperturecat this needs fixing
+	//			pStudioHdr,
+	//			m_PlayerAnimState->GetRenderAngles(),
+	//			adjOrigin,
+	//			pos,
+	//			q,
+	//			pBoneToWorld,
+	//			pParent,
+	//			pParentCache );
 
 			return;
 		}
@@ -2971,14 +2990,18 @@ bool CPortal_Player::ClientCommand( const CCommand &args )
 
 		CBaseEntity *pTargetEnt = ( nIndex != -1 ) ? UTIL_EntityByIndex( nIndex ) : NULL;
 
-		UserMessageBegin( player, "AddLocator" );
-			WRITE_SHORT( entindex() );
-			WRITE_EHANDLE( pTargetEnt );
-			WRITE_FLOAT( gpGlobals->curtime + fDelay );
-			WRITE_VEC3COORD( vPosition );
-			WRITE_VEC3NORMAL( vNormal );
-			WRITE_STRING( lpszCommand );
-		MessageEnd();
+		CUsrMsg_AddLocator msg;
+		msg.set_playerindex(entindex());
+		msg.set_target(pTargetEnt->entindex());
+		msg.set_iconname(lpszCommand);
+		msg.set_display_time(gpGlobals->curtime + fDelay);
+		msg.set_normal_x(vNormal.x);
+		msg.set_normal_y(vNormal.y);
+		msg.set_normal_z(vNormal.z);
+		msg.set_position_x(vPosition.x);
+		msg.set_position_y(vPosition.y);
+		msg.set_position_z(vPosition.z);
+		SendUserMessage(player, UM_AddLocator, msg);
 
 		IGameEvent *event = gameeventmanager->CreateEvent( "portal_player_ping" );
 		if ( event )
@@ -3010,12 +3033,12 @@ bool CPortal_Player::ClientCommand( const CCommand &args )
 	}
 	else if ( FStrEq( pcmd, "survey_done" ) )
 	{
-		int nIndex = V_atoi( args[1] );
-		CPointSurvey *pPointSurveyEnt = ( nIndex != -1 ) ? (CPointSurvey*)UTIL_EntityByIndex( nIndex ) : NULL;
-		if ( pPointSurveyEnt )
-		{
-			pPointSurveyEnt->OnSurveyCompleted();
-		}
+		//int nIndex = V_atoi( args[1] ); theaperturecat
+		//CPointSurvey *pPointSurveyEnt = ( nIndex != -1 ) ? (CPointSurvey*)UTIL_EntityByIndex( nIndex ) : NULL;
+		//if ( pPointSurveyEnt )
+		//{
+		//	pPointSurveyEnt->OnSurveyCompleted();
+		//}
 		return true;
 	}
 	else if ( FStrEq( pcmd, "load_recent_checkpoint" ) )
@@ -3796,7 +3819,7 @@ void CPortal_Player::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 	}
 	*/
 
-	te->PhysicsProp( filter, -1, GetModelIndex(), m_nSkin, GetAbsOrigin(), GetAbsAngles(), velocity, true, GetEffects() );
+	te->PhysicsProp( filter, -1, GetModelIndex(), m_nSkin, GetAbsOrigin(), GetAbsAngles(), velocity, true, GetEffects(), GetRenderColor() );
 
 	//UTIL_Remove( this );
 }
@@ -5199,7 +5222,7 @@ void PlayerSwitchTeams( void )
 // than fixing the problem :(
 // Note: This is a nasty copy/paste job from player.cpp, which replaces VEC_DUCK_HULL_MIN/MAX
 //		 with the player's local hulls.
-CEG_NOINLINE void FixPlayerCrouchStuck( CPortal_Player *pPlayer )
+void FixPlayerCrouchStuck( CPortal_Player *pPlayer )
 {
 	trace_t trace;
 
@@ -5239,7 +5262,7 @@ CEG_NOINLINE void FixPlayerCrouchStuck( CPortal_Player *pPlayer )
 	}
 }
 
-CEG_PROTECT_FUNCTION( FixPlayerCrouchStuck );
+//CEG_PROTECT_FUNCTION( FixPlayerCrouchStuck );
 
 int CPortal_Player::Restore( IRestore &restore )
 {

@@ -35,9 +35,11 @@ public:
 	virtual void Cache( IPrecacheHandler *pPrecacheHandler, PrecacheSystem_t nSystem, 
 		const char *pName, bool bPrecache, ResourceList_t hResourceList, bool bBuildResourceList ) = 0;
 
+	virtual void Register(IResourcePrecacher* pResourcePrecacherFirst, PrecacheSystem_t nSystem) = 0;//theaperturecat
+
 	virtual void UncacheAll( IPrecacheHandler *pPrecacheHandler ) = 0 ;
 
-	virtual void Register( IResourcePrecacher *pResourcePrecacherFirst, PrecacheSystem_t nSystem ) = 0;
+
 
 	// Limits resource access to only resources used by this particular system
 	// Use GLOBAL system, and NULL name to disable limited resource access

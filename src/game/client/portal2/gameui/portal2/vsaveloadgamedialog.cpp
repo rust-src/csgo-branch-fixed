@@ -20,7 +20,7 @@
 #endif
 #include "vgui_controls/scrollbar.h"
 
-#include "cegclientwrapper.h"
+//#include "cegclientwrapper.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -616,7 +616,7 @@ void SaveGameItem::NavigateFrom()
 #endif
 }
 
-CEG_NOINLINE void SaveGameItem::OnKeyCodePressed( vgui::KeyCode code )
+void SaveGameItem::OnKeyCodePressed( vgui::KeyCode code )
 {
 	if ( !m_pDialog->IsInputEnabled() )
 		return;
@@ -693,14 +693,14 @@ CEG_NOINLINE void SaveGameItem::OnKeyCodePressed( vgui::KeyCode code )
 		return;
 	}
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( SaveGameItem_OnKeyCodePressed );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( SaveGameItem_OnKeyCodePressed );
 	
 	BaseClass::OnKeyCodePressed( code );
 }
 
-CEG_NOINLINE void SaveGameItem::OnMousePressed( vgui::MouseCode code )
+void SaveGameItem::OnMousePressed( vgui::MouseCode code )
 {
-	CEG_PROTECT_VIRTUAL_FUNCTION( SaveGameItem_OnMousePressed );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( SaveGameItem_OnMousePressed );
 
 	if ( code == MOUSE_LEFT )
 	{
@@ -714,7 +714,7 @@ CEG_NOINLINE void SaveGameItem::OnMousePressed( vgui::MouseCode code )
 	BaseClass::OnMousePressed( code );
 }
 
-CEG_NOINLINE void SaveGameItem::OnMouseDoublePressed( vgui::MouseCode code )
+void SaveGameItem::OnMouseDoublePressed( vgui::MouseCode code )
 {
 	if ( code == MOUSE_LEFT )
 	{
@@ -727,7 +727,7 @@ CEG_NOINLINE void SaveGameItem::OnMouseDoublePressed( vgui::MouseCode code )
 
 	BaseClass::OnMouseDoublePressed( code );
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( SaveGameItem_OnMouseDoublePressed );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( SaveGameItem_OnMouseDoublePressed );
 }
 
 void SaveGameItem::PerformLayout()
@@ -780,7 +780,7 @@ static int __cdecl SaveGameListSortFunc( vgui::Panel* const *a, vgui::Panel* con
 CPS3AsyncStatus SaveLoadGameDialog::m_PS3AsyncStatus;
 #endif
 
-CEG_NOINLINE SaveLoadGameDialog::SaveLoadGameDialog( vgui::Panel *pParent, const char *pPanelName, bool bIsSaveDialog ) : BaseClass( pParent, pPanelName, false, true )
+SaveLoadGameDialog::SaveLoadGameDialog( vgui::Panel *pParent, const char *pPanelName, bool bIsSaveDialog ) : BaseClass( pParent, pPanelName, false, true )
 {
 	SetProportional( true );
 	SetDeleteSelfOnClose( true );
@@ -811,7 +811,7 @@ CEG_NOINLINE SaveLoadGameDialog::SaveLoadGameDialog( vgui::Panel *pParent, const
 
 	m_nSaveGameScreenshotId = -1;
 
-	CEG_PROTECT_MEMBER_FUNCTION( SaveGameDialog_SaveGameDialog );
+	//CEG_PROTECT_MEMBER_FUNCTION( SaveGameDialog_SaveGameDialog );
 
 	m_nNoSaveGameImageId = -1;
 	m_nNewSaveGameImageId = -1;
@@ -913,12 +913,12 @@ void SaveLoadGameDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_pSaveGameList->NavigateTo();
 	}
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( SaveLoadGameDialog_ApplySchemeSettings );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( SaveLoadGameDialog_ApplySchemeSettings );
 }
 
-CEG_NOINLINE void SaveLoadGameDialog::OnCommand( char const *szCommand )
+void SaveLoadGameDialog::OnCommand( char const *szCommand )
 {
-	CEG_PROTECT_VIRTUAL_FUNCTION( SaveLoadGameDialog_OnCommand );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( SaveLoadGameDialog_OnCommand );
 
 	if ( !V_stricmp( szCommand, "Back" ) )
 	{
@@ -930,7 +930,7 @@ CEG_NOINLINE void SaveLoadGameDialog::OnCommand( char const *szCommand )
 	BaseClass::OnCommand( szCommand );
 }
 
-CEG_NOINLINE void SaveLoadGameDialog::Activate()
+void SaveLoadGameDialog::Activate()
 {
 	BaseClass::Activate();
 
@@ -941,7 +941,7 @@ CEG_NOINLINE void SaveLoadGameDialog::Activate()
 
 	UpdateFooter();
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( SaveLoadGameDialog_Activate );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( SaveLoadGameDialog_Activate );
 }
 
 void SaveLoadGameDialog::Reset()

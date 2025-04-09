@@ -27,7 +27,7 @@
 #include "fmtstr.h"
 #include "smartptr.h"
 
-#include "cegclientwrapper.h"
+//#include "cegclientwrapper.h"
 
 #include "globalvars_base.h"
 extern CGlobalVarsBase *gpGlobals;
@@ -323,7 +323,7 @@ public:
 
 	virtual void PaintBackground();
 
-	CEG_NOINLINE void OnKeyCodePressed( vgui::KeyCode code )
+	void OnKeyCodePressed( vgui::KeyCode code )
 	{
 		int iUserSlot = GetJoystickForCode( code );
 		CBaseModPanel::GetSingleton().SetLastActiveUserId( iUserSlot );
@@ -359,16 +359,16 @@ public:
 			return;
 		}
 
-		CEG_PROTECT_MEMBER_FUNCTION( FriendsListItem_OnKeyCodePressed );
+		//CEG_PROTECT_MEMBER_FUNCTION( FriendsListItem_OnKeyCodePressed );
 
 		BaseClass::OnKeyCodePressed( code );
 	}
 
 	void OnKeyCodeTyped( vgui::KeyCode code ) { BaseClass::OnKeyCodeTyped( code ); }
 
-	CEG_NOINLINE void OnMousePressed( vgui::MouseCode code )
+	void OnMousePressed( vgui::MouseCode code )
 	{
-		CEG_PROTECT_MEMBER_FUNCTION( FriendsListItem_OnMousePressed );
+		//CEG_PROTECT_MEMBER_FUNCTION( FriendsListItem_OnMousePressed );
 		if ( code == MOUSE_LEFT )
 		{
 			m_pListCtrlr->SelectPanelItemByPanel( this );
@@ -394,7 +394,7 @@ public:
 		BaseClass::OnMousePressed( code );
 	}
 
-	CEG_NOINLINE void SendInvite()
+	void SendInvite()
 	{
 #ifdef _X360
 		IMatchSession *pIMatchSession = g_pMatchFramework->GetMatchSession();
@@ -443,7 +443,7 @@ public:
 			return;
 		DevMsg( "Invite: %s\n", GetFullInfo().Name );
 
-		CEG_PROTECT_MEMBER_FUNCTION( FriendsListItem_SendInvite );
+		//CEG_PROTECT_MEMBER_FUNCTION( FriendsListItem_SendInvite );
 
 		m_flInviteTime = Plat_FloatTime();
 		if ( !ui_pvplobby_invite_fake.GetBool() )
@@ -481,9 +481,9 @@ public:
 		}
 	}
 
-	CEG_NOINLINE void OnMouseDoublePressed( vgui::MouseCode code )
+	void OnMouseDoublePressed( vgui::MouseCode code )
 	{
-		CEG_PROTECT_MEMBER_FUNCTION( FriendsListItem_OnMouseDoublePressed );
+		//CEG_PROTECT_MEMBER_FUNCTION( FriendsListItem_OnMouseDoublePressed );
 		SendInvite();
 	}
 
@@ -883,7 +883,7 @@ static void QuickMatchImpl()
 // Game lobby implementation
 //
 
-CEG_NOINLINE PvpLobby::PvpLobby(vgui::Panel *parent, const char *panelName, KeyValues *pSettings ) :
+PvpLobby::PvpLobby(vgui::Panel *parent, const char *panelName, KeyValues *pSettings ) :
 	BaseClass( parent, panelName, true, true, false ),
 #ifndef NO_STEAM
 	m_CallbackPersonaStateChanged( this, &PvpLobby::Steam_OnPersonaStateChanged ),
@@ -935,7 +935,7 @@ CEG_NOINLINE PvpLobby::PvpLobby(vgui::Panel *parent, const char *panelName, KeyV
 
 	SetupLobbySettings( pSettings );
 
-	CEG_PROTECT_MEMBER_FUNCTION( PvpLobby_PvpLobby );
+	//CEG_PROTECT_MEMBER_FUNCTION( PvpLobby_PvpLobby );
 }
 
 PvpLobby::~PvpLobby()
@@ -1000,9 +1000,9 @@ void PvpLobby::SetupLobbySettings( KeyValues *pSettings )
 #endif
 }
 
-CEG_NOINLINE void PvpLobby::OnCommand(const  char *command )
+void PvpLobby::OnCommand(const  char *command )
 {
-	CEG_PROTECT_MEMBER_FUNCTION( PvpLobby_OnCommand );
+	//CEG_PROTECT_MEMBER_FUNCTION( PvpLobby_OnCommand );
 
 	if ( m_bNoCommandHandling )
 		return;
@@ -1258,9 +1258,9 @@ void PvpLobby::MsgChangeGameSettings()
 	OnCommand( "ChangeGameSettings" );
 }
 
-CEG_NOINLINE void PvpLobby::ApplySchemeSettings( vgui::IScheme* pScheme )
+void PvpLobby::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
-	CEG_PROTECT_VIRTUAL_FUNCTION( PvpLobby_ApplySchemeSettings );
+//	CEG_PROTECT_VIRTUAL_FUNCTION( PvpLobby_ApplySchemeSettings );
 
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -1279,11 +1279,11 @@ CEG_NOINLINE void PvpLobby::ApplySchemeSettings( vgui::IScheme* pScheme )
 	}
 }
 
-CEG_NOINLINE void PvpLobby::Activate()
+void PvpLobby::Activate()
 {
 	BaseClass::Activate();
 
-	CEG_PROTECT_MEMBER_FUNCTION( PvpLobby_Activate );
+	//CEG_PROTECT_MEMBER_FUNCTION( PvpLobby_Activate );
 
 	m_pListFriends->NavigateTo();
 }

@@ -174,7 +174,7 @@ protected:
 	// save off your pose parameters in member variables in your derivation of this function:
 	virtual void	PopulatePoseParameters( void );
 
-private:
+protected://theaperturecat
 	CBoneMergeCache					*m_pBoneMergeCache;
 
 public:

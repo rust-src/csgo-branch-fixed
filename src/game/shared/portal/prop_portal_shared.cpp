@@ -106,7 +106,7 @@ void CProp_Portal::DelayedPlacementThink( void )
 		else if ( IsPortalIntersectingNoPortalVolume( m_vDelayedPosition, m_qDelayedAngles, vForward, GetHalfWidth(), GetHalfHeight() ) )
 		{
 #if defined GAME_DLL
-			RANDOM_CEG_TEST_SECRET_PERIOD( 29, 83 )
+			//RANDOM_CEG_TEST_SECRET_PERIOD( 29, 83 )
 #endif
 			m_iDelayedFailure = PORTAL_FIZZLE_BAD_VOLUME;
 		}

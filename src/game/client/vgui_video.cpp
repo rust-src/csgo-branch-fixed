@@ -13,7 +13,7 @@
 #include "vgui_video.h"
 #include "engine/IEngineSound.h"
 #include "vgui/ILocalize.h"
-
+#undef PORTAL2
 #if defined(PORTAL2)
 #include "portal2/basemodui.h"
 #endif

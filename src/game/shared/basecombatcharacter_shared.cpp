@@ -244,7 +244,7 @@ CBaseCombatWeapon *CBaseCombatCharacter::Weapon_GetSlot( int slot ) const
 	return NULL;
 }
 
-
+#ifdef CSTRIKE15
 //-----------------------------------------------------------------------------
 // Purpose: Returns the weapon (if any) in the requested loadout position
 // Input  : position - which slot to poll
@@ -270,7 +270,7 @@ CBaseCombatWeapon *CBaseCombatCharacter::Weapon_GetPosition( int position ) cons
 
 	return NULL;
 }
-
+#endif
 
 
 

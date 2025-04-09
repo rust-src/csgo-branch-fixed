@@ -14,8 +14,8 @@
 #include "clientmode_portal.h"
 #include "usermessages.h"
 #include "prediction.h"
-#include "portal2/vgui/portalclientscoreboard.h"
-#include "portal2/vgui/surveypanel.h"
+//#include "portal2/vgui/portalclientscoreboard.h" theaperturecat
+//#include "portal2/vgui/surveypanel.h"
 #include "hud_macros.h"
 #include "radialmenu.h"
 #include "glow_outline_effect.h"
@@ -127,7 +127,7 @@ IViewPortPanel* CHudViewport::CreatePanelByName( const char *szPanelName )
 {
 	IViewPortPanel* newpanel = NULL;
 
-	if ( Q_strcmp( PANEL_SCOREBOARD, szPanelName) == 0 )
+	/*if (Q_strcmp(PANEL_SCOREBOARD, szPanelName) == 0) theaperturecat
 	{
 		newpanel = new CPortalClientScoreBoardDialog( this );
 		return newpanel;
@@ -136,7 +136,7 @@ IViewPortPanel* CHudViewport::CreatePanelByName( const char *szPanelName )
 	{
 		newpanel = new CSurveyPanel( this );
 		return newpanel;
-	}
+	}*/
 	/*else if ( Q_strcmp(PANEL_INFO, szPanelName) == 0 )
 	{
 		newpanel = new CHL2MPTextWindow( this );
@@ -217,10 +217,11 @@ void CHLModeManager::LevelShutdown( void )
 }
 
 //--------------------------------------------------------------------------------------------------------
-static void __MsgFunc_TransitionFade( bf_read &msg )
+static bool __MsgFunc_TransitionFade( const CUsrMsg_TransitionFade &msg )
 {
-	float flFadeTime = msg.ReadFloat();
+	float flFadeTime = msg.fadetime();
 	GetClientModePortalNormal()->StartTransitionFade( flFadeTime );
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -254,9 +255,9 @@ void ClientModePortalNormal::InitViewport()
 	m_pViewport->Start( gameuifuncs, gameeventmanager );
 }
 
-CEG_NOINLINE void ClientModePortalNormal::LevelInit( const char *newmap )
+void ClientModePortalNormal::LevelInit( const char *newmap )
 {
-	CEG_PROTECT_VIRTUAL_FUNCTION( ClientModePortalNormal_LevelInit );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( ClientModePortalNormal_LevelInit );
 
 	// Load color correction lookup for the death effect
 	/*
@@ -284,7 +285,7 @@ void ClientModePortalNormal::LevelShutdown( void )
 
 void ClientModePortalNormal::OnColorCorrectionWeightsReset( void )
 {
-	BaseClass::OnColorCorrectionWeightsReset();
+	//BaseClass::OnColorCorrectionWeightsReset();
 
 	C_Portal_Player *pPlayer = C_Portal_Player::GetLocalPortalPlayer();
 	
@@ -362,7 +363,7 @@ void ClientModePortalNormal::SetBlurFade( float scale )
 //--------------------------------------------------------------------------------------------------------
 void ClientModePortalNormal::StartTransitionFade( float flFadeTime )
 {
-	STEAMWORKS_SELFCHECK(); 
+	//STEAMWORKS_SELFCHECK(); 
 
 	// Screen fade to black
 	ScreenFade_t sf;
@@ -388,7 +389,7 @@ void ClientModePortalNormal::DoPostScreenSpaceEffects( const CViewSetup *pSetup 
 
 	MDLCACHE_CRITICAL_SECTION();
 
-	g_GlowObjectManager.RenderGlowEffects( pSetup, GetSplitScreenPlayerSlot() );
+	GlowObjectManager().RenderGlowEffects(pSetup, GetSplitScreenPlayerSlot());
 
 	if ( m_BlurFadeScale )
 	{
@@ -450,7 +451,7 @@ private:
 private:
 	virtual void InitViewportSingletons( void )
 	{
-		SetAsFullscreenViewportInterface();
+		//SetAsFullscreenViewportInterface(); theaperturecat - is this needed?
 	}
 };
 

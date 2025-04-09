@@ -70,13 +70,13 @@ private:
 
 	char m_szNextMap[ MAX_MAP_NAME ];
 
-	CPortalLeaderboard *m_pLeaderboard;
+	//CPortalLeaderboard *m_pLeaderboard;
 
 	CPortalChallengeStatsPanel *m_pChallengeStatsPanel;
 
 	Label *m_pInvalidLabel;
 	Label *m_pInvalidLabel2;
-	ImagePanel *m_pWorkingAnim;
+	vgui::ImagePanel *m_pWorkingAnim;
 
 	Label *m_pFewestPortalsLabel;
 	Label *m_pFastestTimeLabel;

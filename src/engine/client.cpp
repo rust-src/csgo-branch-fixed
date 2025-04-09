@@ -329,7 +329,7 @@ bool CClientState::SetSignonState ( int state, int count, const CNETMsg_SignonSt
 			{
 				EngineVGui()->UpdateProgressBar(PROGRESS_SIGNONNEW);
 
-				if ( cl_download_demoplayer.GetBool() || !demoplayer->IsPlayingBack() )
+				if ( false)//cl_download_demoplayer.GetBool() || !demoplayer->IsPlayingBack() ) theaperturecat this code was causing the problem
 				{
 					// When playing back a demo we need to suspend packet reading here
 					if ( demoplayer->IsPlayingBack() )

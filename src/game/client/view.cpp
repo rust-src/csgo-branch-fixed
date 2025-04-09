@@ -49,7 +49,7 @@
 #endif
 #ifdef GAMEUI_EMBEDDED
 #if defined( PORTAL2 )
-#include "gameui/basemodpanel.h"
+#include "portal2/gameui/portal2/basemodpanel.h"
 #elif defined( SWARM_DLL )
 #include "swarm/gameui/swarm/basemodpanel.h"
 #elif defined( CSTRIKE15 )

@@ -2,11 +2,12 @@
 #include "cbase.h"
 #include "hltvreplaysystem.h"
 #include "hltvcamera.h"
-#include "cs_gamerules.h"
+//#include "cs_gamerules.h"
 #include "iviewrender.h"
 #include "engine/IEngineSound.h"
 #include "netmessages.h"
-#include "cstrike15/c_cs_player.h"
+//#include "cstrike15/c_cs_player.h"
+#include "steam/steam_api.h"
 #include "ihltv.h"
 
 ConVar snd_deathcam_replay_mix( "snd_deathcam_replay_mix", "0", 0, "When set to non-0, client switches to DeathCam_Replay_Mix mixgroup during deathcam replay" );
@@ -777,6 +778,7 @@ void CHltvReplaySystem::OnPlayerDeath( IGameEvent *event )
 		&& spec_replay_others_experimental.GetBool() && IsPlayerTeamDead( iPlayerIndexVictim )
 		)
 	{
+#ifdef CSTRIKE15
 		int nLocalPlayerTeam = pLocalPlayer->GetTeamNumber();
 		if ( nLocalPlayerTeam == TEAM_CT || nLocalPlayerTeam == TEAM_TERRORIST )
 		{
@@ -799,6 +801,7 @@ void CHltvReplaySystem::OnPlayerDeath( IGameEvent *event )
 				}
 			}
 		}
+#endif
 	}
 
 	if ( isLocalVictim || m_DelayedReplay.nRequest >= 0 )
@@ -870,6 +873,7 @@ void CHltvReplaySystem::CacheRagdollBones()
 	int nRagdollsCached = 0;
 	while ( ( pEnt = iterator.Next() ) != NULL )
 	{
+#ifdef CSTRIKE15
 		if ( C_CSRagdoll * pRagdoll = dynamic_cast< C_CSRagdoll * >( pEnt ) )
 		{
 			if ( int nEntIndex = pRagdoll->entindex() )
@@ -910,7 +914,8 @@ void CHltvReplaySystem::CacheRagdollBones()
 			{
 				Warning( "A ragdoll without entindex found @%p\n", pRagdoll );
 			}
-		}
+#endif
+
 	}
 	if ( nRagdollsCached )
 		DevMsg( "%d ragdolls cached\n", nRagdollsCached );
@@ -974,13 +979,13 @@ float CHltvReplaySystem::GetReplayMessageTime()
 {
 	static ConVarRef spec_replay_message_time( "spec_replay_message_time" );
 	float flReplayMessageTime = spec_replay_message_time.GetFloat();
-	if ( CCSGameRules* pRules = CSGameRules() )
+	/*if (CCSGameRules* pRules = CSGameRules())
 	{
 		if ( pRules->m_iRoundWinStatus != WINNER_NONE )
 		{// the message time is cut short by the end of round
 			flReplayMessageTime = spec_replay_autostart_delay.GetFloat();
 		}
-	}
+	}*/
 	return flReplayMessageTime;
 }
 
@@ -989,7 +994,7 @@ bool CHltvReplaySystem::UpdateHltvReplayButtonTimeOutState()
 {
 	bool bTimedOut = false;
 
-	if ( CCSGameRules* pRules = CSGameRules() )
+	/*if (CCSGameRules* pRules = CSGameRules())
 	{
 		if ( pRules->IsWarmupPeriod() && !pRules->IsWarmupPeriodPaused() )
 		{
@@ -1003,7 +1008,7 @@ bool CHltvReplaySystem::UpdateHltvReplayButtonTimeOutState()
 				bTimedOut = true;
 			}
 		}
-	}
+	}*/
 
 	bool bStateUpdated = ( m_bHltvReplayButtonTimedOut != bTimedOut );
 	m_bHltvReplayButtonTimedOut = bTimedOut;

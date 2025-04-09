@@ -16,6 +16,7 @@
 #include "portal_shareddefs.h"
 #include "matchmaking/imatchframework.h"
 #include "matchmaking/mm_helpers.h"
+#include "portal_usermessages.pb.h"
 
 #ifndef CLIENT_DLL
 #include "player_voice_listener.h"
@@ -81,7 +82,7 @@
 	extern ConVar locator_background_border_color;
 	extern ConVar locator_icon_min_size_non_ss;
 	extern ConVar locator_icon_max_size_non_ss;
-	extern ConVar voice_icons_use_particles;
+	//extern ConVar voice_icons_use_particles;
 #endif // CLIENT_DLL
 
 
@@ -327,7 +328,7 @@ CPortalMPGameRules::CPortalMPGameRules()
 	}
 
 	m_bTeamPlayEnabled = teamplay.GetBool();
-	m_flIntermissionEndTime = 0.0f;
+	m_flIntermissionStartTime = 0.0f;
 	m_flGameStartTime = 0;
 
 	m_hRespawnableItemsAndWeapons.RemoveAll();
@@ -451,7 +452,7 @@ CPortalMPGameRules::CPortalMPGameRules()
 	locator_icon_min_size_non_ss.SetValue( 1.0f );
 	locator_icon_max_size_non_ss.SetValue( 1.15f );
 
-	voice_icons_use_particles.SetValue( 1 );
+	//voice_icons_use_particles.SetValue( 1 );
 
 #endif
 
@@ -625,7 +626,7 @@ void CPortalMPGameRules::FrameUpdatePostEntityThink( void )
 bool CPortalMPGameRules::IsIntermission( void )
 {
 #ifndef CLIENT_DLL
-	return m_flIntermissionEndTime > gpGlobals->curtime;
+	return m_flIntermissionStartTime > gpGlobals->curtime;
 #endif
 
 	return false;
@@ -656,7 +657,7 @@ void CPortalMPGameRules::GoToIntermission( void )
 
 	g_fGameOver = true;
 
-	m_flIntermissionEndTime = gpGlobals->curtime + mp_chattime.GetInt();
+	m_flIntermissionStartTime = gpGlobals->curtime;// + mp_chattime.GetInt();
 
 	for ( int i = 0; i < MAX_PLAYERS; i++ )
 	{
@@ -678,7 +679,7 @@ bool CPortalMPGameRules::CheckGameOver()
 	if ( g_fGameOver )   // someone else quit the game already
 	{
 		// check to see if we should change levels now
-		if ( m_flIntermissionEndTime < gpGlobals->curtime )
+		if ( m_flIntermissionStartTime < gpGlobals->curtime )
 		{
 			ChangeLevel(); // intermission is over			
 		}
@@ -1046,7 +1047,7 @@ int CPortalMPGameRules::PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *p
 	if ( !pPlayer || !pTarget || !pTarget->IsPlayer() || IsTeamplay() == false )
 		return GR_NOTTEAMMATE;
 
-	if ( (*GetTeamID(pPlayer) != '\0') && (*GetTeamID(pTarget) != '\0') && !stricmp( GetTeamID(pPlayer), GetTeamID(pTarget) ) )
+	if ( (*pPlayer->TeamID() != '\0') && (*pTarget->TeamID() != '\0') && !stricmp( pPlayer->TeamID(), pTarget->TeamID()))
 	{
 		return GR_TEAMMATE;
 	}
@@ -1574,7 +1575,7 @@ void CPortalMPGameRules::StartPlayerTransitionThinks( void )
 	}
 
 	ResetAllPlayersStats();
-	g_portal_ui_controller.OnLevelStart();
+	//g_portal_ui_controller.OnLevelStart(); theaperturecat
 }
 
 
@@ -1673,7 +1674,7 @@ void CPortalMPGameRules::RestartGame()
 
 	m_nNumPortalsPlaced = 0;
 
-	m_flIntermissionEndTime = 0;
+	m_flIntermissionStartTime = 0;
 	m_flRestartGameTime = 0.0;		
 	m_bCompleteReset = false;
 
@@ -1974,10 +1975,24 @@ void CPortalMPGameRules::SetBranchComplete( int nBranch, bool bComplete /*= true
 			CReliableBroadcastRecipientFilter player;
 			player.AddAllPlayers();
 
-			UserMessageBegin( player, bComplete ? "MPMapCompleted" : "MPMapIncomplete" );
-				WRITE_CHAR( nBranch );
-				WRITE_CHAR( nLevel );
-			MessageEnd();
+			//UserMessageBegin( player, bComplete ? "MPMapCompleted" : "MPMapIncomplete" );
+			//	WRITE_CHAR( nBranch );
+			//	WRITE_CHAR( nLevel );
+			//MessageEnd();
+			if (bComplete)
+			{
+				CUsrMsg_MPMapCompleted msg;
+				msg.set_branch(nBranch);
+				msg.set_level(nLevel);
+				SendUserMessage(player, UM_MPMapCompleted, msg);
+			}
+			else
+			{
+				CUsrMsg_MPMapIncomplete msg;
+				msg.set_branch(nBranch);
+				msg.set_level(nLevel);
+				SendUserMessage(player, UM_MPMapIncomplete, msg);
+			}
 
 			m_bLevelCompletions[ 0 ][ nBranch ][ nLevel ] = bComplete;
 			m_bLevelCompletions[ 1 ][ nBranch ][ nLevel ] = bComplete;
@@ -2060,10 +2075,20 @@ void CPortalMPGameRules::SetMapComplete( const char *pchName, bool bComplete /*=
 					CReliableBroadcastRecipientFilter player;
 					player.AddAllPlayers();
 
-					UserMessageBegin( player, bComplete ? "MPMapCompleted" : "MPMapIncomplete" );
-						WRITE_CHAR( nBranch );
-						WRITE_CHAR( nLevel );
-					MessageEnd();
+					if (bComplete)
+					{
+						CUsrMsg_MPMapCompleted msg;
+						msg.set_branch(nBranch);
+						msg.set_level(nLevel);
+						SendUserMessage(player, UM_MPMapCompleted, msg);
+					}
+					else
+					{
+						CUsrMsg_MPMapIncomplete msg;
+						msg.set_branch(nBranch);
+						msg.set_level(nLevel);
+						SendUserMessage(player, UM_MPMapIncomplete, msg);
+					}
 
 					m_bLevelCompletions[ 0 ][ nBranch ][ nLevel ] = bComplete;
 					m_bLevelCompletions[ 1 ][ nBranch ][ nLevel ] = bComplete;
@@ -2128,9 +2153,11 @@ void CPortalMPGameRules::SendAllMapCompleteData( void )
 		}
 	}
 
-	UserMessageBegin( player, "MPMapCompletedData" );
-		WRITE_BITS( buff, nNumBits );
-	MessageEnd();
+	//UserMessageBegin( player, "MPMapCompletedData" );
+	//	WRITE_BITS( buff, nNumBits );
+	//MessageEnd();
+	CUsrMsg_MPMapCompletedData msg;//theaperturecat
+	SendUserMessage(player, UM_MPMapCompletedData, msg);
 }
 
 bool CPortalMPGameRules::SupressSpawnPortalgun( int nTeam )
@@ -2151,14 +2178,14 @@ bool CPortalMPGameRules::SupressSpawnPortalgun( int nTeam )
 }
 
 
-CEG_NOINLINE void CPortalMPGameRules::PlayerWinRPS( CBasePlayer* pWinnerPlayer )
+void CPortalMPGameRules::PlayerWinRPS( CBasePlayer* pWinnerPlayer )
 {
 	bool bIsBlueTeam = ( pWinnerPlayer->GetTeamNumber() == TEAM_BLUE );
 	int nWinnerSlot = bIsBlueTeam ? 0 : 1;
 	int nLoserSlot = bIsBlueTeam ? 1 : 0;
 
 #if defined CLIENT_DLL
-	CEG_PROTECT_MEMBER_FUNCTION( CPortalMPGameRules_PlayerWinRPS );
+	//CEG_PROTECT_MEMBER_FUNCTION( CPortalMPGameRules_PlayerWinRPS );
 #endif
 
 	++m_nRPSWinCount[ nWinnerSlot ];
@@ -2353,48 +2380,50 @@ bool CPortalMPGameRules::IsCommunityCoop( void )
 
 #ifdef CLIENT_DLL
 
-static void __MsgFunc_MPMapCompleted( bf_read &msg )
+static bool __MsgFunc_MPMapCompleted( const CUsrMsg_MPMapCompleted &msg )
 {
 	CPortalMPGameRules *pRules = PortalMPGameRules();
 	if ( !pRules )
-		return;
+		return true;
 
-	int nBranch = msg.ReadChar();
-	int nLevel = msg.ReadChar();
+	int nBranch = msg.branch();
+	int nLevel = msg.level();
 
 	// Both players
 	pRules->SetMapComplete( 0, nBranch, nLevel );
 	pRules->SetMapComplete( 1, nBranch, nLevel );
+	return true;
 }
 USER_MESSAGE_REGISTER( MPMapCompleted );
 
-static void __MsgFunc_MPMapIncomplete( bf_read &msg )
+static bool __MsgFunc_MPMapIncomplete( const CUsrMsg_MPMapIncomplete &msg )
 {
 	CPortalMPGameRules *pRules = PortalMPGameRules();
 	if ( !pRules )
-		return;
+		return true;
 
-	int nBranch = msg.ReadChar();
-	int nLevel = msg.ReadChar();
+	int nBranch = msg.branch();
+	int nLevel = msg.level();
 
 	// Both players
 	pRules->SetMapComplete( 0, nBranch, nLevel, false );
 	pRules->SetMapComplete( 1, nBranch, nLevel, false );
+	return true;
 }
 USER_MESSAGE_REGISTER( MPMapIncomplete );
 
-static void __MsgFunc_MPMapCompletedData( bf_read &msg )
+static bool __MsgFunc_MPMapCompletedData( const CUsrMsg_MPMapCompletedData &msg )
 {
 	CPortalMPGameRules *pRules = PortalMPGameRules();
 	if ( !pRules )
-		return;
+		return true;
 
 	const int nNumBits = 2 * MAX_PORTAL2_COOP_BRANCHES * MAX_PORTAL2_COOP_LEVELS_PER_BRANCH;
 
 	byte buff[ sizeof( byte ) * 8 + nNumBits / ( sizeof( byte ) * 8 ) ];
 	memset( buff, 0, sizeof(buff) );
 
-	msg.ReadBits( buff, nNumBits );
+	//msg.ReadBits( buff, nNumBits ); theaperturecat
 
 	byte *pCurrent = buff;
 	int nMask = 0x01;
@@ -2420,6 +2449,7 @@ static void __MsgFunc_MPMapCompletedData( bf_read &msg )
 			}
 		}
 	}
+	return true;
 }
 USER_MESSAGE_REGISTER( MPMapCompletedData );
 
@@ -2493,44 +2523,47 @@ void CPortalMPGameRules::LoadMapCompleteData( void )
 	engine->ClientCmd( szCommand );
 }
 
-static void __MsgFunc_MPTauntEarned( bf_read &msg )
+static bool __MsgFunc_MPTauntEarned( const CUsrMsg_MPTauntEarned &msg )
 {
-	char szTaunt[ 32 ];
-	msg.ReadString( szTaunt, sizeof( szTaunt ) );
-	bool bAwardSilently = !!msg.ReadByte();
+	//char szTaunt[ 32 ];
+	//msg.ReadString( szTaunt, sizeof( szTaunt ) );
+	bool bAwardSilently = msg.awardsilently();
 	
-	GetClientMenuManagerTaunt().SetTauntOwned( szTaunt, bAwardSilently );
+	GetClientMenuManagerTaunt().SetTauntOwned( msg.tauntname().c_str(), bAwardSilently);
 
 	//if ( bAwardSilently )
 	//	DevMsg( "Awarding %s, but doing it silently.\n", szTaunt );
 
 	// Send event for everything but small wave
-	if ( V_strcmp( szTaunt, "smallWave" ) != 0 )
+	if ( V_strcmp(msg.tauntname().c_str(), "smallWave" ) != 0 )
 	{
 		IGameEvent *event = gameeventmanager->CreateEvent( "gesture_earned" );
 		if ( event )
 		{
 			event->SetInt( "userid", C_BasePlayer::GetLocalPlayer()->GetUserID() );
-			event->SetBool( "teamtaunt", GetClientMenuManagerTaunt().IsTauntTeam( szTaunt ) );
+			event->SetBool( "teamtaunt", GetClientMenuManagerTaunt().IsTauntTeam(msg.tauntname().c_str()) );
 
 			gameeventmanager->FireEventClientSide( event );
 		}
 	}
+	return true;
 }
 USER_MESSAGE_REGISTER( MPTauntEarned );
 
-static void __MsgFunc_MPTauntLocked( bf_read &msg )
+static bool __MsgFunc_MPTauntLocked( const CUsrMsg_MPTauntLocked &msg )
 {
-	char szTaunt[ 32 ];
-	msg.ReadString( szTaunt, sizeof( szTaunt ) );
+	//char szTaunt[ 32 ];
+	//msg.ReadString( szTaunt, sizeof( szTaunt ) );
 
-	GetClientMenuManagerTaunt().SetTauntLocked( szTaunt );
+	GetClientMenuManagerTaunt().SetTauntLocked( msg.args().c_str() );
+	return true;
 }
 USER_MESSAGE_REGISTER( MPTauntLocked );
 
-static void __MsgFunc_MPAllTauntsLocked( bf_read& /*msg*/ )
+static bool __MsgFunc_MPAllTauntsLocked( const CUsrMsg_MPAllTauntsLocked& /*msg*/ )
 {
 	GetClientMenuManagerTaunt().SetAllTauntsLocked();
+	return true;
 }
 USER_MESSAGE_REGISTER( MPAllTauntsLocked );
 
@@ -2597,10 +2630,10 @@ void CC_EarnTaunt( const CCommand &args )
 	CReliableBroadcastRecipientFilter player;
 	player.AddAllPlayers();
 
-	UserMessageBegin( player, "MPTauntEarned" );
-		WRITE_STRING( pNewTaunt );
-		WRITE_BOOL( bAwardSilently );
-	MessageEnd();
+	CUsrMsg_MPTauntEarned msg;
+	msg.set_tauntname(pNewTaunt);
+	msg.set_awardsilently(bAwardSilently);
+	SendUserMessage(player, UM_MPTauntEarned, msg);
 }
 ConCommand mp_earn_taunt( "mp_earn_taunt", CC_EarnTaunt, "Unlocks, owns, and puts a taunt in the gesture wheel.", 0 );
 
@@ -2614,9 +2647,12 @@ void CC_LockTaunt( const CCommand &args )
 	CReliableBroadcastRecipientFilter player;
 	player.AddAllPlayers();
 
-	UserMessageBegin( player, "MPTauntLocked" );
-		WRITE_STRING( args[ 1 ] );
-	MessageEnd();
+	//UserMessageBegin( player, "MPTauntLocked" );
+	//	WRITE_STRING( args[ 1 ] );
+	//MessageEnd();
+	CUsrMsg_MPTauntLocked msg;
+	msg.set_args(args[1]);
+	SendUserMessage(player, UM_MPTauntLocked, msg);
 }
 ConCommand mp_lock_taunt( "mp_lock_taunt", CC_LockTaunt, "Locks a taunt and removes it from the gesture wheel.", 0 );
 
@@ -2625,8 +2661,8 @@ void CC_LockAllTaunts( const CCommand &args )
 	CReliableBroadcastRecipientFilter player;
 	player.AddAllPlayers();
 
-	UserMessageBegin( player, "MPAllTauntsLocked" );
-	MessageEnd();
+	CUsrMsg_MPAllTauntsLocked msg;
+	SendUserMessage(player, UM_MPAllTauntsLocked, msg);
 }
 ConCommand mp_lock_all_taunts( "mp_lock_all_taunts", CC_LockAllTaunts, "Locks all available taunts and removes them from the gesture wheel.", 0 );
 

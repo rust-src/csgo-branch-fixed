@@ -1678,7 +1678,7 @@ void CViewRender::DrawViewModels( const CViewSetup &view, bool drawViewmodel )
 	render->PopView( pRenderContext, GetFrustum() );
 
 	// Render objects that use normal FOV
-	if ( !bDrawScopeLensMask && (opaqueNormalFOVList.Count() > 0 || translucentNormalFOVList.Count() > 0) )
+	if ( (opaqueNormalFOVList.Count() > 0 || translucentNormalFOVList.Count() > 0) )
 	{
 		viewModelSetup.fov = view.fov;
 		render->Push3DView( pRenderContext, viewModelSetup, 0, NULL, GetFrustum() );
@@ -7167,7 +7167,7 @@ void CAperturePhotoView::Draw()
 	BuildWorldRenderLists( true, -1, true, false ); // @MULTICORE (toml 8/9/2006): Portal problem, not sending custom vis down
 	if( !bDrawEverything )
 	{
-		memset( m_pRenderablesList->m_RenderGroupCounts, 0, sizeof( m_pRenderablesList->m_RenderGroupCounts ) );
+		memset( m_pRenderables->m_RenderGroupCounts, 0, sizeof( m_pRenderables->m_RenderGroupCounts ) );
 	}
 	
 	BuildRenderableRenderLists( CurrentViewID() );
@@ -7179,11 +7179,11 @@ void CAperturePhotoView::Draw()
 	//set the target entity as the only entity in the renderables list
 	{
 		if( !bDrawEverything )
-			memset( m_pRenderablesList->m_RenderGroupCounts, 0, sizeof( m_pRenderablesList->m_RenderGroupCounts ) );
+			memset( m_pRenderables->m_RenderGroupCounts, 0, sizeof( m_pRenderables->m_RenderGroupCounts ) );
 
 		for( int i = 0; i != iKeepChildren; ++i )
 		{
-			AddIClientRenderableToRenderList( keepHandles[i], m_pRenderablesList );
+			AddIClientRenderableToRenderList( keepHandles[i], m_pRenderables );
 		}
 	}
 
@@ -7200,7 +7200,7 @@ void CAperturePhotoView::Draw()
 	if( bDrawEverything )
 		DrawWorld( pRenderContext, 0.0f );
 
-	DrawOpaqueRenderables( pRenderContext, RENDERABLES_RENDER_PATH_NORMAL, NULL );
+	DrawOpaqueRenderables( pRenderContext, RENDERABLES_RENDER_PATH_NORMAL, DEPTH_MODE_NORMAL, NULL );
 	if( bDrawEverything )
 	{
 #if defined( PORTAL )

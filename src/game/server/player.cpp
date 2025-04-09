@@ -80,6 +80,7 @@
 
 #ifdef PORTAL2
 #include "weapon_portalgun.h"
+#include "portal_grabcontroller_shared.h"
 #endif
 
 #ifdef HL2_DLL
@@ -588,7 +589,8 @@ CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *ed )
 // Input  : 
 // Output : 
 //-----------------------------------------------------------------------------
-CBasePlayer::CBasePlayer( )
+CBasePlayer::CBasePlayer( ) :
+	m_bIsFullyConnected(false)
 {
 	AddEFlags( EFL_NO_AUTO_EDICT_ATTACH );
 
@@ -714,7 +716,7 @@ CBasePlayer::CBasePlayer( )
 	m_iCoachingTeam = 0;
 
 	m_flDuckAmount = 0.0f;
-	m_flDuckSpeed = CS_PLAYER_DUCK_SPEED_IDEAL;
+	//m_flDuckSpeed = CS_PLAYER_DUCK_SPEED_IDEAL;
 	m_vecLastPositionAtFullCrouchSpeed = vec2_origin;
 	m_flNextDecalTime = 0.0f; // initialize to let this player spray
 	m_bNextDecalTimeExpedited = false;
@@ -2186,7 +2188,7 @@ void CBasePlayer::ShowViewPortPanel( const char * name, bool bShow, KeyValues *d
 		subkey = data->GetFirstSubKey(); // reset 
 	}
 
-	CCSUsrMsg_VGUIMenu msg;
+	CUsrMsg_VGUIMenu msg;
 
 	msg.set_name( name );
 	msg.set_show( bShow );
@@ -2194,7 +2196,7 @@ void CBasePlayer::ShowViewPortPanel( const char * name, bool bShow, KeyValues *d
 	// write additional data (be careful not more than 192 bytes!)
 	while ( subkey )
 	{
-		CCSUsrMsg_VGUIMenu::Subkey *pMsgSubkey = msg.add_subkeys();
+		CUsrMsg_VGUIMenu::Subkey *pMsgSubkey = msg.add_subkeys();
 
 		pMsgSubkey->set_name( subkey->GetName() );
 		pMsgSubkey->set_str( subkey-> GetString() );
@@ -2206,7 +2208,7 @@ void CBasePlayer::ShowViewPortPanel( const char * name, bool bShow, KeyValues *d
 //	if ( bShow )
 //		x++;
 
-	SendUserMessage( filter, CS_UM_VGUIMenu, msg );
+	SendUserMessage( filter, UM_VGUIMenu, msg );
 }
 
 
@@ -2389,8 +2391,8 @@ void CBasePlayer::StopObserverMode()
 	CSingleUserRecipientFilter filter( this );
 	filter.MakeReliable();	
 	
-	CCSUsrMsg_StopSpectatorMode msg;
-	SendUserMessage( filter, CS_UM_StopSpectatorMode, msg );
+	//CUsrMsg_StopSpectatorMode msg;
+	//SendUserMessage( filter, UM_StopSpectatorMode, msg );
 }
 
 bool CBasePlayer::StartObserverMode(int mode)
@@ -4422,9 +4424,9 @@ void CBasePlayer::UpdateGeigerCounter( void )
 		CSingleUserRecipientFilter user( this );
 		user.MakeReliable();
 
-		CCSUsrMsg_Geiger msg;
+		CUsrMsg_Geiger msg;
 		msg.set_range( range );
-		SendUserMessage( user, CS_UM_Geiger, msg );
+		SendUserMessage( user, UM_Geiger, msg );
 	}
 
 	// reset counter and semaphore
@@ -4797,7 +4799,7 @@ void CBasePlayer::PostThink()
 					) )
 				{  
 #if defined ( PORTAL2 )
-					CPlayerPickupController *pPickup = (CPlayerPickupController*)m_hUseEntity.Get();
+					CPlayerPickupController * pPickup = (CPlayerPickupController*)m_hUseEntity.Get();
 					Assert( pPickup );
 					if ( pPickup )
 					{
@@ -5285,7 +5287,7 @@ void CBasePlayer::Spawn( void )
 	m_iDeathPostEffect = 0;
 
 	m_flDuckAmount = 0;
-	m_flDuckSpeed = CS_PLAYER_DUCK_SPEED_IDEAL;
+	//m_flDuckSpeed = CS_PLAYER_DUCK_SPEED_IDEAL;
 }
 
 void CBasePlayer::UpdateMapEntityPointers( void )
@@ -5539,21 +5541,21 @@ void CBasePlayer::NotifyNearbyRadiationSource( float flRange )
 void CBasePlayer::AllowImmediateDecalPainting()
 {
 	// No decal expediting during warmup
-	if ( CSGameRules() )
-	{
-		if ( CSGameRules()->IsWarmupPeriod() )
-			return;
-		if ( !CSGameRules()->IsPlayingClassic() &&
-			!CSGameRules()->IsPlayingGunGameTRBomb() )
-			return;
-	}
+	//if ( CSGameRules() )
+	//{
+	//	if ( CSGameRules()->IsWarmupPeriod() )
+	//		return;
+	////	if ( !CSGameRules()->IsPlayingClassic() &&
+	//		!CSGameRules()->IsPlayingGunGameTRBomb() )
+	//		return;
+	//}
 
 	// CS:GO ensures a minimal ratelimit
-	if ( !m_bNextDecalTimeExpedited && ( m_flNextDecalTime > 0 ) )
-	{
-		m_flNextDecalTime -= ( PLAYERDECALS_COOLDOWN_SECONDS - 3 );
-		m_bNextDecalTimeExpedited = true;
-	}
+	//if ( !m_bNextDecalTimeExpedited && ( m_flNextDecalTime > 0 ) )
+	//{
+	//	m_flNextDecalTime -= ( PLAYERDECALS_COOLDOWN_SECONDS - 3 );
+	//	m_bNextDecalTimeExpedited = true;
+	//}
 }
 
 void CBasePlayer::PushAwayDecalPaintingTime( float flTime )
@@ -5885,7 +5887,7 @@ void CBloodSplat::Think( void )
 //-----------------------------------------------------------------------------
 // Purpose: Create and give the named item to the player. Then return it.
 //-----------------------------------------------------------------------------
-CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pchName, int iSubType /*= 0*/, CEconItemView *pScriptItem /*= NULL*/, bool bForce /*= false*/ )
+CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pchName, int iSubType /*= 0*/, bool bForce /*= false*/ )
 {
 	// If I already own this type don't create one
 	if ( Weapon_OwnsThisType( pchName, iSubType ) )
@@ -6748,7 +6750,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		
 		return true;
 	}
-	else if ( stricmp( cmd, "spec_player_by_accountid" ) == 0 )
+	/*else if (stricmp(cmd, "spec_player_by_accountid") == 0)
 	{
 		if ( GetObserverMode( ) == OBS_MODE_ROAMING || GetObserverMode( ) == OBS_MODE_FIXED )
 			SetObserverMode( OBS_MODE_IN_EYE );
@@ -6765,7 +6767,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 				SetObserverTarget( target );
 			}
 		}
-	}
+	}*/
 
 	else if ( stricmp( cmd, "spec_goto" ) == 0 ) // chase next player
 	{
@@ -7144,9 +7146,9 @@ void CBasePlayer::UpdateClientData( void )
 		m_fInitHUD = false;
 		gInitHUD = false;
 
-		CCSUsrMsg_ResetHud msg;
+		CUsrMsg_ResetHud msg;
 		msg.set_reset( 0 );
-		SendUserMessage( user, CS_UM_ResetHud, msg );
+		SendUserMessage( user, UM_ResetHud, msg );
 
 		if ( !m_fGameHUDInitialized )
 		{
@@ -7168,8 +7170,8 @@ void CBasePlayer::UpdateClientData( void )
 	CWorld *world = GetWorldEntity();
 	if ( world && world->GetDisplayTitle() )
 	{
-		CCSUsrMsg_GameTitle msg;
-		SendUserMessage( user, CS_UM_GameTitle, msg );
+		CUsrMsg_GameTitle msg;
+		SendUserMessage( user, UM_GameTitle, msg );
 
 		world->SetDisplayTitle( false );
 	}
@@ -7248,12 +7250,12 @@ void CBasePlayer::RumbleEffect( unsigned char index, unsigned char rumbleData, u
 	CSingleUserRecipientFilter filter( this );
 	filter.MakeReliable();
 
-	CCSUsrMsg_Rumble msg;
+	CUsrMsg_Rumble msg;
 	msg.set_index( index );
 	msg.set_data( rumbleData );
 	msg.set_flags( rumbleFlags	);
 
-	SendUserMessage( filter, CS_UM_Rumble, msg );	
+	SendUserMessage( filter, UM_Rumble, msg );	
 }
 
 void CBasePlayer::EnableControl(bool fControl)
@@ -7272,9 +7274,9 @@ void CBasePlayer::CheckTrainUpdate( void )
 		CSingleUserRecipientFilter user( this );
 		user.MakeReliable();
 
-		CCSUsrMsg_Train msg;
+		CUsrMsg_Train msg;
 		msg.set_train( m_iTrain & 0xF );
-		SendUserMessage( user, CS_UM_Train, msg );
+		SendUserMessage( user, UM_Train, msg );
 
 		m_iTrain &= ~TRAIN_NEW;
 	}
@@ -9797,16 +9799,20 @@ void CBasePlayer::UpdateFXVolume( void )
 	}
 }
 
+void CBasePlayer::OnFullyConnected()
+{
+	m_bIsFullyConnected = true;
+}
 
 CVoteController* CBasePlayer::GetTeamVoteController()
 {
 	switch ( GetAssociatedTeamNumber( ) )
 	{
-	case TEAM_CT:
-		return g_voteControllerCT;
+	//case TEAM_CT:
+	//	return g_voteControllerCT;
 
-	case TEAM_TERRORIST:
-		return g_voteControllerT;
+	//case TEAM_TERRORIST:
+	//	return g_voteControllerT;
 
 	// SPECTATOR or other
 	default:

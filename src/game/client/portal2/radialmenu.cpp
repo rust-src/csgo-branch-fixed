@@ -33,7 +33,7 @@
 #include "c_trigger_tractorbeam.h"
 #include "c_projectedwallentity.h"
 #include "portal_mp_gamerules.h"
-
+#include "matchmaking/imatchtitle.h"
 #include "vgui/cursor.h"
 #include "fmtstr.h"
 #include "vgui_int.h"
@@ -44,7 +44,7 @@
 #include "radialmenu_taunt.h"
 #include "radialbutton.h"
 
-#include "cegclientwrapper.h"
+//#include "cegclientwrapper.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -151,7 +151,7 @@ int AddGlowToObject( C_BaseEntity *pObject, int nTeamNumber )
 	Vector vColor;
 	TeamPingColor( nTeamNumber, vColor );
 
-	return g_GlowObjectManager.RegisterGlowObject( pObject, vColor, GLOW_OUTLINE_ALPHA, GET_ACTIVE_SPLITSCREEN_SLOT() );
+	return GlowObjectManager().RegisterGlowObject(pObject, vColor, GLOW_OUTLINE_ALPHA, true,true, GET_ACTIVE_SPLITSCREEN_SLOT());
 }
 
 void RadialMenuMouseCallback( uint8* pData, size_t iSize )
@@ -1407,7 +1407,7 @@ int	CRadialMenu::KeyInput( int down, ButtonCode_t keynum, const char *pszCurrent
 		ButtonCode_t key;
 		do 
 		{
-			key = (ButtonCode_t)engine->Key_CodeForBinding( s_pszRadialMenuIgnoreActions[i], nSlot, count, -1 );
+			key = (ButtonCode_t)engine->Key_CodeForBinding( s_pszRadialMenuIgnoreActions[i], nSlot, count, BINDINGLOOKUP_ALL);
 			if ( IsJoystickCode( key ) )
 			{
 				key = GetBaseButtonCode( key );
@@ -1701,7 +1701,7 @@ void CRadialMenu::ClearGlowEntity( void )
 	// Stop glowing if we're done
 	if ( m_nEntityGlowIndex != -1 )
 	{
-		g_GlowObjectManager.UnregisterGlowObject( m_nEntityGlowIndex );
+		GlowObjectManager().UnregisterGlowObject(m_nEntityGlowIndex);
 		m_nEntityGlowIndex = -1;
 	}
 }
@@ -2342,7 +2342,7 @@ public:
 					// Remove the glow
 					if ( m_Signifiers[itr].m_nGlowIndex != -1 )
 					{
-						g_GlowObjectManager.UnregisterGlowObject( m_Signifiers[itr].m_nGlowIndex );
+						GlowObjectManager().UnregisterGlowObject(m_Signifiers[itr].m_nGlowIndex);
 					}
 
 					Locator_RemoveTarget( m_Signifiers[itr].m_nLocatorIndex );
@@ -2359,7 +2359,7 @@ public:
 		{
 			if ( m_Signifiers[itr].m_nGlowIndex != -1 )
 			{
-				g_GlowObjectManager.UnregisterGlowObject( m_Signifiers[itr].m_nGlowIndex );
+				GlowObjectManager().UnregisterGlowObject(m_Signifiers[itr].m_nGlowIndex);
 			}
 		}
 
@@ -2405,7 +2405,7 @@ public:
 						// Remove the glow
 						if ( m_Signifiers[itr].m_nGlowIndex != -1 )
 						{
-							g_GlowObjectManager.UnregisterGlowObject( m_Signifiers[itr].m_nGlowIndex );
+							GlowObjectManager().UnregisterGlowObject(m_Signifiers[itr].m_nGlowIndex);
 						}
 
 						// Kill it
@@ -2455,7 +2455,7 @@ public:
 			Vector vColor;
 			TeamPingColor( pPingPlayer ? pPingPlayer->GetTeamNumber() : 0, vColor );
 
-			g_GlowObjectManager.SetColor( nGlowIndex, vColor );
+			GlowObjectManager().SetColor(nGlowIndex, vColor);
 		}
 
 		// Hold it
@@ -2483,7 +2483,7 @@ inline bool IsPortalOnFloor( CBaseEntity *pEntity )
 
 
 //--------------------------------------------------------------------------------------------------------
-CEG_NOINLINE void PlaceCommandTargetDecal( const Vector &vPosition, const Vector &vNormal, int iTeam, bool bJustArrows )
+void PlaceCommandTargetDecal( const Vector &vPosition, const Vector &vNormal, int iTeam, bool bJustArrows )
 {
 	// Recreate the trace that got us here
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
@@ -2516,7 +2516,7 @@ CEG_NOINLINE void PlaceCommandTargetDecal( const Vector &vPosition, const Vector
 	}
 }
 
-CEG_PROTECT_FUNCTION( PlaceCommandTargetDecal );
+//CEG_PROTECT_FUNCTION( PlaceCommandTargetDecal );
 
 //--------------------------------------------------------------------------------------------------------
 void AddLocator( C_BaseEntity *pTarget, const Vector &vPosition, const Vector &vNormal, int nPlayerIndex, const char *caption, float fDisplayTime )
@@ -2832,25 +2832,33 @@ void AddLocator( C_BaseEntity *pTarget, const Vector &vPosition, const Vector &v
 }
 
 //--------------------------------------------------------------------------------------------------------
-static void __MsgFunc_AddLocator( bf_read &msg )
+static bool __MsgFunc_AddLocator( const CUsrMsg_AddLocator &msg )
 {
 	// Find the index of the sending player
-	int nPlayerIndex = msg.ReadShort();
+	int nPlayerIndex = msg.playerindex();
 
 	// Find the entity in question
-	C_BaseEntity *pTarget = UTIL_EntityFromUserMessageEHandle( msg.ReadLong() );
+	C_BaseEntity *pTarget = UTIL_EntityFromUserMessageEHandle( msg.target() );
 
-	float fDisplayTime = msg.ReadFloat();
+	float fDisplayTime = msg.display_time();
 	
 	Vector vPosition = vec3_invalid;
 	Vector vNormal = vec3_invalid;
-	msg.ReadBitVec3Coord( vPosition );
-	msg.ReadBitVec3Normal( vNormal );
+	vPosition.x = msg.position_x();
+	vPosition.y = msg.position_y();
+	vPosition.z = msg.position_z();
+
+	vNormal.x = msg.normal_x();
+	vNormal.y = msg.normal_y();
+	vNormal.z = msg.normal_z();
+	//msg.ReadBitVec3Coord( vPosition );
+	//msg.ReadBitVec3Normal( vNormal );
 
 	// Find the name of the icon to show
-	char iconName[2048]; 
-	msg.ReadString( iconName, sizeof(iconName) );
-	AddLocator( pTarget, vPosition, vNormal, nPlayerIndex, iconName, fDisplayTime );
+	//char iconName[2048]; 
+	//msg.ReadString( iconName, sizeof(iconName) );
+	AddLocator( pTarget, vPosition, vNormal, nPlayerIndex, msg.iconname().c_str(), fDisplayTime);
+	return true;
 }
 
 USER_MESSAGE_REGISTER( AddLocator );

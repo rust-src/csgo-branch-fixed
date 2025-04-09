@@ -12,14 +12,14 @@
 #include "ammodef.h"
 #include "util_shared.h"
 #include "weapon_parse.h"
-#include "econ_item_view.h"
+//#include "econ_item_view.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 CWeaponDatabase g_WeaponDatabase;
 
-extern void LoadEquipmentData();
+//extern void LoadEquipmentData();
 
 // The sound categories found in the weapon classname.txt files
 // This needs to match the WeaponSound_t enum in weapon_parse.h
@@ -267,11 +267,13 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	Q_strncpy( szPrintName, pKeyValuesData->GetString( "printname", WEAPON_PRINTNAME_MISSING ), MAX_WEAPON_STRING );
 	// View model & world model
 	Q_strncpy( szViewModel, pKeyValuesData->GetString( "viewmodel" ), MAX_WEAPON_STRING );
-	Q_strncpy( szWorldModel, pKeyValuesData->GetString( "playermodel" ), MAX_WEAPON_STRING );
-
+	Q_strncpy(szWorldModel, pKeyValuesData->GetString( "playermodel"), MAX_WEAPON_STRING );
+#ifdef CSTRIKE15
 	V_StripExtension( szWorldModel, szWorldDroppedModel, sizeof( szWorldDroppedModel ) );
 	V_strcat_safe( szWorldDroppedModel, "_dropped.mdl" );
-	
+#else
+	Q_strncpy(szWorldDroppedModel, pKeyValuesData->GetString("playermodel"), MAX_WEAPON_STRING);
+#endif
 	Q_strncpy( szAnimationPrefix, pKeyValuesData->GetString( "anim_prefix" ), MAX_WEAPON_PREFIX );
 	iSlot = pKeyValuesData->GetInt( "bucket", 0 );
 	iPosition = pKeyValuesData->GetInt( "bucket_position", 0 );
@@ -384,88 +386,33 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	}
 }
 
-const char* FileWeaponInfo_t::GetWorldModel( const CEconItemView* pWepView, int iTeam ) const
+const char* FileWeaponInfo_t::GetWorldModel( int iTeam ) const
 {
-	if ( pWepView && pWepView->IsValid() )
-	{
-		const char *pchWorldOverride = pWepView->GetStaticData()->GetEntityOverrideModel();
-		if ( pchWorldOverride )
-		{
-			return pchWorldOverride;
-		}
-
-		return pWepView->GetItemDefinition()->GetWorldDisplayModel();
-	}
-	else
 	{
 		return szWorldModel;
 	}
 }
 
-const char* FileWeaponInfo_t::GetViewModel( const CEconItemView* pWepView, int iTeam ) const
+const char* FileWeaponInfo_t::GetViewModel( int iTeam ) const
 {
-	if ( pWepView && pWepView->IsValid() )
-	{
-		const char *pchViewOverride = pWepView->GetStaticData()->GetViewOverrideModel();
-		if ( pchViewOverride )
-		{
-			return pchViewOverride;
-		}
-
-		return pWepView->GetItemDefinition()->GetBasePlayerDisplayModel();
-	}
-	else
 	{
 		return szViewModel;
 	}
 }
 
-const char* FileWeaponInfo_t::GetWorldDroppedModel( const CEconItemView* pWepView, int iTeam ) const
+const char* FileWeaponInfo_t::GetWorldDroppedModel( int iTeam ) const
 {
-	if ( pWepView && pWepView->IsValid() )
-	{
-		const char *pchWorldDroppedModel = pWepView->GetItemDefinition()->GetWorldDroppedModel();
-		if ( pchWorldDroppedModel )
-		{
-			return pchWorldDroppedModel;
-		}
-	}
-	
 	return szWorldDroppedModel;
 }
 
-const char* FileWeaponInfo_t::GetPrimaryAmmo( const CEconItemView* pWepView ) const
+const char* FileWeaponInfo_t::GetPrimaryAmmo(  ) const
 {
-
-	if ( pWepView && pWepView->IsValid() )
-	{
-		// TODO: replace visual data with attributes when attributes support strings.
-		const char *pszString = pWepView->GetStaticData()->GetPrimaryAmmo();
-
-		if ( pszString )
-		{
-			return pszString;
-		}
-	}
-
 	return szAmmo1;
 }
 
 
-int FileWeaponInfo_t::GetPrimaryAmmoType( const CEconItemView* pWepView ) const
+int FileWeaponInfo_t::GetPrimaryAmmoType( ) const
 {
-
-	if ( pWepView && pWepView->IsValid() )
-	{
-		// TODO: replace visual data with attributes when attributes support strings.
-		const char *pszString = GetPrimaryAmmo( pWepView );
-
-		if ( pszString )
-		{
-			return GetAmmoDef()->Index( pszString );
-		}
-	}
-
 	return iAmmoType;
 }
 
@@ -553,7 +500,7 @@ bool CWeaponDatabase::LoadManifest()
 		}
 	}
 
-	LoadEquipmentData();
+	//LoadEquipmentData();
 
 	return true;
 }

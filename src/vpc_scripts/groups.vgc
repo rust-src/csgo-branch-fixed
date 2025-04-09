@@ -8,12 +8,14 @@
 // Group definitions //
 ///////////////////////
 
-$Group "csgo_partner"
+$Group "portal2_partner"
 {
 	"appframework"
 	"valve_avi"
 	"bitmap"
 	"bitmap_byteswap"
+//	"blobulator" theaperturecat - one day maybe
+//	"blobulator_job"
 	"bonesetup"
 	"choreoobjects"
 	"datacache"
@@ -104,11 +106,13 @@ $Group "csgo_partner"
 	"vtf"
 }
 
-$Group "csgo_partner_linux"
+$Group "portal2_partner_linux"
 {
 	"appframework"
 	"bitmap"
 	"bonesetup"
+//	"blobulator"
+//	"blobulator_job"
 	"bzip2"
 	"choreoobjects"
 	"datacache"

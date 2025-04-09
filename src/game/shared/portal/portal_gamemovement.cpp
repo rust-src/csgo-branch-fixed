@@ -16,6 +16,7 @@
 #include "tier0/stacktools.h"
 #include "portal_util_shared.h"
 #include "iclient.h"
+#include "portal_grabcontroller_shared.h"
 
 #if defined( CLIENT_DLL )
 	#include "c_portal_player.h"
@@ -405,7 +406,7 @@ void CPortalGameMovement::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMov
 		// Cropping movement speed scales mv->m_fForwardSpeed etc. globally
 		// Once we crop, we don't want to recursively crop again, so we set the crop
 		// flag globally here once per usercmd cycle.
-		m_bSpeedCropped = false;
+		m_iSpeedCropped = SPEED_CROPPED_RESET;
 
 		m_bInPortalEnv = (((CPortal_Player *)pPlayer)->m_hPortalEnvironment != NULL);
 
@@ -648,7 +649,7 @@ void CPortalGameMovement::AirAccelerate( Vector& wishdir, float wishspeed, float
 	addspeed = wishspd - currentspeed;
 
 #if defined CLIENT_DLL
-	RANDOM_CEG_TEST_SECRET();
+	//RANDOM_CEG_TEST_SECRET();
 #endif
 
 	// If not adding any, done.
@@ -1079,7 +1080,7 @@ void CPortalGameMovement::GroundPortalFunnel( Vector& wishdir,
 }
 
 
-CEG_NOINLINE void CPortalGameMovement::PlayerRoughLandingEffects( float fvol )
+void CPortalGameMovement::PlayerRoughLandingEffects( float fvol )
 {
 	if ( fvol > 0.0 )
 	{
@@ -1120,7 +1121,7 @@ CEG_NOINLINE void CPortalGameMovement::PlayerRoughLandingEffects( float fvol )
 			ep.m_flVolume = MIN( player->m_Local.m_flFallVelocity * 0.00075f - 0.38, 1.0f );	// louder the harder they land
 
 #if defined GAME_DLL
-			CEG_PROTECT_MEMBER_FUNCTION( CPortalGameMovement_PlayerRoughLandingEffects );
+			//CEG_PROTECT_MEMBER_FUNCTION( CPortalGameMovement_PlayerRoughLandingEffects );
 #endif
 
 			CBaseEntity::EmitSound( filter, player->entindex(), ep );
@@ -1187,7 +1188,7 @@ void CPortalGameMovement::PlayerCeilingImpactEffects( float fvol )
 			ep.m_flVolume = MIN( 4.0f * (fallVelocity * 0.00075f - 0.38), 1.0f );	// louder the harder they land
 
 #if defined CLIENT_DLL
-			RANDOM_CEG_TEST_SECRET_PERIOD( 3, 7 );
+			//RANDOM_CEG_TEST_SECRET_PERIOD( 3, 7 );
 #endif
 
 			CBaseEntity::EmitSound( filter, player->entindex(), ep );
@@ -1302,7 +1303,7 @@ void CPortalGameMovement::CategorizePosition( void )
 				bRampLaunch = true;
 
 #if defined CLIENT_DLL
-				STEAMWORKS_TESTSECRET();
+				//STEAMWORKS_TESTSECRET();
 #endif
 
 				// Compute normalized forward direction in tangent plane of the ramp
@@ -2201,12 +2202,12 @@ CBaseHandle CPortalGameMovement::TestPlayerPosition( const Vector& pos, int coll
 		CPortal_Player *pPortalPlayer = (CPortal_Player *)((CBaseEntity *)mv->m_nPlayerHandle.Get());
 		pPortalPlayer->SetStuckOnPortalCollisionObject();
 
-		return INVALID_EHANDLE_INDEX;
+		return INVALID_EHANDLE;
 	}
 #endif
 	else
 	{	
-		return INVALID_EHANDLE_INDEX;
+		return INVALID_EHANDLE;
 	}
 }
 
@@ -2992,13 +2993,13 @@ void CPortalGameMovement::CheckParameters()
 		mv->m_flUpMove      = 0;
 	}
 
-	DecayPunchAngle();
+	DecayViewPunchAngle();
 
 	// Take angles from command.
 	if ( !IsDead() )
 	{
 		v_angle = mv->m_vecAngles;
-		v_angle = v_angle + player->m_Local.m_vecPunchAngle;
+		v_angle = v_angle + player->m_Local.m_viewPunchAngle;
 
 		// Now adjust roll angle
 		if ( player->GetMoveType() != MOVETYPE_ISOMETRIC  &&
@@ -3192,7 +3193,7 @@ void CPortalGameMovement::StepMove( Vector &vecDestination, trace_t &traceIn )
 	}
 
 #if defined GAME_DLL
-	RANDOM_CEG_TEST_SECRET();
+	//RANDOM_CEG_TEST_SECRET();
 #endif
 
 	TracePlayerBBox( mv->GetAbsOrigin(), vecEndPos, PlayerSolidMask(), COLLISION_GROUP_PLAYER_MOVEMENT, trace );
@@ -3257,7 +3258,7 @@ void CPortalGameMovement::CheckWallImpact( Vector& primal_velocity )
 	if ( fLateralStoppingAmount > PLAYER_MAX_SAFE_FALL_SPEED )
 	{
 #if defined CLIENT_DLL
-		STEAMWORKS_TESTSECRET();
+		//STEAMWORKS_TESTSECRET();
 #endif
 		fSlamVol = 1.0f;
 	}
@@ -3861,7 +3862,7 @@ void CPortalGameMovement::WalkMove()
 	}
 
 #if defined GAME_DLL
-	RANDOM_CEG_TEST_SECRET();
+	//RANDOM_CEG_TEST_SECRET();
 #endif
 
 	// Now pull the base velocity back out.   Base velocity is set if you are on a moving object, like a conveyor (or maybe another monster?)
@@ -3982,7 +3983,7 @@ void CPortalGameMovement::FullWalkMove()
 			else
 			{
 #if defined CLIENT_DLL
-				RANDOM_CEG_TEST_SECRET();
+				//RANDOM_CEG_TEST_SECRET();
 #endif
 				AirMove();  // Take into account movement when in air.
 			}
@@ -4162,7 +4163,7 @@ int CPortalGameMovement::TryPlayerMove( Vector *pFirstDest, trace_t *pFirstTrace
 				pPortalPlayer->m_flAutoGrabLockOutTime = gpGlobals->curtime;
 
 #ifdef CLIENT_DLL
-				STEAMWORKS_TESTSECRET();
+				//STEAMWORKS_TESTSECRET();
 
 				if ( pm.m_pEnt == pPortalPlayer->m_hUseEntToSend.Get() )
 				{

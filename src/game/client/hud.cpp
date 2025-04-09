@@ -34,6 +34,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+
 static 	CClassMemoryPool< CHudTexture >	 g_HudTextureMemoryPool( 128 );
 
 //-----------------------------------------------------------------------------
@@ -318,14 +319,14 @@ CHud &GetHud( int nSlot /*= -1*/ )
 	return gHUD[ nSlot ];
 }
 
-bool MsgFunc_ResetHUD( const CCSUsrMsg_ResetHud& msg )
+bool MsgFunc_ResetHUD( const CUsrMsg_ResetHud& msg )
 {
 	ASSERT_LOCAL_PLAYER_RESOLVABLE();
 	return gHUD[ GET_ACTIVE_SPLITSCREEN_SLOT() ].MsgFunc_ResetHUD( msg );
 }
 
 #ifdef CSTRIKE_DLL
-bool MsgFunc_SendAudio( const CCSUsrMsg_SendAudio& msg )
+bool MsgFunc_SendAudio( const CUsrMsg_SendAudio& msg )
 {
 	ASSERT_LOCAL_PLAYER_RESOLVABLE();
 	return gHUD[ GET_ACTIVE_SPLITSCREEN_SLOT() ].MsgFunc_SendAudio( msg );
@@ -341,9 +342,9 @@ public:
 
 	void Init()
 	{
-		m_UMCMsgResetHud.Bind< CS_UM_ResetHud, CCSUsrMsg_ResetHud >( UtlMakeDelegate( MsgFunc_ResetHUD ) );
+		m_UMCMsgResetHud.Bind< UM_ResetHud, CUsrMsg_ResetHud >( UtlMakeDelegate( MsgFunc_ResetHUD ) );
 #ifdef CSTRIKE_DLL
-		m_UMCMsgSendAudio.Bind< CS_UM_SendAudio, CCSUsrMsg_SendAudio >( UtlMakeDelegate( MsgFunc_SendAudio ) );
+		m_UMCMsgSendAudio.Bind< UM_SendAudio, CUsrMsg_SendAudio >( UtlMakeDelegate( MsgFunc_SendAudio ) );
 #endif
 	}
 
@@ -876,10 +877,10 @@ bool CHud::IsHidden( int iHudFlags )
 		return true;
 
 	// Grab the local or observed player
-	C_BasePlayer *pPlayer = GetHudPlayer();
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer(m_nSplitScreenSlot);
 
 	// Grab the local player
-	C_CSPlayer *localPlayer = C_CSPlayer::GetLocalCSPlayer();
+	//C_CSPlayer *localPlayer = C_CSPlayer::GetLocalCSPlayer();
 
 	if ( !pPlayer )
 		return true;
@@ -894,7 +895,7 @@ bool CHud::IsHidden( int iHudFlags )
 	// Everything hidden?
 	if ( iHideHud & HIDEHUD_ALL )
 		return true;
-
+#ifdef CSTRIKE15
 	// hide health if not chasing a target
 	if ( localPlayer->GetObserverMode() == OBS_MODE_ROAMING || 
 		localPlayer->GetObserverMode() == OBS_MODE_FIXED || 
@@ -904,7 +905,7 @@ bool CHud::IsHidden( int iHudFlags )
 		if ( (iHudFlags & HIDEHUD_HEALTH) || (iHudFlags & HIDEHUD_WEAPONSELECTION) )
 			return true;
 	}
-
+#endif
 	// Hide all hud elements if we're blurring the background, since they don't blur properly
 	if ( GetClientMode()->GetBlurFade() )
 		return true;

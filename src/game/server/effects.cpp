@@ -2457,7 +2457,7 @@ inline void UTIL_TraceLineIgnoreTwoEntities( const Vector& vecAbsStart, const Ve
 }
 
 extern ConVar sv_showbullethits;
-extern ConVar sv_penetration_type;
+//extern ConVar sv_penetration_type;
 #define	CS_MASK_SHOOT (MASK_SOLID|CONTENTS_DEBRIS)
 
 void CEnvGunfire::FireBullet(
@@ -2475,13 +2475,13 @@ void CEnvGunfire::FireBullet(
 	const char *pszTracerName
 	)
 {
-	CCSPlayer *pPlayer = NULL;
-	for ( int i = 1; i <= MAX_PLAYERS; i++ )
-	{
-		pPlayer = ToCSPlayer( UTIL_PlayerByIndex( i ) );
-		if ( pPlayer )
-			break;
-	}
+	//CCSPlayer *pPlayer = NULL;
+	//for ( int i = 1; i <= MAX_PLAYERS; i++ )
+	//{
+	//	pPlayer = ToCSPlayer( UTIL_PlayerByIndex( i ) );
+	//	if ( pPlayer )
+	//		break;
+	//}
 
 	float fCurrentDamage = iDamage;   // damage of the bullet at it's current trajectory
 	float flCurrentDistance = 0.0;  //distance that the bullet has traveled so far
@@ -2496,8 +2496,8 @@ void CEnvGunfire::FireBullet(
 	float flPenetrationModifier = 1.0f;
 
 	// we use the max penetrations on this gun to figure out how much penetration it's capable of
-	if ( sv_penetration_type.GetInt() == 1 )
-		flPenetrationPower = flPenetration;
+	//if ( sv_penetration_type.GetInt() == 1 )
+	//	flPenetrationPower = flPenetration;
 
 	if ( !pevAttacker )
 		pevAttacker = this;  // the default attacker is ourselves
@@ -2727,7 +2727,7 @@ void CEnvGunfire::FireBullet(
 
 		// === Damage applied later ===
 #endif
-
+#ifdef CSTRIKE15 
 		// [dkorus] note: values are changed inside of HandleBulletPenetration
 		bool bulletStopped = pPlayer->HandleBulletPenetration( flPenetration, iEnterMaterial, hitGrate, tr, vecDir, pSurfaceData, flPenetrationModifier,
 													  flDamageModifier, bDoEffects, iDamageType, flPenetrationPower, nPenetrationCount, vecSrc, flDistance,
@@ -2736,6 +2736,7 @@ void CEnvGunfire::FireBullet(
 		// [dkorus] bulletStopped is true if the bullet can no longer continue penetrating materials
 		if ( bulletStopped )
 			break;
+#endif
 	}
 
 

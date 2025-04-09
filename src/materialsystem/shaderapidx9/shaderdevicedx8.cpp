@@ -3630,7 +3630,7 @@ void CShaderDeviceDx8::OnDebugEvent( const char * pEvent )
 		double flSleepMilliseconds = g_mp_Present.GetTotalMilliseconds();
 		if( g_mp_Present.m_numCalls )
 		{
-			COM_TimestampedLog( "Present() Stats: %d flips / %.1f sec = ave %.1f fps. Sleep %.2f seconds = %.3fms/flip. %s\n", g_mp_Present.m_numCalls, timeDelta, timeDelta > 0.001 ? float( g_mp_Present.m_numCalls ) / timeDelta : 0.0f, flSleepMilliseconds * 1e-3f, g_mp_Present.m_numCalls ? flSleepMilliseconds / double( g_mp_Present.m_numCalls ) : 0.0f, pEvent );
+			//COM_TimestampedLog( "Present() Stats: %d flips / %.1f sec = ave %.1f fps. Sleep %.2f seconds = %.3fms/flip. %s\n", g_mp_Present.m_numCalls, timeDelta, timeDelta > 0.001 ? float( g_mp_Present.m_numCalls ) / timeDelta : 0.0f, flSleepMilliseconds * 1e-3f, g_mp_Present.m_numCalls ? flSleepMilliseconds / double( g_mp_Present.m_numCalls ) : 0.0f, pEvent );
 		}
 		else
 		{

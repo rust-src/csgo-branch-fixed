@@ -29,7 +29,7 @@ CPortalCollideableEnumerator::CPortalCollideableEnumerator( const CPortal_Base2D
 
 IterationRetval_t CPortalCollideableEnumerator::EnumElement( IHandleEntity *pHandleEntity )
 {
-	EHANDLE hEnt = pHandleEntity->GetRefEHandle();
+	EHANDLE hEnt = (EHANDLE &)pHandleEntity->GetRefEHandle();
 	
 	CBaseEntity *pEnt = hEnt.Get();
 	if( pEnt == NULL ) //I really never thought this would be necessary

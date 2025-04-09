@@ -34,7 +34,7 @@
 #include "pushentity.h"
 #include "igamemovement.h"
 #include "tier0/cache_hints.h"
-#include "basecsgrenade_projectile.h"
+//#include "basecsgrenade_projectile.h"
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -66,7 +66,7 @@ static void Physics_TraceEntity( CBaseEntity* pBaseEntity, const Vector &vecAbsS
 		UTIL_TraceEntity( pBaseEntity, vecAbsStart, vecAbsEnd, mask, ptr );
 
 		// perform an additional trace if this is a grenade projectile hitting a player
-		CBaseCSGrenadeProjectile* pGrenadeProjectile = dynamic_cast<CBaseCSGrenadeProjectile*>( pBaseEntity );
+		/*CBaseCSGrenadeProjectile* pGrenadeProjectile = dynamic_cast<CBaseCSGrenadeProjectile*>(pBaseEntity);
 
 		if ( pGrenadeProjectile && ptr->startsolid && ptr->contents & CONTENTS_GRENADECLIP )
 		{
@@ -83,7 +83,7 @@ static void Physics_TraceEntity( CBaseEntity* pBaseEntity, const Vector &vecAbsS
 			UTIL_ClearTrace( *ptr );
 			//why does traceline respect hitmoxes in the mask param but traceentity and tracehull do not?
 			UTIL_TraceLine( vecAbsStart, vecAbsEnd, mask, pBaseEntity, pBaseEntity->GetCollisionGroup(), ptr );
-		}
+		}*/
 	}
 }
 
@@ -115,6 +115,10 @@ static void PhysicsCheckSweep( CBaseEntity *pEntity, const Vector& vecAbsStart, 
 
 	Physics_TraceEntity( pEntity, vecAbsStart, vecAbsEnd, mask, pTrace );
 }
+
+CPhysicsPushedEntities s_PushedEntities;
+
+CPhysicsPushedEntities* g_pPushedEntities = &s_PushedEntities;
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1472,13 +1476,13 @@ void CBaseEntity::PhysicsPushEntity( const Vector& push, trace_t *pTrace )
 	if ( pTrace->startsolid )
 	{
 
-		CBaseCSGrenadeProjectile* pGrenadeProjectile = dynamic_cast<CBaseCSGrenadeProjectile*>( this );
+		/*CBaseCSGrenadeProjectile* pGrenadeProjectile = dynamic_cast<CBaseCSGrenadeProjectile*>(this);
 		if ( pGrenadeProjectile )
 		{
 			pGrenadeProjectile->SetCollisionGroup( COLLISION_GROUP_INTERACTIVE_DEBRIS );
 			UTIL_TraceLine( prevOrigin - push, prevOrigin + push, (CONTENTS_GRENADECLIP|CONTENTS_SOLID|CONTENTS_MOVEABLE|CONTENTS_WINDOW|CONTENTS_GRATE), this, COLLISION_GROUP_INTERACTIVE_DEBRIS, pTrace );
 		}
-		else
+		else*/
 		{
 			::PhysicsCheckSweep( this, prevOrigin - push, push, pTrace );
 		}

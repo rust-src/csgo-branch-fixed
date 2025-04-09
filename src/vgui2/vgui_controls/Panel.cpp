@@ -9002,4 +9002,7 @@ int ComputePos( Panel* pPanel, const char *pszInput, int &nPos, const int& nSize
 	return nFlags;
 }
 
+int Panel::s_NavLock = 0;//theaperturecat
+
 }
+

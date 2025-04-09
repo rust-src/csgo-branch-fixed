@@ -519,11 +519,11 @@ void C_BaseCombatWeapon::ApplyThirdPersonStickers( C_BaseAnimating *pWeaponModel
 	if ( !IsAbsQueriesValid() )
 		return;
 
-	CEconItemView *pItem = GetEconItemView();
-	if (!pItem)
+	//CEconItemView *pItem = GetEconItemView();
+	//if (!pItem)
 		return;
 
-	if ( pItem->GetNumSupportedStickerSlots() == 0 )
+	//if ( pItem->GetNumSupportedStickerSlots() == 0 )
 		return;
 	
 	C_BaseAnimating *pTargetModel = pWeaponModelTargetOverride ? pWeaponModelTargetOverride : this;
@@ -536,14 +536,6 @@ void C_BaseCombatWeapon::ApplyThirdPersonStickers( C_BaseAnimating *pWeaponModel
 	pTargetModel->CreateModelInstance();
 	if ( pTargetModel->GetModelInstance() != MODEL_INSTANCE_INVALID )
 	{
-		if ( modelrender->ModelHasDecals( pTargetModel->GetModelInstance() ) &&
-#ifdef _DEBUG
-			!stickers_debug_thirdperson_constant.GetBool() &&
-#endif
-			pItem->ItemHasAnyStickersApplied() )
-		{
-			return; //decals are already applied
-		}
 		modelrender->RemoveAllDecals( pTargetModel->GetModelInstance() );
 	}
 	else
@@ -561,9 +553,9 @@ void C_BaseCombatWeapon::ApplyThirdPersonStickers( C_BaseAnimating *pWeaponModel
 		"sticker_e"
 	};
 
-	for (int i=0; i<pItem->GetNumSupportedStickerSlots(); i++ )
+	for (int i=0; i<0; i++ )
 	{
-		IMaterial *pStickerMaterialThirdPerson = pItem->GetStickerIMaterialBySlotIndex(i, true);
+		IMaterial *pStickerMaterialThirdPerson = NULL;
 
 		if ( !pStickerMaterialThirdPerson )
 		{
@@ -601,15 +593,15 @@ void C_BaseCombatWeapon::ApplyThirdPersonStickers( C_BaseAnimating *pWeaponModel
 		else
 		{
 
-			int nBIndex = pTargetModel->LookupBone( pItem->GetStickerWorldModelBoneParentNameBySlotIndex(i) );
-			if ( nBIndex == -1 )
-				continue; //couldn't find the parent bone this sticker slot wanted
+			//int nBIndex = pTargetModel->LookupBone( pItem->GetStickerWorldModelBoneParentNameBySlotIndex(i) );
+			//if ( nBIndex == -1 )
+			//	continue; //couldn't find the parent bone this sticker slot wanted
 
-			pTargetModel->GetBoneTransform( nBIndex, weaponBoneTransform );
+			//pTargetModel->GetBoneTransform( nBIndex, weaponBoneTransform );
 
 			Ray_t stickerRayLocal;
-			stickerRayLocal.Init( pItem->GetStickerSlotWorldProjectionStartBySlotIndex( i ), 
-									pItem->GetStickerSlotWorldProjectionEndBySlotIndex( i ) );
+			//stickerRayLocal.Init( pItem->GetStickerSlotWorldProjectionStartBySlotIndex( i ), 
+			//						pItem->GetStickerSlotWorldProjectionEndBySlotIndex( i ) );
 
 			VectorTransform( stickerRayLocal.m_Start, weaponBoneTransform, vecWorldRayOrigin );
 			VectorRotate( stickerRayLocal.m_Delta, weaponBoneTransform, vecWorldRayDirection );

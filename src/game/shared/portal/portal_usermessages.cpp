@@ -13,7 +13,7 @@
 #include "tier0/memdbgon.h"
 
 void RegisterUserMessages()
-{
+{/*
 	//copy/paste from hl2
 	usermessages->Register( "Geiger", 1 );
 	usermessages->Register( "Train", 1 );
@@ -94,4 +94,5 @@ void RegisterUserMessages()
 	//usermessages->Register( "MPVSGameOver", sizeof( BYTE ) );
 	//usermessages->Register( "MPVSRoundEnd", sizeof( BYTE ) );
 #endif // PORTAL2
+*/
 }

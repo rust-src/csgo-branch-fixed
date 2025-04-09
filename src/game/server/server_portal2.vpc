@@ -6,9 +6,11 @@
 
 $Macro GAMENAME 	"portal2"
 $Macro GENERATED_PROTO_DIR	"$SRCDIR\game\server\portal2\generated_proto"
+$Macro SRVSRCDIR    "."
 
 $Include "server_portal_base.vpc"
-$Include "server_econ_base.vpc"		[($WIN32 || $OSXALL) && !$NO_STEAM]
+//$Include "server_econ_base.vpc"		[($WIN32 || $OSXALL) && !$NO_STEAM]
+$include "$SRCDIR\game\shared\portal\portal_usermessages_include.vpc"
 
 $Configuration
 {
@@ -16,7 +18,7 @@ $Configuration
 	{
 		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2;$SRCDIR\game\shared\episodic;.\hl2;.\episodic;$SRCDIR\game\shared\portal;.\portal;$SRCDIR\game\shared\multiplayer;$SRCDIR\game\shared\portal2;.\portal2;$SRCDIR\public\meshutils;"
 		$PreprocessorDefinitions		"$BASE;USES_SAVERESTORE;PORTAL2;PORTAL"
-		$PreprocessorDefinitions		"$BASE;PORTAL2_PUZZLEMAKER"					[ $WIN32 ||  $OSXALL ]
+		//$PreprocessorDefinitions		"$BASE;PORTAL2_PUZZLEMAKER"					[ $WIN32 ||  $OSXALL ]
 		$PreprocessorDefinitions		"$BASE;USE_CEG"								[ $WIN32 && !$NO_CEG ]
 	}
 
@@ -30,12 +32,12 @@ $Configuration
 
 	$PreBuildEvent	[$WIN32 && !$NO_CEG]
 	{
-		$CommandLine		"del $(IntDir)\*.temp" "\n" \ 
-							"del $(IntDir)\*.substitutions*" "\n" \
-							"if EXIST $OUTBINDIR\$(TargetFileName) for /f $QUOTEdelims=$QUOTE %%A in ('attrib $QUOTE$OUTBINDIR\$(TargetFileName)$QUOTE') do set valveTmpIsReadOnly=$QUOTE%%A$QUOTE" "\n" \
-							"set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%" "\n" \
-							"if $QUOTE%valveTmpIsReadOnlyLetter%$QUOTE==$QUOTER$QUOTE del /q $QUOTE$(TargetDir)$QUOTE$(TargetFileName)" "\n" \
-							"$CRCCHECK"						
+		//$CommandLine		"del $(IntDir)\*.temp" "\n" \ 
+		//					"del $(IntDir)\*.substitutions*" "\n" \
+		//					"if EXIST $OUTBINDIR\$(TargetFileName) for /f $QUOTEdelims=$QUOTE %%A in ('attrib $QUOTE$OUTBINDIR\$(TargetFileName)$QUOTE') do set valveTmpIsReadOnly=$QUOTE%%A$QUOTE" "\n" \
+		//					"set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%" "\n" \
+		//					"if $QUOTE%valveTmpIsReadOnlyLetter%$QUOTE==$QUOTER$QUOTE del /q $QUOTE$(TargetDir)$QUOTE$(TargetFileName)" "\n" //\
+		//					"$CRCCHECK"						
 	}
 	
 	$PreLinkEvent	[$WIN32 && !$NO_CEG]
@@ -119,7 +121,46 @@ $Project "Server (Portal 2)"
 	{
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.h"
+
+		$File	"$SRCDIR\public\zip\XUnzip.h"
+		$File	"$SRCDIR\public\zip\XZip.h" 
+
+		$File	"$SRCDIR\public\XZip.cpp" \
+				"$SRCDIR\public\XUnzip.cpp"\
+				"$SRCDIR\tier1\fileio.cpp"\
+				"$SRCDIR\utils\common\bsplib.cpp"\
+				"$SRCDIR\public\filesystem_init.cpp"\
+				"$SRCDIR\utils\common\filesystem_tools.cpp"\
+				"$SRCDIR\utils\common\cmdlib.cpp"\
+				"$SRCDIR\utils\common\scriplib.cpp"\
+				"$SRCDIR\public\lumpfiles.cpp"\
+				"$SRCDIR\public\zip_utils.cpp"
+		{
+			$Configuration
+			{
+				$Compiler
+				{
+					$Create/UsePrecompiledHeader	"Not Using Precompiled Headers" // This file compiles into several projects, some of which don't use pch
+					// The 'force include' directive used for this project defines the time_t type and methods before 
+					// we can set the #define to force 32 bit time. Adding it here fixes that.
+					$PreprocessorDefinitions		"$BASE;_USE_32BIT_TIME_T"		[!$WIN64]
+				}
+			}
+		}
 		
+
+					$File	"$SRCDIR\common\platforminputdevice.h"
+					$File	"$SRCDIR\common\platforminputdevice.cpp"
+					{
+						$Configuration
+						{
+							$Compiler
+							{
+								$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
+							}
+						}
+					}
+
 		$Folder "Workshop"
 		{
 			$File	"$SRCDIR\game\shared\ugc_request_manager.cpp"
@@ -132,6 +173,11 @@ $Project "Server (Portal 2)"
 			$File	"$SRCDIR\game\shared\ugc_workshop_manager.h"
 		}
 
+		$Folder	"HL2 DLL"
+		{
+			$File	"hl2\weapon_rpg.cpp"
+		}
+
 		$Folder	"Portal"
 		{
 			$File	"portal\portal_client.cpp"
@@ -140,17 +186,17 @@ $Project "Server (Portal 2)"
 			$File	"$SRCDIR\game\shared\portal\portal_mp_gamerules.cpp"
 			$File	"$SRCDIR\game\shared\portal\portal_mp_gamerules.h"
 			
-			$Folder "Economy"	[ ( $WIN32 || $OSXALL) && !$NO_STEAM ]
-			{
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_inventory.cpp"
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_inventory.h"
+			//$Folder "Economy"	[ ( $WIN32 || $OSXALL) && !$NO_STEAM ]
+			//{
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_inventory.cpp"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_inventory.h"
 
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_schema.cpp"
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_schema.h"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_schema.cpp"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_schema.h"
 
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_system.cpp"
-				$File	"$SRCDIR\game\shared\portal2\portal2_item_system.h"
-			}
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_system.cpp"
+			//	$File	"$SRCDIR\game\shared\portal2\portal2_item_system.h"
+			//}
 
 			$Folder "Portal 2"
 			{
@@ -334,18 +380,5 @@ $Project "Server (Portal 2)"
 			}
 		}
 
-		$Folder "Protobuf Files"	[ ( $WIN32 || $OSXALL ) && !$NO_STEAM ]
-		{
-			$DynamicFile "$GENERATED_PROTO_DIR\steammessages.pb.cc"
-			{
-				$Configuration
-				{
-					$Compiler 
-					{
-						$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
-					}
-				}
-			}
-		}
 	}
 }

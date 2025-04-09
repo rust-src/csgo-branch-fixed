@@ -571,7 +571,13 @@ bool CVideoMode_Common::CreateGameWindow( int nWidth, int nHeight, bool bWindowe
 
 		if( IsPS3QuitRequested() )
 			return false;
+#ifdef PORTAL2
+        COM_TimestampedLog("DrawStartupVideo - Start");
 
+        DrawStartupVideo();
+
+        COM_TimestampedLog("DrawStartupVideo - Finish");
+#endif
 		COM_TimestampedLog( "DrawStartupGraphic - Start" );
 
         // Display the image for the background during the remainder of startup

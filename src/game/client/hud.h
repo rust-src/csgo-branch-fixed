@@ -17,6 +17,7 @@
 #include <color.h>
 #include <bitbuf.h>
 #include "usermessages.h"
+//#include "generated_proto/portal_usermessages.pb.h"
 
 namespace vgui
 {
@@ -112,6 +113,7 @@ public:
 
 #include "hudtexturehandle.h"
 
+
 class CHudElement;
 class CHudRenderGroup;
 
@@ -176,11 +178,11 @@ public:
 
 	void						DrawProgressBar( int x, int y, int width, int height, float percentage, Color& clr, unsigned char type );
 	void						DrawIconProgressBar( int x, int y, CHudTexture *icon, CHudTexture *icon2, float percentage, Color& clr, int type );
-
+//#ifdef CSTRIKE15
 	// User messages
-	bool						MsgFunc_ResetHUD( const CCSUsrMsg_ResetHud& msg );
-	bool 						MsgFunc_SendAudio( const CCSUsrMsg_SendAudio& msg );
-
+	bool						MsgFunc_ResetHUD( const CUsrMsg_ResetHud& msg );
+	bool 						MsgFunc_SendAudio( const CUsrMsg_SendAudio& msg );
+//#endif
 	// Hud Render group
 	int							LookupRenderGroupIndexByName( const char *pszGroupName );
 	bool						LockRenderGroup( int iGroupIndex, CHudElement *pLocker = NULL );

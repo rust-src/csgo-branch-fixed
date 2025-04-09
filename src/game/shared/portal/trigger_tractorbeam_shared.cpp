@@ -50,7 +50,7 @@ void CTrigger_TractorBeam::EndTouch( CBaseEntity *pOther )
 #ifdef GAME_DLL
 	if ( FClassnameIs( pOther, "npc_portal_turret_floor" ) )
 	{
-		CNPC_Portal_FloorTurret *pTurret = assert_cast< CNPC_Portal_FloorTurret* >( pOther );
+		CNPC_Portal_FloorTurret *pTurret = static_cast< CNPC_Portal_FloorTurret* >( pOther );
 		if ( pTurret )
 		{
 			pTurret->OnExitedTractorBeam();

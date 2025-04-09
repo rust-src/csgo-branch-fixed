@@ -20,6 +20,10 @@
 #include "vscript_server_nut.h"
 #endif
 
+#ifdef PORTAL2
+#include "portal_usermessages.pb.h"
+#endif
+
 #ifdef DOTA_DLL
 #include "dota_animation.h"
 #endif
@@ -446,11 +450,12 @@ static float ScriptTraceLine( const Vector &vecStart, const Vector &vecEnd, HSCR
 static void SetDucking( const char *pszLayerName, const char *pszMixGroupName, float factor )
 {
 	CReliableBroadcastRecipientFilter filter;
-	UserMessageBegin( filter, "SetMixLayerTriggerFactor" );
-		WRITE_STRING( pszLayerName );
-		WRITE_STRING( pszMixGroupName );
-		WRITE_FLOAT( factor );
-	MessageEnd();
+	
+	CUsrMsg_SetMixLayerTriggerFactor msg;
+	msg.set_layername(pszLayerName);
+	msg.set_mixgroupname(pszMixGroupName);
+	msg.set_factor(factor);
+	SendUserMessage(filter, UM_SetMixLayerTriggerFactor, msg);
 }
 #endif
 

@@ -4,6 +4,7 @@
 //===============================================================================
 
 #include "cbase.h"
+//#define USE_BLOBULATOR
 #include <crtmemdebug.h>
 #include "vgui_int.h"
 #include "clientmode.h"
@@ -125,7 +126,7 @@
 #ifdef GAMEUI_EMBEDDED
 #if defined( PORTAL2 )
 #ifdef GAMEUI_UISYSTEM2_ENABLED
-#include "gameui/basemodpanel.h"
+#include "portal2/gameui/portal2/basemodpanel.h"
 #else
 #include "portal2/gameui/portal2/basemodpanel.h"
 #endif
@@ -150,7 +151,7 @@
 #include "engine/iblackbox.h"
 #include "c_rumble.h"
 #include "viewpostprocess.h"
-#include "cstrike15_gcmessages.pb.h"
+//#include "cstrike15_gcmessages.pb.h"
 
 #include "achievements_and_stats_interface.h"
 
@@ -212,6 +213,13 @@ extern void ProcessPortalTeleportations( void );
 #include "iloadingdisc.h"
 
 #include "bannedwords.h"
+
+#include "soundinfo.h"
+#include "fmtstr.h"
+
+#ifdef USE_BLOBULATOR
+//#include "blobulator/iblob_renderer.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1416,6 +1424,10 @@ void CHLClient::Disconnect()
 	ConVar_Unregister( );
 }
 
+//namespace Blobulator
+//{
+//	void CreateBlobInterface();
+//};
 
 int CHLClient::Init( CreateInterfaceFn appSystemFactory, CGlobalVarsBase *pGlobals )
 {
@@ -1774,8 +1786,8 @@ void CHLClient::Shutdown( void )
 	ParticleMgr()->Term();
 	
 #ifdef USE_BLOBULATOR
-	Blobulator::ShutdownBlob();
-#endif // USE_BLOBULATOR
+	//Blobulator::ShutdownBlob();
+#endif
 	
 	ClearKeyValuesCache();
 
@@ -2478,7 +2490,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 
 	//[msmith] Portal 2 wanted to turn off prediction for local clients.
 	//         We want to keep it for CStrike15 (and probably other games) because of the noticable lag without it, particularly when firing a weapon.
-#if defined( PORTAL2 )
+#if defined( PORTAL2 ) || defined(HL2_CLIENT_DLL)
 	
 	// don't do prediction if single player!
 	// don't set direct because of FCVAR_USERINFO
@@ -3586,7 +3598,7 @@ bool CHLClient::CanRecordDemo( char *errorMsg, int length ) const
 
 bool CHLClient::CanStopRecordDemo( char *errorMsg, int length ) const
 {
-	if ( CSGameRules() )
+	/*if (CSGameRules())
 	{
 		if ( CSGameRules()->IsWarmupPeriod() )
 			return true;	// can always stop in warmup
@@ -3606,7 +3618,7 @@ bool CHLClient::CanStopRecordDemo( char *errorMsg, int length ) const
 		Q_strncpy( errorMsg, "Demo recording will stop as soon as the round is over.", length );
 		CSGameRules()->MarkClientStopRecordAtRoundEnd( true );
 		return false;
-	}
+	}*/
 
 	return true;
 }
@@ -3623,11 +3635,11 @@ void CHLClient::OnDemoRecordStart( char const* pDemoBaseName )
 	}
 #endif
 
-	if ( CSGameRules() )
-	{
+	//if ( CSGameRules() )
+	//{
 		// If client was previously marked to stop recording at round end then mark it now as not requiring to stop
-		CSGameRules()->MarkClientStopRecordAtRoundEnd( false );
-	}
+	//	CSGameRules()->MarkClientStopRecordAtRoundEnd( false );
+	//}
 }
 
 void CHLClient::OnDemoRecordStop()
@@ -3915,12 +3927,12 @@ int CHLClient::GetSpectatorTarget( ClientDLLObserverMode_t* pObserverMode )
 		*pObserverMode = CLIENT_DLL_OBSERVER_NONE;
 	}
 
-	C_CSPlayer *pPlayer = GetLocalOrInEyeCSPlayer();
+	//C_CSPlayer *pPlayer = GetLocalOrInEyeCSPlayer();
 
-	if ( pPlayer != NULL )
-	{
-		return pPlayer->entindex();
-	}
+	//if ( pPlayer != NULL )
+	//{
+	//	return pPlayer->entindex();
+	//}
 
 	return -1;
 }
@@ -4272,6 +4284,7 @@ float CHLClient::GetUGCFileDownloadProgress( PublishedFileId_t id )
 #if !defined ( NO_STEAM ) && defined( CSTRIKE15 )
 	return g_CSGOWorkshopMaps.GetFileDownloadProgress( id );
 #endif
+	return 0;
 }
 
 void CHLClient::RecordUIEvent( const char* szEvent )
@@ -4293,8 +4306,8 @@ void CHLClient::OnDemoPlaybackTimeJump()
 // Inventory access
 float CHLClient::FindInventoryItemWithMaxAttributeValue( char const *szItemType, char const *szAttrClass )
 {
-	CCSPlayerInventory *pLocalInv = CSInventoryManager()->GetLocalCSInventory();
-	return pLocalInv ? pLocalInv->FindInventoryItemWithMaxAttributeValue( szItemType, szAttrClass ) : -1.0f;
+	//CCSPlayerInventory *pLocalInv = CSInventoryManager()->GetLocalCSInventory();
+	return  -1.0f;
 }
 
 void CHLClient::DetermineSubscriptionKvToAdvertise( KeyValues *kvLocalPlayer )
@@ -4429,61 +4442,11 @@ char const * CHLClient::GetRichPresenceStatusString()
 	// Game mode (Arms Race, Demolition, etc.)
 	char const *szMode = NULL;
 	char const *szGameMode = NULL;
-	
-	if ( bConnectedToServer )
-	{
-		extern ConVar game_type;
-		extern ConVar game_mode;
-		switch ( game_type.GetInt() )
-		{
-		case 0:
-			switch ( game_mode.GetInt() )
-			{
-			case 1:
-				szMode = "competitive";
-				szGameMode = "Competitive";
-				break;
-			default:
-				szMode = "casual";
-				szGameMode = "Casual";
-				break;
-			}
-			break;
-		case 1:
-			switch ( game_mode.GetInt() )
-			{
-			case 0:
-				szMode = "gungameprogressive";
-				szGameMode = "Arms Race";
-				break;
-			case 1:
-				szMode = "gungametrbomb";
-				szGameMode = "Demolition";
-				break;
-			default:
-				szMode = "deathmatch";
-				szGameMode = "Deathmatch";
-				break;
-			}
-			break;
-		case 2:
-			szMode = "training";
-			szGameMode = "Weapons Course";
-			break;
-		case 4:
-			szMode = "cooperative";
-			szGameMode = "Mission";
-			break;
-		default:
-			szMode = "custom";
-			szGameMode = "Custom";
-			break;
-		}
-	}
-	
+
 	// Score of the match
 	char chScore[64] = {};
 	char const *szScore = NULL;
+#ifdef CSTRIKE15
 	if ( bConnectedToServer && !g_bEngineIsHLTV && CSGameRules() )
 	{
 		// Append the score using local player's team first, or CT first
@@ -4504,7 +4467,7 @@ char const * CHLClient::GetRichPresenceStatusString()
 			szScore = chScore;
 		}
 	}
-
+#endif
 	// Server type
 	char const *szServerType = NULL; // V for Valve, P for Pinion
 	char const *szConnectAddress = NULL;
@@ -4517,6 +4480,7 @@ char const * CHLClient::GetRichPresenceStatusString()
 	{
 		if ( bWatchingLiveBroadcast )
 		{
+#ifdef CSTRIKE15
 			if ( CSGameRules() && CSGameRules()->IsValveDS() )
 			{
 				szServerType = "kv";
@@ -4525,6 +4489,7 @@ char const * CHLClient::GetRichPresenceStatusString()
 				if ( !CSGameRules()->IsPlayingCooperativeGametype() )
 					bCanWatch = true;
 			}
+#endif
 		}
 		else if ( !bPlayingDemo )
 		{
@@ -4538,7 +4503,7 @@ char const * CHLClient::GetRichPresenceStatusString()
 			else if ( pNetChanInfo )
 			{
 				szConnectAddress = pNetChanInfo->GetAddress();
-
+#ifdef CSTRIKE15
 				if ( CSGameRules() && CSGameRules()->IsValveDS() )
 				{
 					szServerType = "kv";
@@ -4547,7 +4512,7 @@ char const * CHLClient::GetRichPresenceStatusString()
 					if ( !CSGameRules()->IsPlayingCooperativeGametype() )
 						bCanWatch = true;
 				}
-
+#endif
 				if ( !szServerType )
 				{
 					szServerType = "community";
@@ -4559,10 +4524,10 @@ char const * CHLClient::GetRichPresenceStatusString()
 					}
 				}
 
-				bCanInvite = ( CSGameRules() && !CSGameRules()->IsQueuedMatchmaking() &&	// queued official competitive
-					!engine->IsHLTV() &&			// demo preview or GOTV
-					( adrRemote.GetPort() != 1 )	// SteamID steamcnx for a private match, address is not valid
-					);
+				//bCanInvite = ( CSGameRules() && !CSGameRules()->IsQueuedMatchmaking() &&	// queued official competitive
+				//	!engine->IsHLTV() &&			// demo preview or GOTV
+				//	( adrRemote.GetPort() != 1 )	// SteamID steamcnx for a private match, address is not valid
+				//	);
 				if ( bCanInvite && Q_strcmp( szServerType, "community" ) )
 				{
 					// Make sure we don't have a max number of players
@@ -4668,10 +4633,10 @@ char const * CHLClient::GetRichPresenceStatusString()
 	{
 		uint32 uiRandomThing = RandomInt( 1, INT_MAX );
 		CUtlString strConnectHash;
-		ns_address adr;
-		if ( adr.SetFromString( szConnectAddress ) && adr.GetAddressType() == NSAT_PROXIED_GAMESERVER )
-			strConnectHash.Format( "%u:%u:%llu", uiRandomThing, steamapicontext->SteamUser()->GetSteamID().GetAccountID(), adr.m_steamID.GetSteamID().ConvertToUint64() );
-		else
+		//ns_address adr; theaperturecat
+		//if ( adr.SetFromString( szConnectAddress ) && adr.GetAddressType() == NSAT_PROXIED_GAMESERVER )
+		//	strConnectHash.Format( "%u:%u:%llu", uiRandomThing, steamapicontext->SteamUser()->GetSteamID().GetAccountID(), adr.m_steamID.GetSteamID().ConvertToUint64() );
+		//else
 			strConnectHash.Format( "%u:%u:%s", uiRandomThing, steamapicontext->SteamUser()->GetSteamID().GetAccountID(), szConnectAddress );
 		CRC32_t crcConnectHash = CRC32_ProcessSingleBuffer( strConnectHash.Access(), strConnectHash.Length() );
 
@@ -4698,11 +4663,11 @@ char const * CHLClient::GetRichPresenceStatusString()
 
 int CHLClient::GetInEyeEntity() const
 {
-	C_CSPlayer* player = GetLocalOrInEyeCSPlayer();
-	if (player != nullptr)
-	{
-		return player->entindex();
-	}
+	//C_CSPlayer* player = GetLocalOrInEyeCSPlayer();
+	//if (player != nullptr)
+	//{
+	//	return player->entindex();
+	//}
 	return -1;
 }
 
@@ -4733,7 +4698,7 @@ IScaleformSlotInitController * CHLClient::GetScaleformSlotInitController()
 
 bool CHLClient::IsConnectedUserInfoChangeAllowed( IConVar *pCvar )
 {
-	return CSGameRules() ? CSGameRules()->IsConnectedUserInfoChangeAllowed( NULL ) : true;
+	return false;//CSGameRules() ? CSGameRules()->IsConnectedUserInfoChangeAllowed( NULL ) : true;
 }
 
 void CHLClient::OnCommandDuringPlayback( char const *cmd )
@@ -4768,7 +4733,7 @@ void CHLClient::OnTickPre( int tickcount )
 	g_pFatDemoRecorder->OnTickPre( tickcount );
 #endif
 }
-
+#ifdef CSTRIKE15
 class ClientJob_EMsgGCCStrike15_GotvSyncPacket : public GCSDK::CGCClientJob
 {
 public:
@@ -4783,7 +4748,7 @@ public:
 	}
 };
 GC_REG_CLIENT_JOB( ClientJob_EMsgGCCStrike15_GotvSyncPacket, k_EMsgGCCStrike15_v2_GotvSyncPacket );
-
+#endif
 
 
 //-----------------------------------------------------------------------------

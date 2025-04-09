@@ -50,7 +50,7 @@
 #include "vphysics/player_controller.h"
 #include "debugoverlay_shared.h"
 #include "iclient.h"
-#include "steam/steam_api.h"
+//#include "steam/steam_api.h"
 
 #include "platforminputdevice.h"
 #include "inputsystem/iinputsystem.h"
@@ -562,7 +562,9 @@ C_BasePlayer::C_BasePlayer() : m_iv_vecViewOffset( "C_BasePlayer::m_iv_vecViewOf
 	m_AimDirection.Init();
 
 	m_flDuckAmount = 0.0f;
+#ifdef CSTRIKE15
 	m_flDuckSpeed = CS_PLAYER_DUCK_SPEED_IDEAL;
+#endif
 	m_vecLastPositionAtFullCrouchSpeed = vec2_origin;
 
 	m_bHasWalkMovedSinceLastJump = false;
@@ -598,8 +600,8 @@ C_BasePlayer::~C_BasePlayer()
 		}
 	}
 }
-
-bool MsgFunc_SendLastKillerDamageToClient( const CCSUsrMsg_SendLastKillerDamageToClient &msg )
+#ifdef CSTRIKE15
+bool MsgFunc_SendLastKillerDamageToClient( const CUsrMsg_SendLastKillerDamageToClient &msg )
 {
 	int nNumHitsGiven = msg.num_hits_given();
 	int nDamageGiven = msg.damage_given();
@@ -614,15 +616,16 @@ bool MsgFunc_SendLastKillerDamageToClient( const CCSUsrMsg_SendLastKillerDamageT
 
 	return true;
 }
-
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void C_BasePlayer::Spawn( void )
 {
-	m_UMCMsg_SendLastKillerDamageToClient.Bind< CS_UM_SendLastKillerDamageToClient, CCSUsrMsg_SendLastKillerDamageToClient >
+#ifdef CSTRIKE15
+	m_UMCMsg_SendLastKillerDamageToClient.Bind< UM_SendLastKillerDamageToClient, CUsrMsg_SendLastKillerDamageToClient >
 		( UtlMakeDelegate( MsgFunc_SendLastKillerDamageToClient ));
-
+#endif
 	// Clear all flags except for FL_FULLEDICT
 	ClearFlags();
 	AddFlag( FL_CLIENT );
@@ -1001,14 +1004,14 @@ void C_BasePlayer::ClientThink()
 
 		if ( GetObserverTarget( ) && ( GetObserverMode( ) == OBS_MODE_IN_EYE || GetObserverMode( ) == OBS_MODE_CHASE ) )
 		{
-			C_CSPlayer *pPlayer = dynamic_cast< C_CSPlayer* >( GetObserverTarget( ) );
+			C_BasePlayer *pPlayer = dynamic_cast< C_BasePlayer* >( GetObserverTarget( ) );//theaperturecat
 
 			if ( pPlayer )
 			{
 				CSteamID SteamID;
 				pPlayer->GetSteamID( &SteamID );
 
-				if ( SteamID.GetAccountID( ) == CSteamID( spec_lock_to_accountid.GetString( ) ).GetAccountID() )
+				//if ( SteamID.GetAccountID( ) == CSteamID( spec_lock_to_accountid.GetString( ) ).GetAccountID() ) theaperturecat
 				{
 					bSwitchTargets = false;
 				}
@@ -1193,12 +1196,14 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 		}
 		else if ( m_bWasFreezeFraming && GetObserverMode() != OBS_MODE_FREEZECAM )
 		{
+#ifdef CSTRIKE15
 			if ( spec_freeze_panel_extended_time.GetFloat() > 0 )
 			{
 				m_flFreezePanelExtendedStartTime = gpGlobals->curtime;
 				m_bWasFreezePanelExtended = true;
 			}
 			else
+#endif
 			{
 				bHideFreezePanel = true;
 			}
@@ -1208,7 +1213,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 			ConVar *pVar = ( ConVar * )cvar->FindVar( "snd_soundmixer" );
 			pVar->Revert();
 		}
-		else if ( m_bWasFreezePanelExtended && gpGlobals->curtime >= m_flFreezePanelExtendedStartTime + spec_freeze_panel_extended_time.GetFloat() )
+		else if ( m_bWasFreezePanelExtended && gpGlobals->curtime >= m_flFreezePanelExtendedStartTime)// + spec_freeze_panel_extended_time.GetFloat() )
 		{
 			bHideFreezePanel = true;
 			m_bWasFreezePanelExtended = false;
@@ -1276,13 +1281,13 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 
 	int eventType = -1;
 	int nOptionalParam = 0;
-	ConVarRef spec_show_xray( "spec_show_xray" );
+	//ConVarRef spec_show_xray( "spec_show_xray" );
 
 	CSteamID steamID;
 	// if the state changed for any of the cameraman stuff, send to the local player
 	if ( IsActiveCameraMan() && GetSteamID( &steamID ) )
 	{
-		if ( spec_show_xray.GetBool() != m_bLastCameraManXRayState || m_bCameraManXRay != m_bLastCameraManXRayState )
+		if ( false != m_bLastCameraManXRayState || m_bCameraManXRay != m_bLastCameraManXRayState )
 		{
 			m_bLastCameraManXRayState = m_bCameraManXRay;
 			eventType = ( m_bCameraManXRay ) ? HLTV_UI_XRAY_ON : HLTV_UI_XRAY_OFF;
@@ -2117,10 +2122,12 @@ void C_BasePlayer::CalcChaseCamView(Vector& eyeOrigin, QAngle& eyeAngles, float&
 		// if this is a train, we want to be back a little further so we can see more of it
 		flMaxDistance *= 2.5f;
 	}
+#ifdef CSTRIKE15
 	else if ( pGrenade )
 	{
 		flMaxDistance = 64.0f;
 	}
+#endif
 	m_flObserverChaseDistance = clamp( m_flObserverChaseDistance, 16, flMaxDistance );
 	
 	AngleVectors( viewangles, &forward );
@@ -3690,6 +3697,7 @@ CrossPlayPlatform_t C_BasePlayer::GetCrossPlayPlatform( void ) const
 
 bool C_BasePlayer::ShouldRegenerateOriginFromCellBits() const
 {
+	//return false;
 	// Don't use cell bits for local players
 	if ( 
 #ifdef PORTAL2
@@ -3767,6 +3775,7 @@ bool C_BasePlayer::GetSteamID( CSteamID *pID )
 
 void C_BasePlayer::OnTimeJumpAllPlayers()
 {
+#ifdef CSTRIKE15
 	for ( int i = 1; i <= MAX_PLAYERS; i++ )
 	{
 		C_CSPlayer *pPlayer = ToCSPlayer( UTIL_PlayerByIndex( i ) );
@@ -3775,6 +3784,7 @@ void C_BasePlayer::OnTimeJumpAllPlayers()
 			pPlayer->OnTimeJump();
 		}
 	}
+#endif
 }
 
 

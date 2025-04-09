@@ -29,6 +29,34 @@
 using namespace BaseModUI;
 using namespace vgui;
 
+//theaperturecat - sorry, but this codebase is a mess anyway:
+// 
+// This function cannot be defined here because it requires on a full definition of
+// KeyValues (to call KeyValues::MakeCopy()) whereas the rest of this header file
+// assumes a forward declared definition of KeyValues.
+template< class S >
+inline void Panel::PostMessageToAllSiblingsOfType(KeyValues* msg, float delaySeconds /*= 0.0f*/)
+{
+	Panel* parent = GetParent();
+	if (parent)
+	{
+		int nChildCount = parent->GetChildCount();
+		for (int i = 0; i < nChildCount; ++i)
+		{
+			Panel* sibling = parent->GetChild(i);
+			if (sibling == this)
+				continue;
+			if (dynamic_cast<S*>(sibling))
+			{
+				PostMessage(sibling->GetVPanel(), msg->MakeCopy(), delaySeconds);
+			}
+		}
+	}
+
+	msg->deleteThis();
+}
+
+
 ConVar ui_virtualnav_render( "ui_virtualnav_render", "0", FCVAR_DEVELOPMENTONLY );
 
 DECLARE_BUILD_FACTORY_DEFAULT_TEXT( BaseModHybridButton, HybridButton );
@@ -955,7 +983,7 @@ void BaseModHybridButton::ApplySettings( KeyValues *pInResourceData )
 		{
 			m_iUsablePlayerIndex = USE_NOBODY;
 		}
-		else if ( isdigit( pszValue[0] ) )
+		else if ( V_isdigit( pszValue[0] ) )
 		{
 			m_iUsablePlayerIndex = atoi( pszValue );
 		}

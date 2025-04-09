@@ -1,3 +1,5 @@
+//Theaperturecat - this file is trashed by csgo, FIXME
+
 //========= Copyright  1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
@@ -22,15 +24,18 @@
 #include "view_shared.h"
 #include "view.h"
 #include "ivrenderview.h"
-#include "c_plantedc4.h"
-#include "basecsgrenade_projectile.h"
+#include "fmtstr.h"
+//
+//#include "c_plantedc4.h"
+//#include "basecsgrenade_projectile.h"
 #include "ivieweffects.h"
-#include "cs_hud_chat.h"
+#include "hud_basechat.h"
 #include "in_buttons.h"
 #include <vgui/IInput.h>
 #include "vgui_controls/Controls.h"
 #include "hltvreplaysystem.h"
-
+#include "iinput.h"
+#include "basegrenade_shared.h"
 #ifdef CSTRIKE_DLL
 	#include "c_cs_player.h"
 	#include "cs_gamerules.h"
@@ -54,6 +59,7 @@ extern ConVar view_recoil_tracking;
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 #define CHASE_CAM_DISTANCE		76.0f
 #define WALL_OFFSET				6.0f
@@ -163,6 +169,7 @@ void C_HLTVCamera::SetWatchingGrenade( C_BaseEntity *pGrenade, bool bWatching )
 		{
 			if ( m_bIsFollowingGrenade == true )
 			{
+#ifdef CSTRIKE15
 				C_BaseEntity *pLastTarget = ClientEntityList().GetBaseEntity( m_iLastTarget1 );
 
 				if ( !pLastTarget || pLastTarget->IsDormant() || !pLastTarget->IsAlive() )
@@ -178,7 +185,7 @@ void C_HLTVCamera::SetWatchingGrenade( C_BaseEntity *pGrenade, bool bWatching )
 						}
 					}
 				}
-
+#endif
 				m_iTarget1 = m_iLastTarget1;
 			}
 
@@ -240,7 +247,7 @@ void C_HLTVCamera::CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, float
 		return;
 	}
 #endif*/
-
+#ifdef CSTRIKE15
 	CBaseCSGrenadeProjectile *pGrenade = dynamic_cast< CBaseCSGrenadeProjectile* >( target1 );
 
 	if ( pGrenade )
@@ -248,10 +255,12 @@ void C_HLTVCamera::CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, float
 		m_iTarget2 = m_iTarget1;
 		m_bIsFollowingGrenade = true;
 	}
-
+#else
+	CBaseGrenade* pGrenade = NULL;
+#endif
 	bool bManual = !spec_autodirector.GetBool();
-	if ( pGrenade && pGrenade->m_nBounces <= 0 )	// chase camera controlled manually
-		bManual = false;
+	//if ( pGrenade && pGrenade->m_nBounces <= 0 )	// chase camera controlled manually
+	//	bManual = false;
 
 	if ( target1->IsPlayer() && target1->IsAlive() && target1->IsDormant() )
 		return;
@@ -459,7 +468,7 @@ Vector C_HLTVCamera::CalcIdealOverviewPosition( Vector vecStartPos, Vector vOldO
 
 	CBaseEntity *pFocusEnts[32];
 	int focusCount = 0;
-
+#ifdef CSTRIKE15
 	for ( int i = 0; i < count; i++ )
 	{
 		CBaseEntity *pOther = pEntList[i];
@@ -473,7 +482,7 @@ Vector C_HLTVCamera::CalcIdealOverviewPosition( Vector vecStartPos, Vector vOldO
 				flFarthestEntDist = dist;
 		}
 	}
-
+#endif
 	Vector vecAvPos = Vector( 0, 0, 0 );
 	for ( int i = 0; i < focusCount; i++ )
 	{
@@ -496,13 +505,14 @@ Vector C_HLTVCamera::CalcIdealOverviewPosition( Vector vecStartPos, Vector vOldO
 
 int C_HLTVCamera::GetMode()
 {
+#ifdef CSTRIKE15
 	// hacky....
 	if ( dynamic_cast< C_BaseCSGrenadeProjectile* >( GetPrimaryTarget() ) )
 	{
 		m_bIsFollowingGrenade = true;
 		return OBS_MODE_CHASE;
 	}
-
+#endif
 	if ( m_iCameraMan > 0 )
 	{
 		C_BasePlayer *pCameraMan = UTIL_PlayerByIndex( m_iCameraMan );
@@ -510,7 +520,7 @@ int C_HLTVCamera::GetMode()
 		if ( pCameraMan )
 			return pCameraMan->GetObserverMode();
 	}
-
+#ifdef CSTRIKE15
 	// to get here, our target is not a grenade, but we think we're still folowing one
  	if ( m_bIsFollowingGrenade == true )
  	{
@@ -526,7 +536,7 @@ int C_HLTVCamera::GetMode()
  			m_bIsFollowingGrenade = false;
  		}
  	}
-
+#endif
 	return m_nCameraMode;	
 }
 
@@ -549,7 +559,7 @@ C_BaseEntity* C_HLTVCamera::GetPrimaryTarget()
 
 	C_BaseEntity* target = ClientEntityList().GetEnt( m_iTarget1 );
 
-	if ( !target || (m_bIsFollowingGrenade && dynamic_cast< CBaseCSGrenadeProjectile* >( target ) == NULL) )
+	if ( !target )//|| (m_bIsFollowingGrenade && dynamic_cast< CBaseCSGrenadeProjectile* >( target ) == NULL) )
 	{
 		C_BaseEntity* oldTarget = ClientEntityList().GetEnt( m_iLastTarget1 );
 		if ( oldTarget )
@@ -569,18 +579,19 @@ C_BasePlayer *C_HLTVCamera::GetCameraMan()
 
 void C_HLTVCamera::CalcInEyeCamView( Vector& eyeOrigin, QAngle& eyeAngles, float& fov )
 {
-	C_BasePlayer *pPlayer = dynamic_cast<C_CSPlayer*>(GetPrimaryTarget());
+	C_BasePlayer *pPlayer = dynamic_cast<C_BasePlayer*>(GetPrimaryTarget());
 
 	if ( !pPlayer )
 		return;
 
 	if ( !pPlayer->IsAlive() )
 	{
+#ifdef CSTRIKE15
 		// if dead, show from 3rd person
 		C_CSPlayer *pCSPlayer =	static_cast<C_CSPlayer*>( pPlayer );
 		if ( pCSPlayer && pCSPlayer->GetLastKillerIndex() )
 			m_iTarget2 = pCSPlayer->GetLastKillerIndex();
-
+#endif
 		CalcChaseCamView( eyeOrigin, eyeAngles, fov );
 		return;
 	}
@@ -700,6 +711,7 @@ extern ConVar fov_cs_debug;
 // movement code is a copy of CGameMovement::FullNoClipMove()
 void C_HLTVCamera::CalcRoamingView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov)
 {
+#ifdef CSTRIKE15
 	if ( !CSGameRules() )
 		return;
 
@@ -820,6 +832,7 @@ void C_HLTVCamera::CalcRoamingView(Vector& eyeOrigin, QAngle& eyeAngles, float& 
 	eyeAngles = m_aCamAngle;
 	//fov = m_flFOV;
 	fov = fov_cs_debug.GetInt() > 0 ? m_flFOV : CSGameRules()->DefaultFOV();
+#endif
 }
 
 void C_HLTVCamera::CalcFixedView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov)
@@ -1144,7 +1157,7 @@ void C_HLTVCamera::SetPrimaryTarget( int nEntity )
 	IGameEvent *event = gameeventmanager->CreateEvent( "hltv_changed_target" );
 	if ( event )
 	{
-		event->SetInt("userid", pLocalPlayer->GetUserID() );
+		event->SetInt("userid", 0);//pLocalPlayer->GetUserID() );
 		event->SetInt( "mode", m_nCameraMode );
 		event->SetInt( "old_target", m_iLastTarget1 );
 		event->SetInt( "obs_target", m_iTarget1 );
@@ -1231,7 +1244,7 @@ void C_HLTVCamera::SpecPlayerByAccountID( const char *pszSteamID )
 		CSteamID steamID;
 		pPlayer->GetSteamID( &steamID );
 
-		if ( CSteamID( pszSteamID ).GetAccountID() != steamID.GetAccountID( ) )
+		//if ( CSteamID( pszSteamID ).GetAccountID() != steamID.GetAccountID( ) ) theaperturecat
 			continue;
 
 		// only follow living players or dedicated spectators
@@ -1312,7 +1325,7 @@ void C_HLTVCamera::Update()
 	if ( CDemoPlaybackParameters_t const *pParameters = engine->GetDemoPlaybackParameters() )
 	{
 		int numFastForwardTicks = 0;
-
+#ifdef CSTRIKE15
 		// Get the team score
 		if ( CSGameRules() )
 		{
@@ -1331,7 +1344,7 @@ void C_HLTVCamera::Update()
 				return;
 			}
 		}
-		
+#endif
 		if ( pParameters->m_uiLockFirstPersonAccountID )
 		{
 			// Skip portions of playback that aren't locking view to the requested account ID
@@ -1354,8 +1367,8 @@ void C_HLTVCamera::Update()
 								( player->m_lifeState == LIFE_DEAD ) ||
 								( player->GetFlags() & FL_FROZEN ) || // skip freezetime
 								( player->IsObserver() ) ||
-								( player->GetTeamNumber() == TEAM_SPECTATOR ) ||
-								( CSGameRules() && CSGameRules()->IsFreezePeriod() ) )
+								( player->GetTeamNumber() == TEAM_SPECTATOR ))// ||
+								//( CSGameRules() && CSGameRules()->IsFreezePeriod() ) )
 								break; // break to skip some ticks
 
 							bLockedToRequestedAccount = true;
@@ -1729,6 +1742,7 @@ void C_HLTVCamera::SetAutoDirector( AutodirectorState_t eState )
 				// is this played the selected cameraman
 				if ( ( uint32 )( spec_autodirector_cameraman.GetInt() ) == compareSteamID.GetAccountID() )
 				{
+#ifdef CSTRIKE15
 					// validate that they are a tournament caster
 					for ( int j = 0; j < MAX_TOURNAMENT_ACTIVE_CASTER_COUNT; j++ )
 					{
@@ -1750,6 +1764,7 @@ void C_HLTVCamera::SetAutoDirector( AutodirectorState_t eState )
 							}
 						}
 					}
+#endif
 				}
 				if ( m_iCameraMan )
 					break;
@@ -1772,6 +1787,7 @@ void C_HLTVCamera::SetAutoDirector( AutodirectorState_t eState )
 	}
 	else // OFF or PAUSED
 	{
+#ifdef CSTRIKE15
 		C_CSPlayer *pLocalPlayer = C_CSPlayer::GetLocalCSPlayer();
 		CBaseHudChat *hudChat = ( CBaseHudChat * )GET_HUDELEMENT( CHudChat );
 		if ( hudChat && pLocalPlayer && m_iCameraMan != 0 && IsAutoDirectorOn() )
@@ -1780,7 +1796,7 @@ void C_HLTVCamera::SetAutoDirector( AutodirectorState_t eState )
 			
 			pLocalPlayer->EmitSound("UI.ButtonRolloverLarge");		
 		}
-
+#endif
 		spec_autodirector.SetValue( 0 );
 		m_iCameraMan = 0;
 	}

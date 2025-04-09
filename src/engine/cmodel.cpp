@@ -303,6 +303,7 @@ void CM_InitPortalOpenState( CCollisionBSPData *pBSPData )
 	}
 }
 
+ConVar sv_force_paint_in_map("sv_force_paint_in_map", "0", FCVAR_CHEAT);
 
 void CM_RegisterPaintMap( CCollisionBSPData *pBSPData )
 {
@@ -319,6 +320,9 @@ void CM_RegisterPaintMap( CCollisionBSPData *pBSPData )
 
 		kv->deleteThis();
 	}
+
+	if (sv_force_paint_in_map.GetBool())
+		bMapHasPaint = true;
 
 	g_PaintManager.m_bShouldRegister = bMapHasPaint;
 }

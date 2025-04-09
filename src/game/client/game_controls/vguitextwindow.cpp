@@ -25,7 +25,9 @@
 
 #include <game/client/iviewport.h>
 
-#include "cs_gamerules.h"
+#include "cdll_util.h"
+#include "hud.h"
+#include "tier1/fmtstr.h"
 
 #include "matchmaking/imatchframework.h"
 #include "tier1/netadr.h"
@@ -414,7 +416,7 @@ void CTextWindow::ShowFile( const char *filename )
 
 		char buffer[2048];
 			
-		int size = min( g_pFullFileSystem->Size( f ), sizeof(buffer)-1 ); // just allow 2KB
+		int size = MIN( g_pFullFileSystem->Size( f ), sizeof(buffer)-1 ); // just allow 2KB
 
 		g_pFullFileSystem->Read( buffer, size, f );
 		g_pFullFileSystem->Close( f );
@@ -467,16 +469,16 @@ void CTextWindow::Update( void )
 
 int CTextWindow::GetNumSecondsRequiredByServer() const
 {
-	if ( !g_pGameTypes )
+	//if ( !g_pGameTypes )
 		return 0;
 
-	int numSecondsRequired = g_pGameTypes->GetCurrentServerSettingInt( "sv_require_motd_seconds", 0 );
-	if ( numSecondsRequired < 0 )
-		return 0;
+	//int numSecondsRequired = g_pGameTypes->GetCurrentServerSettingInt( "sv_require_motd_seconds", 0 );
+	//if ( numSecondsRequired < 0 )
+	//	return 0;
 
-	if ( numSecondsRequired > 35 )
-		numSecondsRequired = 35; // never allow > 35 second ads
-	return numSecondsRequired;
+	//if ( numSecondsRequired > 35 )
+	//	numSecondsRequired = 35; // never allow > 35 second ads
+	//return numSecondsRequired;
 }
 
 int CTextWindow::GetNumSecondsSponsorRequiredRemaining() const
@@ -679,15 +681,15 @@ void CTextWindow::PaintBackground()
 {
 	BaseClass::PaintBackground();
 
-	if ( m_uiTimestampStarted && IsVisible() &&
-		CSGameRules() && CSGameRules()->IsQueuedMatchmaking() &&
-		( int( Plat_MSTime() - m_uiTimestampStarted ) > 1000*cl_motd_competitive_timeout.GetInt() ) )
-	{
-		m_bForcingWindowCloseRegardlessOfTime = true;
-		m_uiTimestampStarted = 0;
-		OnCommand( "okay" );
-		return;
-	}
+	//if ( m_uiTimestampStarted && IsVisible() &&
+	//	CSGameRules() && CSGameRules()->IsQueuedMatchmaking() &&
+	//	( int( Plat_MSTime() - m_uiTimestampStarted ) > 1000*cl_motd_competitive_timeout.GetInt() ) )
+	//{
+	//	m_bForcingWindowCloseRegardlessOfTime = true;
+	//	m_uiTimestampStarted = 0;
+	//	OnCommand( "okay" );
+	//	return;
+	//}
 
 	if ( m_pInfoLabelTicker )
 	{

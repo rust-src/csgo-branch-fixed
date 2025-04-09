@@ -12,7 +12,7 @@
 #include "vgui_controls/Label.h"
 #include "vgui_controls/ImagePanel.h"
 #include "vgui_controls/Button.h"
-#include "vgui_controls/tgaimagepanel.h"
+#include "tgaimagepanel.h"
 #include "tier1/utlbuffer.h"
 #include "tier2/resourceprecacher.h"
 #include <stdio.h>
@@ -33,8 +33,8 @@ using namespace vgui;
 
 // Dead, basemod ui trumps...
 #if 0
-PRECACHE_REGISTER_BEGIN( GLOBAL, BaseSaveGameDialog )
-PRECACHE( MATERIAL, "vgui/resource/autosave.vmt" )
+PRECACHE_REGISTER_BEGIN(GLOBAL, BaseSaveGameDialog)
+PRECACHE(MATERIAL, "vgui/resource/autosave.vmt")
 PRECACHE_REGISTER_END()
 #endif
 
@@ -43,104 +43,104 @@ PRECACHE_REGISTER_END()
 //-----------------------------------------------------------------------------
 class CSaveGamePanel : public vgui::EditablePanel
 {
-	DECLARE_CLASS_SIMPLE( CSaveGamePanel, vgui::EditablePanel );
+	DECLARE_CLASS_SIMPLE(CSaveGamePanel, vgui::EditablePanel);
 public:
-	CSaveGamePanel( PanelListPanel *parent, const char *name, int saveGameListItemID ) : BaseClass( parent, name )
+	CSaveGamePanel(PanelListPanel* parent, const char* name, int saveGameListItemID) : BaseClass(parent, name)
 	{
 		m_iSaveGameListItemID = saveGameListItemID;
 		m_pParent = parent;
-		m_pSaveGameImage = new CTGAImagePanel( this, "SaveGameImage" );
-		m_pAutoSaveImage = new ImagePanel( this, "AutoSaveImage" );
-		m_pSaveGameScreenshotBackground = new ImagePanel( this, "SaveGameScreenshotBackground" );
-		m_pChapterLabel = new Label( this, "ChapterLabel", "" );
-		m_pTypeLabel = new Label( this, "TypeLabel", "" );
-		m_pElapsedTimeLabel = new Label( this, "ElapsedTimeLabel", "" );
-		m_pFileTimeLabel = new Label( this, "FileTimeLabel", "" );
+		m_pSaveGameImage = new CTGAImagePanel(this, "SaveGameImage");
+		m_pAutoSaveImage = new ImagePanel(this, "AutoSaveImage");
+		m_pSaveGameScreenshotBackground = new ImagePanel(this, "SaveGameScreenshotBackground");
+		m_pChapterLabel = new Label(this, "ChapterLabel", "");
+		m_pTypeLabel = new Label(this, "TypeLabel", "");
+		m_pElapsedTimeLabel = new Label(this, "ElapsedTimeLabel", "");
+		m_pFileTimeLabel = new Label(this, "FileTimeLabel", "");
 
-		CMouseMessageForwardingPanel *panel = new CMouseMessageForwardingPanel(this, NULL);
+		CMouseMessageForwardingPanel* panel = new CMouseMessageForwardingPanel(this, NULL);
 		panel->SetZPos(2);
 
-		SetSize( 200, 140 );
+		SetSize(200, 140);
 
-		LoadControlSettings( "resource/SaveGamePanel.res" );
+		LoadControlSettings("resource/SaveGamePanel.res");
 
 		m_FillColor = m_pSaveGameScreenshotBackground->GetFillColor();
 	}
 
-	void SetSaveGameInfo( SaveGameDescription_t &save )
+	void SetSaveGameInfo(SaveGameDescription_t& save)
 	{
 		// set the bitmap to display
 		char tga[_MAX_PATH];
-		Q_strncpy( tga, save.szFileName, sizeof(tga) );
-		char *ext = strstr( tga, ".sav" );
-		if ( ext )
+		Q_strncpy(tga, save.szFileName, sizeof(tga));
+		char* ext = strstr(tga, ".sav");
+		if (ext)
 		{
-			strcpy( ext, ".tga" );
+			strcpy(ext, ".tga");
 		}
 
 		// If a TGA file exists then it is a user created savegame
-		if ( g_pFullFileSystem->FileExists( tga ) )
+		if (g_pFullFileSystem->FileExists(tga))
 		{
-			m_pSaveGameImage->SetTGAFilename( tga );
+			m_pSaveGameImage->SetTGA(tga);
 		}
 		// If there is no TGA then it is either an autosave or the user TGA file has been deleted
 		else
 		{
-			m_pSaveGameImage->SetVisible( false );
-			m_pAutoSaveImage->SetVisible( true );
-			m_pAutoSaveImage->SetImage( "resource\\autosave" );
+			m_pSaveGameImage->SetVisible(false);
+			m_pAutoSaveImage->SetVisible(true);
+			m_pAutoSaveImage->SetImage("resource\\autosave");
 		}
 
 		// set the title text
-		m_pChapterLabel->SetText( save.szComment );
+		m_pChapterLabel->SetText(save.szComment);
 
 		// type
-		SetControlString( "TypeLabel", save.szType );
-		SetControlString( "ElapsedTimeLabel", save.szElapsedTime );
-		SetControlString( "FileTimeLabel", save.szFileTime );
+		SetControlString("TypeLabel", save.szType);
+		SetControlString("ElapsedTimeLabel", save.szElapsedTime);
+		SetControlString("FileTimeLabel", save.szFileTime);
 	}
 
-	MESSAGE_FUNC_INT( OnPanelSelected, "PanelSelected", state )
+	MESSAGE_FUNC_INT(OnPanelSelected, "PanelSelected", state)
 	{
-		if ( state )
+		if (state)
 		{
 			// set the text color to be orange, and the pic border to be orange
-			m_pSaveGameScreenshotBackground->SetFillColor( m_SelectedColor );
-			m_pChapterLabel->SetFgColor( m_SelectedColor );
-			m_pTypeLabel->SetFgColor( m_SelectedColor );
-			m_pElapsedTimeLabel->SetFgColor( m_SelectedColor );
-			m_pFileTimeLabel->SetFgColor( m_SelectedColor );
+			m_pSaveGameScreenshotBackground->SetFillColor(m_SelectedColor);
+			m_pChapterLabel->SetFgColor(m_SelectedColor);
+			m_pTypeLabel->SetFgColor(m_SelectedColor);
+			m_pElapsedTimeLabel->SetFgColor(m_SelectedColor);
+			m_pFileTimeLabel->SetFgColor(m_SelectedColor);
 		}
 		else
 		{
-			m_pSaveGameScreenshotBackground->SetFillColor( m_FillColor );
-			m_pChapterLabel->SetFgColor( m_TextColor );
-			m_pTypeLabel->SetFgColor( m_TextColor );
-			m_pElapsedTimeLabel->SetFgColor( m_TextColor );
-			m_pFileTimeLabel->SetFgColor( m_TextColor );
+			m_pSaveGameScreenshotBackground->SetFillColor(m_FillColor);
+			m_pChapterLabel->SetFgColor(m_TextColor);
+			m_pTypeLabel->SetFgColor(m_TextColor);
+			m_pElapsedTimeLabel->SetFgColor(m_TextColor);
+			m_pFileTimeLabel->SetFgColor(m_TextColor);
 		}
 
-		PostMessage( m_pParent->GetVParent(), new KeyValues("PanelSelected") );
+		PostMessage(m_pParent->GetVParent(), new KeyValues("PanelSelected"));
 	}
 
-	virtual void OnMousePressed( vgui::MouseCode code )
+	virtual void OnMousePressed(vgui::MouseCode code)
 	{
-		m_pParent->SetSelectedPanel( this );
+		m_pParent->SetSelectedPanel(this);
 	}
 
-	virtual void ApplySchemeSettings( IScheme *pScheme )
+	virtual void ApplySchemeSettings(IScheme* pScheme)
 	{
-		m_TextColor = pScheme->GetColor( "NewGame.TextColor", Color(255, 255, 255, 255) );
-		m_SelectedColor = pScheme->GetColor( "NewGame.SelectionColor", Color(255, 255, 255, 255) );
+		m_TextColor = pScheme->GetColor("NewGame.TextColor", Color(255, 255, 255, 255));
+		m_SelectedColor = pScheme->GetColor("NewGame.SelectionColor", Color(255, 255, 255, 255));
 
-		BaseClass::ApplySchemeSettings( pScheme );
+		BaseClass::ApplySchemeSettings(pScheme);
 	}
 
-	virtual void OnMouseDoublePressed( vgui::MouseCode code )
+	virtual void OnMouseDoublePressed(vgui::MouseCode code)
 	{
 		// call the panel
-		OnMousePressed( code );
-		PostMessage( m_pParent->GetParent(), new KeyValues("Command", "command", "loadsave") );
+		OnMousePressed(code);
+		PostMessage(m_pParent->GetParent(), new KeyValues("Command", "command", "loadsave"));
 	}
 
 	int GetSaveGameListItemID()
@@ -149,16 +149,16 @@ public:
 	}
 
 private:
-	vgui::PanelListPanel *m_pParent;
-	vgui::Label *m_pChapterLabel;
-	CTGAImagePanel *m_pSaveGameImage;
-	ImagePanel *m_pAutoSaveImage;
-	
+	vgui::PanelListPanel* m_pParent;
+	vgui::Label* m_pChapterLabel;
+	CTGAImagePanel* m_pSaveGameImage;
+	ImagePanel* m_pAutoSaveImage;
+
 	// things to change color when the selection changes
-	ImagePanel *m_pSaveGameScreenshotBackground;
-	Label *m_pTypeLabel;
-	Label *m_pElapsedTimeLabel;
-	Label *m_pFileTimeLabel;
+	ImagePanel* m_pSaveGameScreenshotBackground;
+	Label* m_pTypeLabel;
+	Label* m_pElapsedTimeLabel;
+	Label* m_pFileTimeLabel;
 	Color m_TextColor, m_FillColor, m_SelectedColor;
 
 	int m_iSaveGameListItemID;
@@ -168,13 +168,13 @@ private:
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CBaseSaveGameDialog::CBaseSaveGameDialog( vgui::Panel *parent, const char *name ) : BaseClass( parent, name )
+CBaseSaveGameDialog::CBaseSaveGameDialog(vgui::Panel* parent, const char* name) : BaseClass(parent, name)
 {
 	CreateSavedGamesList();
 	ScanSavedGames();
 
-	new vgui::Button( this, "loadsave", "" );
-	SetControlEnabled( "loadsave", false );
+	new vgui::Button(this, "loadsave", "");
+	SetControlEnabled("loadsave", false);
 }
 
 //-----------------------------------------------------------------------------
@@ -182,8 +182,8 @@ CBaseSaveGameDialog::CBaseSaveGameDialog( vgui::Panel *parent, const char *name 
 //-----------------------------------------------------------------------------
 void CBaseSaveGameDialog::CreateSavedGamesList()
 {
-	m_pGameList = new vgui::PanelListPanel( this, "listpanel_loadgame" );
-	m_pGameList->SetFirstColumnWidth( 0 );
+	m_pGameList = new vgui::PanelListPanel(this, "listpanel_loadgame");
+	m_pGameList->SetFirstColumnWidth(0);
 }
 
 //-----------------------------------------------------------------------------
@@ -191,13 +191,13 @@ void CBaseSaveGameDialog::CreateSavedGamesList()
 //-----------------------------------------------------------------------------
 int CBaseSaveGameDialog::GetSelectedItemSaveIndex()
 {
-	CSaveGamePanel *panel = dynamic_cast<CSaveGamePanel *>(m_pGameList->GetSelectedPanel());
-	if ( panel )
+	CSaveGamePanel* panel = dynamic_cast<CSaveGamePanel*>(m_pGameList->GetSelectedPanel());
+	if (panel)
 	{
 		// find the panel in the list
-		for ( int i = 0; i < m_SaveGames.Count(); i++ )
+		for (int i = 0; i < m_SaveGames.Count(); i++)
 		{
-			if ( i == panel->GetSaveGameListItemID() )
+			if (i == panel->GetSaveGameListItemID())
 			{
 				return i;
 			}
@@ -213,130 +213,130 @@ void CBaseSaveGameDialog::ScanSavedGames()
 {
 	// populate list box with all saved games on record:
 	char	szDirectory[_MAX_PATH];
-	Q_snprintf( szDirectory, sizeof( szDirectory ), "save/*.sav" );
+	Q_snprintf(szDirectory, sizeof(szDirectory), "save/*.sav");
 
 	// clear the current list
 	m_pGameList->DeleteAllItems();
 	m_SaveGames.RemoveAll();
-	
+
 	// iterate the saved files
 	FileFindHandle_t handle;
-	const char *pFileName = g_pFullFileSystem->FindFirst( szDirectory, &handle );
+	const char* pFileName = g_pFullFileSystem->FindFirst(szDirectory, &handle);
 	while (pFileName)
 	{
-		if ( !Q_strnicmp(pFileName, "HLSave", strlen( "HLSave" ) ) )
+		if (!Q_strnicmp(pFileName, "HLSave", strlen("HLSave")))
 		{
-			pFileName = g_pFullFileSystem->FindNext( handle );
+			pFileName = g_pFullFileSystem->FindNext(handle);
 			continue;
 		}
 
 		char szFileName[_MAX_PATH];
-		Q_snprintf(szFileName, sizeof( szFileName ), "save/%s", pFileName);
+		Q_snprintf(szFileName, sizeof(szFileName), "save/%s", pFileName);
 
 		// Only load save games from the current mod's save dir
-		if( !g_pFullFileSystem->FileExists( szFileName, "MOD" ) )
+		if (!g_pFullFileSystem->FileExists(szFileName, "MOD"))
 		{
-			pFileName = g_pFullFileSystem->FindNext( handle );
+			pFileName = g_pFullFileSystem->FindNext(handle);
 			continue;
 		}
-		
+
 		SaveGameDescription_t save;
-		if ( ParseSaveData( szFileName, pFileName, save ) )
+		if (ParseSaveData(szFileName, pFileName, save))
 		{
-			m_SaveGames.AddToTail( save );
+			m_SaveGames.AddToTail(save);
 		}
-		
-		pFileName = g_pFullFileSystem->FindNext( handle );
+
+		pFileName = g_pFullFileSystem->FindNext(handle);
 	}
-	
-	g_pFullFileSystem->FindClose( handle );
+
+	g_pFullFileSystem->FindClose(handle);
 
 	// notify derived classes that save games are being scanned (so they can insert their own)
 	OnScanningSaveGames();
 
 	// sort the save list
-	qsort( m_SaveGames.Base(), m_SaveGames.Count(), sizeof(SaveGameDescription_t), &SaveGameSortFunc );
+	qsort(m_SaveGames.Base(), m_SaveGames.Count(), sizeof(SaveGameDescription_t), &SaveGameSortFunc);
 
 	// add to the list
-	for ( int saveIndex = 0; saveIndex < m_SaveGames.Count() && saveIndex < MAX_LISTED_SAVE_GAMES; saveIndex++ )
+	for (int saveIndex = 0; saveIndex < m_SaveGames.Count() && saveIndex < MAX_LISTED_SAVE_GAMES; saveIndex++)
 	{
 		// add the item to the panel
-		AddSaveGameItemToList( saveIndex );
+		AddSaveGameItemToList(saveIndex);
 	}
 
 	// display a message if there are no save games
-	if ( !m_SaveGames.Count() )
+	if (!m_SaveGames.Count())
 	{
-		vgui::Label *pNoSavesLabel = SETUP_PANEL(new Label(m_pGameList, "NoSavesLabel", "#GameUI_NoSaveGamesToDisplay"));
+		vgui::Label* pNoSavesLabel = SETUP_PANEL(new Label(m_pGameList, "NoSavesLabel", "#GameUI_NoSaveGamesToDisplay"));
 		pNoSavesLabel->SetTextColorState(vgui::Label::CS_DULL);
-		m_pGameList->AddItem( NULL, pNoSavesLabel );
+		m_pGameList->AddItem(NULL, pNoSavesLabel);
 	}
 
-	SetControlEnabled( "loadsave", false );
-	SetControlEnabled( "delete", false );
+	SetControlEnabled("loadsave", false);
+	SetControlEnabled("delete", false);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Adds an item to the list
 //-----------------------------------------------------------------------------
-void CBaseSaveGameDialog::AddSaveGameItemToList( int saveIndex )
+void CBaseSaveGameDialog::AddSaveGameItemToList(int saveIndex)
 {
 	// create the new panel and add to the list
-	CSaveGamePanel *saveGamePanel = new CSaveGamePanel( m_pGameList, "SaveGamePanel", saveIndex );
-	saveGamePanel->SetSaveGameInfo( m_SaveGames[saveIndex] );
-	m_pGameList->AddItem( NULL, saveGamePanel );
+	CSaveGamePanel* saveGamePanel = new CSaveGamePanel(m_pGameList, "SaveGamePanel", saveIndex);
+	saveGamePanel->SetSaveGameInfo(m_SaveGames[saveIndex]);
+	m_pGameList->AddItem(NULL, saveGamePanel);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Parses the save game info out of the .sav file header
 //-----------------------------------------------------------------------------
-bool CBaseSaveGameDialog::ParseSaveData( char const *pszFileName, char const *pszShortName, SaveGameDescription_t &save )
+bool CBaseSaveGameDialog::ParseSaveData(char const* pszFileName, char const* pszShortName, SaveGameDescription_t& save)
 {
 	char    szMapName[SAVEGAME_MAPNAME_LEN];
 	char    szComment[SAVEGAME_COMMENT_LEN];
 	char    szElapsedTime[SAVEGAME_ELAPSED_LEN];
 
-	if ( !pszFileName || !pszShortName )
+	if (!pszFileName || !pszShortName)
 		return false;
 
-	Q_strncpy( save.szShortName, pszShortName, sizeof(save.szShortName) );
-	Q_strncpy( save.szFileName, pszFileName, sizeof(save.szFileName) );
+	Q_strncpy(save.szShortName, pszShortName, sizeof(save.szShortName));
+	Q_strncpy(save.szFileName, pszFileName, sizeof(save.szFileName));
 
-	FileHandle_t fh = g_pFullFileSystem->Open( pszFileName, "rb", "MOD" );
+	FileHandle_t fh = g_pFullFileSystem->Open(pszFileName, "rb", "MOD");
 	if (fh == FILESYSTEM_INVALID_HANDLE)
 		return false;
 
-	int readok = SaveReadNameAndComment( fh, szMapName, szComment );
+	int readok = SaveReadNameAndComment(fh, szMapName, szComment);
 	g_pFullFileSystem->Close(fh);
 
-	if ( !readok )
+	if (!readok)
 	{
 		return false;
 	}
 
-	Q_strncpy( save.szMapName, szMapName, sizeof(save.szMapName) );
+	Q_strncpy(save.szMapName, szMapName, sizeof(save.szMapName));
 
 	// Elapsed time is the last 6 characters in comment. (mmm:ss)
 	int i;
-	i = strlen( szComment );
-	Q_strncpy( szElapsedTime, "??", sizeof( szElapsedTime ) );
+	i = strlen(szComment);
+	Q_strncpy(szElapsedTime, "??", sizeof(szElapsedTime));
 	if (i >= 6)
 	{
-		Q_strncpy( szElapsedTime, (char *)&szComment[i - 6], 7 );
+		Q_strncpy(szElapsedTime, (char*)&szComment[i - 6], 7);
 		szElapsedTime[6] = '\0';
 
 		// parse out
-		int minutes = atoi( szElapsedTime );
-		int seconds = atoi( szElapsedTime + 4);
+		int minutes = atoi(szElapsedTime);
+		int seconds = atoi(szElapsedTime + 4);
 
 		// reformat
-		if ( minutes )
+		if (minutes)
 		{
-			Q_snprintf( szElapsedTime, sizeof(szElapsedTime), "%d %s %d seconds", minutes, minutes > 1 ? "minutes" : "minute", seconds );
+			Q_snprintf(szElapsedTime, sizeof(szElapsedTime), "%d %s %d seconds", minutes, minutes > 1 ? "minutes" : "minute", seconds);
 		}
 		else
 		{
-			Q_snprintf( szElapsedTime, sizeof(szElapsedTime), "%d seconds", seconds );
+			Q_snprintf(szElapsedTime, sizeof(szElapsedTime), "%d seconds", seconds);
 		}
 
 		// Chop elapsed out of comment.
@@ -344,7 +344,7 @@ bool CBaseSaveGameDialog::ParseSaveData( char const *pszFileName, char const *ps
 
 		n = i - 6;
 		szComment[n] = '\0';
-	
+
 		n--;
 
 		// Strip back the spaces at the end.
@@ -357,7 +357,7 @@ bool CBaseSaveGameDialog::ParseSaveData( char const *pszFileName, char const *ps
 	}
 
 	// calculate the file name to print
-	const char *pszType = "";
+	const char* pszType = "";
 	if (strstr(pszFileName, "quick"))
 	{
 		pszType = "#GameUI_QuickSave";
@@ -367,20 +367,20 @@ bool CBaseSaveGameDialog::ParseSaveData( char const *pszFileName, char const *ps
 		pszType = "#GameUI_AutoSave";
 	}
 
-	Q_strncpy( save.szType, pszType, sizeof(save.szType) );
-	Q_strncpy( save.szComment, szComment, sizeof(save.szComment) );
-	Q_strncpy( save.szElapsedTime, szElapsedTime, sizeof(save.szElapsedTime) );
+	Q_strncpy(save.szType, pszType, sizeof(save.szType));
+	Q_strncpy(save.szComment, szComment, sizeof(save.szComment));
+	Q_strncpy(save.szElapsedTime, szElapsedTime, sizeof(save.szElapsedTime));
 
 	// Now get file time stamp.
 	long fileTime = g_pFullFileSystem->GetFileTime(pszFileName);
 	char szFileTime[32];
 	g_pFullFileSystem->FileTimeToString(szFileTime, sizeof(szFileTime), fileTime);
-	char *newline = strstr(szFileTime, "\n");
+	char* newline = strstr(szFileTime, "\n");
 	if (newline)
 	{
 		*newline = 0;
 	}
-	Q_strncpy( save.szFileTime, szFileTime, sizeof(save.szFileTime) );
+	Q_strncpy(save.szFileTime, szFileTime, sizeof(save.szFileTime));
 	save.iTimestamp = fileTime;
 	return true;
 }
@@ -388,10 +388,10 @@ bool CBaseSaveGameDialog::ParseSaveData( char const *pszFileName, char const *ps
 //-----------------------------------------------------------------------------
 // Purpose: timestamp sort function for savegames
 //-----------------------------------------------------------------------------
-int CBaseSaveGameDialog::SaveGameSortFunc( const void *lhs, const void *rhs )
+int CBaseSaveGameDialog::SaveGameSortFunc(const void* lhs, const void* rhs)
 {
-	const SaveGameDescription_t *s1 = (const SaveGameDescription_t *)lhs;
-	const SaveGameDescription_t *s2 = (const SaveGameDescription_t *)rhs;
+	const SaveGameDescription_t* s1 = (const SaveGameDescription_t*)lhs;
+	const SaveGameDescription_t* s2 = (const SaveGameDescription_t*)rhs;
 
 	if (s1->iTimestamp < s2->iTimestamp)
 		return 1;
@@ -404,71 +404,71 @@ int CBaseSaveGameDialog::SaveGameSortFunc( const void *lhs, const void *rhs )
 
 #define MAKEID(d,c,b,a)	( ((int)(a) << 24) | ((int)(b) << 16) | ((int)(c) << 8) | ((int)(d)) )
 
-int SaveReadNameAndComment( FileHandle_t f, char *name, char *comment )
+int SaveReadNameAndComment(FileHandle_t f, char* name, char* comment)
 {
 	int i, tag, size, tokenSize, tokenCount;
-	char *pSaveData, *pFieldName, **pTokenList;
+	char* pSaveData, * pFieldName, ** pTokenList;
 
-	g_pFullFileSystem->Read( &tag, sizeof(int), f );
-	if ( tag != MAKEID('J','S','A','V') )
+	g_pFullFileSystem->Read(&tag, sizeof(int), f);
+	if (tag != MAKEID('J', 'S', 'A', 'V'))
 	{
 		return 0;
 	}
-		
-	g_pFullFileSystem->Read( &tag, sizeof(int), f );
-	if ( tag != SAVEGAME_VERSION )				// Enforce version for now
+
+	g_pFullFileSystem->Read(&tag, sizeof(int), f);
+	if (tag != SAVEGAME_VERSION)				// Enforce version for now
 	{
 		return 0;
 	}
 
 	name[0] = '\0';
 	comment[0] = '\0';
-	g_pFullFileSystem->Read( &size, sizeof(int), f );
-	
-	g_pFullFileSystem->Read( &tokenCount, sizeof(int), f );	// These two ints are the token list
-	g_pFullFileSystem->Read( &tokenSize, sizeof(int), f );
+	g_pFullFileSystem->Read(&size, sizeof(int), f);
+
+	g_pFullFileSystem->Read(&tokenCount, sizeof(int), f);	// These two ints are the token list
+	g_pFullFileSystem->Read(&tokenSize, sizeof(int), f);
 	size += tokenSize;
 
 	// Sanity Check.
-	if ( tokenCount < 0 || tokenCount > 1024*1024*32  )
+	if (tokenCount < 0 || tokenCount > 1024 * 1024 * 32)
 	{
 		return 0;
 	}
 
-	if ( tokenSize < 0 || tokenSize > 1024*1024*32  )
+	if (tokenSize < 0 || tokenSize > 1024 * 1024 * 32)
 	{
 		return 0;
 	}
 
-	pSaveData = (char *)new char[size];
+	pSaveData = (char*)new char[size];
 	g_pFullFileSystem->Read(pSaveData, size, f);
 
 	int nNumberOfFields;
 
-	char *pData;
+	char* pData;
 	int nFieldSize;
-	
+
 	pData = pSaveData;
 
 	// Allocate a table for the strings, and parse the table
-	if ( tokenSize > 0 )
+	if (tokenSize > 0)
 	{
-		pTokenList = new char *[tokenCount];
+		pTokenList = new char* [tokenCount];
 
 		// Make sure the token strings pointed to by the pToken hashtable.
-		for( i=0; i<tokenCount; i++ )
+		for (i = 0; i < tokenCount; i++)
 		{
 			pTokenList[i] = *pData ? pData : NULL;	// Point to each string in the pToken table
-			while( *pData++ );				// Find next token (after next null)
+			while (*pData++);				// Find next token (after next null)
 		}
 	}
 	else
 		pTokenList = NULL;
 
 	// short, short (size, index of field name)
-	nFieldSize = *(short *)pData;
+	nFieldSize = *(short*)pData;
 	pData += sizeof(short);
-	pFieldName = pTokenList[ *(short *)pData ];
+	pFieldName = pTokenList[*(short*)pData];
 
 	if (stricmp(pFieldName, "GameHeader"))
 	{
@@ -489,10 +489,10 @@ int SaveReadNameAndComment( FileHandle_t f, char *name, char *comment )
 		// szName
 		// Actual Data
 
-		nFieldSize = *(short *)pData;
+		nFieldSize = *(short*)pData;
 		pData += sizeof(short);
 
-		pFieldName = pTokenList[ *(short *)pData ];
+		pFieldName = pTokenList[*(short*)pData];
 		pData += sizeof(short);
 
 		if (!stricmp(pFieldName, "comment"))
@@ -511,33 +511,33 @@ int SaveReadNameAndComment( FileHandle_t f, char *name, char *comment )
 	// Delete the string table we allocated
 	delete[] pTokenList;
 	delete[] pSaveData;
-	
+
 	if (strlen(name) > 0 && strlen(comment) > 0)
 		return 1;
-	
+
 	return 0;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: deletes an existing save game
 //-----------------------------------------------------------------------------
-void CBaseSaveGameDialog::DeleteSaveGame( const char *fileName )
+void CBaseSaveGameDialog::DeleteSaveGame(const char* fileName)
 {
-	if ( !fileName || !fileName[0] )
+	if (!fileName || !fileName[0])
 		return;
 
 	// delete the save game file
-	g_pFullFileSystem->RemoveFile( fileName, "MOD" );
+	g_pFullFileSystem->RemoveFile(fileName, "MOD");
 
 	// delete the associated tga
 	char tga[_MAX_PATH];
-	Q_strncpy( tga, fileName, sizeof(tga) );
-	char *ext = strstr( tga, ".sav" );
-	if ( ext )
+	Q_strncpy(tga, fileName, sizeof(tga));
+	char* ext = strstr(tga, ".sav");
+	if (ext)
 	{
-		strcpy( ext, ".tga" );
+		strcpy(ext, ".tga");
 	}
-	g_pFullFileSystem->RemoveFile( tga, "MOD" );
+	g_pFullFileSystem->RemoveFile(tga, "MOD");
 }
 
 //-----------------------------------------------------------------------------
@@ -545,8 +545,8 @@ void CBaseSaveGameDialog::DeleteSaveGame( const char *fileName )
 //-----------------------------------------------------------------------------
 void CBaseSaveGameDialog::OnPanelSelected()
 {
-	SetControlEnabled( "loadsave", true );
-	SetControlEnabled( "delete", true );
+	SetControlEnabled("loadsave", true);
+	SetControlEnabled("delete", true);
 }
 
 

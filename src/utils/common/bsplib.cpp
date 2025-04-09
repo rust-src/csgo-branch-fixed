@@ -2589,6 +2589,10 @@ int LoadWorldLights( int lumpnum,  dworldlight_t *pWorldlights )
 
 void ValidateHeader( const char *filename, const BSPHeader_t *pHeader )
 {
+	if (pHeader->ident == 30)//theaperturecat
+	{
+		return;
+	}
 	if ( pHeader->ident != IDBSPHEADER )
 	{
 		Error ("%s is not a IBSP file", filename);

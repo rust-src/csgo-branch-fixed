@@ -376,7 +376,7 @@ namespace BaseModUI
 		void OnGameUIHidden();
 		void OpenFrontScreen( bool bIgnoreMatchSession = false );
 		void RunFrame();
-		void OnLevelLoadingStarted( char const *levelName, bool bShowProgressDialog );
+		void OnLevelLoadingStarted( bool bShowProgressDialog );
 		void OnLevelLoadingFinished( KeyValues *kvEvent );
 		bool UpdateProgressBar(float progress, const char *statusText);
 		void OnCreditsFinished(void);

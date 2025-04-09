@@ -176,7 +176,9 @@ protected:
 	// editing
 	virtual void ApplySchemeSettings(IScheme *pScheme);
 	virtual void GetSettings( KeyValues *outResourceData );
+	public:
 	virtual void ApplySettings( KeyValues *inResourceData );
+	protected:
 	virtual const char *GetDescription( void );
 
 	MESSAGE_FUNC_PARAMS( OnDialogVariablesChanged, "DialogVariables", dialogVariables );

@@ -8,7 +8,7 @@
 #include "mm_title_richpresence.h"
 #include "portal2.spa.h"
 #include "matchmaking/portal2/imatchext_portal2.h"
-#include "filesystem/ixboxinstaller.h"
+//#include "filesystem/ixboxinstaller.h"
 
 #include "filesystem.h"
 #include "vstdlib/random.h"
@@ -51,7 +51,7 @@ public:
 	virtual KeyValues * DefineSessionSearchKeys( KeyValues *pSettings );
 
 	// Defines dedicated server search key
-	virtual KeyValues * DefineDedicatedSearchKeys( KeyValues *pSettings );
+	virtual KeyValues * DefineDedicatedSearchKeys( KeyValues *pSettings, bool bNeedOfficialServer, int nSearchPass );
 
 
 	// Initializes full game settings from potentially abbreviated game settings
@@ -102,11 +102,90 @@ public:
 
 	// Validates if client profile can set a stat or get awarded an achievement
 	virtual bool AllowClientProfileUpdate( KeyValues *kvUpdate );
+
+	// Sets the bspname key given a mapgroup
+	virtual void SetBspnameFromMapgroup(KeyValues* pSettings);
+
+	// Retrieves the indexed formula from the match system settings file. (MatchSystem.360.res)
+	virtual char const* GetFormulaAverage(int index);
+
+	// Update a team session to be a game session by filling in map name, updating number of slots etc
+	virtual KeyValues* ExtendTeamLobbyToGame(KeyValues* pSettings);
+
+	// Called by the client to notify matchmaking that it should update matchmaking properties based
+// on player distribution among the teams.
+	virtual void UpdateTeamProperties(KeyValues* pCurrentSettings, KeyValues* pTeamProperties);
 };
 
 CMatchTitleGameSettingsMgr g_MatchTitleGameSettingsMgr;
 IMatchTitleGameSettingsMgr *g_pIMatchTitleGameSettingsMgr = &g_MatchTitleGameSettingsMgr;
 
+void CMatchTitleGameSettingsMgr::SetBspnameFromMapgroup(KeyValues* pSettings)
+{
+	//const char* pMapGroupName = pSettings->GetString("game/mapgroupname", NULL);
+	//const char* pMapName = pSettings->GetString("game/map", NULL);
+	//if (!pMapName && pMapGroupName)
+	//{
+		//pMapName = g_pGameTypes->GetRandomMap(pMapGroupName);
+		//if (pMapName && pMapName[0])
+		//{
+		//	pSettings->SetString("game/map", pMapName);
+		//}
+	//}
+}
+
+// Retrieves the indexed formula from the match system settings file. (MatchSystem.360.res)
+char const* CMatchTitleGameSettingsMgr::GetFormulaAverage(int index)
+{
+	// Ensure the matchmaking settings are loaded.
+	//LoadMatchSettings();
+
+	//if (!m_FormulaAverage.Count())
+		return "newValue";
+
+	//int indexClamped = clamp(index, 0, m_FormulaAverage.Count() - 1);
+	//return m_FormulaAverage[indexClamped].String();
+}
+
+void CMatchTitleGameSettingsMgr::UpdateTeamProperties(KeyValues* pCurrentSettings, KeyValues* pTeamProperties)
+{
+}
+
+KeyValues* CMatchTitleGameSettingsMgr::ExtendTeamLobbyToGame(KeyValues* pSettings)
+{
+	KeyValues* pUpdate = KeyValues::FromString(
+		"update",
+		" update { "
+		" system { "
+		" network LIVE "
+		" netFlag #empty#"
+		" } "
+		" options { "
+		" bypasslobby 1"
+		" } "
+		" game {"
+		" } "
+		" members {"
+		" } "
+		" } "
+	);
+
+	// Add in bsp name from map group name
+	const char* pMapGroupName = pSettings->GetString("game/mapgroupname", NULL);
+	Assert(pMapGroupName);
+	const char* pMapName = pSettings->GetString("game/map", NULL);
+	Assert(pMapName);
+	if (!pMapName)
+	{
+		//pMapName = g_pGameTypes->GetRandomMap(pMapGroupName);
+		//pUpdate->SetString("udpate/game/map", pMapName);
+	}
+
+	DevMsg("CMatchTitleGameSettingsMgr::ExtendTeamLobbyToGame\n");
+	KeyValuesDumpAsDevMsg(pUpdate);
+
+	return pUpdate;
+}
 
 //
 // Mission information block
@@ -360,7 +439,7 @@ void AppendToRollup( char const *sz, CRC32_t &u )
 	char const *p2 = p1;
 	while ( *p2 )
 	{
-		while ( *p2 && !isupper( *p2 ) )
+		while ( *p2 && !V_isupper( *p2 ) )
 		{
 			++ p2;
 		}
@@ -479,7 +558,7 @@ KeyValues * CMatchTitleGameSettingsMgr::RollupGameDetails( KeyValues *pDetails, 
 }
 
 // Defines dedicated server search key
-KeyValues * CMatchTitleGameSettingsMgr::DefineDedicatedSearchKeys( KeyValues *pSettings )
+KeyValues * CMatchTitleGameSettingsMgr::DefineDedicatedSearchKeys( KeyValues* pSettings, bool bNeedOfficialServer, int nSearchPass )
 {
 	// No dedicated servers support
 	return NULL;

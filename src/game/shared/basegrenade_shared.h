@@ -24,9 +24,9 @@
 #include "player_pickup.h"
 
 #endif
-
+#ifdef CSTRIKE15
 #include "cs_shareddefs.h"
-
+#endif
 #define BASEGRENADE_EXPLOSION_VOLUME	1024
 
 class CTakeDamageInfo;
@@ -76,9 +76,9 @@ public:
 	virtual float		GetShakeRadius( void ) { return 750.0; }
 
 	virtual const char *GetParticleSystemName( int pointContents, surfacedata_t *pdata = NULL ) { return NULL; }
-
+#ifdef CSTRIKE15
 	virtual GrenadeType_t GetGrenadeType( void ) { return GRENADE_TYPE_EXPLOSIVE; }
-
+#endif
 	// Damage accessors.
 	virtual float GetDamage()
 	{

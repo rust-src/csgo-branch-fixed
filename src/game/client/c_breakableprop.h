@@ -10,7 +10,7 @@
 #pragma once
 #endif
 
-#include "player_pickup.h" 
+#include "portal2/player_pickup.h" 
 
 //-----------------------------------------------------------------------------
 // Purpose: 

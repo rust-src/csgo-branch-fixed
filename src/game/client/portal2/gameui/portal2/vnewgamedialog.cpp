@@ -12,7 +12,7 @@
 #include "vgui/IVGui.h"
 #include "vgui/ilocalize.h"
 
-#include "cegclientwrapper.h"
+//#include "cegclientwrapper.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -269,7 +269,7 @@ public:
 		return m_nChapterIndex;
 	}
 
-	CEG_NOINLINE void OnKeyCodePressed( vgui::KeyCode code )
+	void OnKeyCodePressed( vgui::KeyCode code )
 	{
 		int iUserSlot = GetJoystickForCode( code );
 		CBaseModPanel::GetSingleton().SetLastActiveUserId( iUserSlot );
@@ -281,7 +281,7 @@ public:
 			return;
 		}
 
-		CEG_PROTECT_MEMBER_FUNCTION( ChapterListItem_OnKeyCodePressed );
+		//CEG_PROTECT_MEMBER_FUNCTION( ChapterListItem_OnKeyCodePressed );
 
 		BaseClass::OnKeyCodePressed( code );
 	}
@@ -362,9 +362,9 @@ protected:
 #endif
 	}
 
-	CEG_NOINLINE void OnMousePressed( vgui::MouseCode code )
+	void OnMousePressed( vgui::MouseCode code )
 	{
-		CEG_PROTECT_MEMBER_FUNCTION( ChapterListItem_OnMousePressed );
+		//CEG_PROTECT_MEMBER_FUNCTION( ChapterListItem_OnMousePressed );
 
 		if ( code == MOUSE_LEFT )
 		{
@@ -377,7 +377,7 @@ protected:
 		BaseClass::OnMousePressed( code );
 	}
 
-	CEG_NOINLINE void OnMouseDoublePressed( vgui::MouseCode code )
+	void OnMouseDoublePressed( vgui::MouseCode code )
 	{
 		if ( code == MOUSE_LEFT )
 		{
@@ -387,7 +387,7 @@ protected:
 				OnKeyCodePressed( ButtonCodeToJoystickButtonCode( KEY_XBUTTON_A, CBaseModPanel::GetSingleton().GetLastActiveUserId() ) );
 			}
 
-			CEG_PROTECT_MEMBER_FUNCTION( ChapterListItem_OnMouseDoublePressed );
+			//CEG_PROTECT_MEMBER_FUNCTION( ChapterListItem_OnMouseDoublePressed );
 
 			return;
 		}
@@ -524,7 +524,7 @@ private:
 	int					m_nTextOffsetY;
 };
 
-CEG_NOINLINE CNewGameDialog::CNewGameDialog( vgui::Panel *pParent, const char *pPanelName, bool bIsCommentaryDialog ) : BaseClass( pParent, pPanelName, false, true )
+CNewGameDialog::CNewGameDialog( vgui::Panel *pParent, const char *pPanelName, bool bIsCommentaryDialog ) : BaseClass( pParent, pPanelName, false, true )
 {
 	SetProportional( true );
 	SetDeleteSelfOnClose( true );
@@ -542,7 +542,7 @@ CEG_NOINLINE CNewGameDialog::CNewGameDialog( vgui::Panel *pParent, const char *p
 	m_pChapterList = new GenericPanelList( this, "ChapterList", GenericPanelList::ISM_PERITEM | GenericPanelList::ISM_ALPHA_INVISIBLE );
 	m_pChapterList->SetPaintBackgroundEnabled( false );	
 
-	CEG_PROTECT_MEMBER_FUNCTION( CNewGameDialog_CNewGameDialog );
+	//CEG_PROTECT_MEMBER_FUNCTION( CNewGameDialog_CNewGameDialog );
 
 	m_pChapterLabel = new ChapterLabel( this, "ChapterText" );
 
@@ -558,9 +558,9 @@ CNewGameDialog::~CNewGameDialog()
 	delete m_pChapterLabel;
 }
 
-CEG_NOINLINE void CNewGameDialog::OnCommand( char const *szCommand )
+void CNewGameDialog::OnCommand( char const *szCommand )
 {
-	CEG_PROTECT_VIRTUAL_FUNCTION( CNewGameDialog_OnCommand );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( CNewGameDialog_OnCommand );
 
 	if ( !Q_strcmp( szCommand, "Back" ) )
 	{
@@ -572,7 +572,7 @@ CEG_NOINLINE void CNewGameDialog::OnCommand( char const *szCommand )
 	BaseClass::OnCommand( szCommand );
 }
 
-CEG_NOINLINE void CNewGameDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CNewGameDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	
@@ -604,7 +604,7 @@ CEG_NOINLINE void CNewGameDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_ChapterImages.AddToTail( nImageId );
 	}
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( CNewGameDialog_ApplySchemeSettings );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( CNewGameDialog_ApplySchemeSettings );
 
 	// add the sp chapters
 	int nNoSaveGameImageId = CBaseModPanel::GetSingleton().GetImageId( "vgui/no_save_game" );
@@ -645,13 +645,13 @@ CEG_NOINLINE void CNewGameDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 	UpdateFooter();
 }
 
-CEG_NOINLINE void CNewGameDialog::Activate()
+void CNewGameDialog::Activate()
 {
 	BaseClass::Activate();
 
 	m_pChapterList->NavigateTo();
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( CNewGameDialog_Activate );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( CNewGameDialog_Activate );
 
 	UpdateFooter();
 }

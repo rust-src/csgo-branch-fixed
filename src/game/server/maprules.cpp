@@ -129,8 +129,8 @@ LINK_ENTITY_TO_CLASS( game_score, CGameScore );
 BEGIN_DATADESC( CGameScore )
 	// Inputs
 	DEFINE_INPUTFUNC( FIELD_VOID, "ApplyScore", InputApplyScore ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "AddScoreTerrorist", InputAddScoreTerrorist ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "AddScoreCT", InputAddScoreCT ),
+	//DEFINE_INPUTFUNC( FIELD_VOID, "AddScoreTerrorist", InputAddScoreTerrorist ),
+	//DEFINE_INPUTFUNC( FIELD_VOID, "AddScoreCT", InputAddScoreCT ),
 END_DATADESC()
 
 void CGameScore::Spawn( void )
@@ -248,10 +248,10 @@ bool CGameCoopMissionManager::KeyValue( const char *szKeyName, const char *szVal
 
 int	CGameCoopMissionManager::GetWaveNumber( void )
 {
-	if ( !CSGameRules() )
+	//if ( !CSGameRules() )
 		return 0;
 
-	return CSGameRules()->GetCoopWaveNumber();
+	//return CSGameRules()->GetCoopWaveNumber();
 }
 
 void CGameCoopMissionManager::SetWaveCompleted( void )
@@ -986,7 +986,7 @@ void CGamePlayerEquip::Touch( CBaseEntity *pOther )
 
 void CGamePlayerEquip::EquipPlayer( CBaseEntity *pEntity, const char *szWeapon )
 {
-	if ( !pEntity )
+	if (!pEntity)
 		return;
 
 	CBasePlayer *pPlayer = NULL;
@@ -1011,7 +1011,7 @@ void CGamePlayerEquip::EquipPlayer( CBaseEntity *pEntity, const char *szWeapon )
 	if ( szWeapon != NULL )
 		nMaxLoop = 1;
 
-	for ( int i = 0; i < MAX_EQUIP; i++ )
+	/*for (int i = 0; i < MAX_EQUIP; i++)
 	{
 		if ( szWeapon == NULL && !m_weaponNames[i] )
 			break;
@@ -1078,7 +1078,7 @@ void CGamePlayerEquip::EquipPlayer( CBaseEntity *pEntity, const char *szWeapon )
 				pPlayer->GiveAmmo( m_weaponCount[ i ], nType );
 			}
 		}
-	}
+	}*/
 }
 
 

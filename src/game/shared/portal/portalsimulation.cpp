@@ -402,7 +402,7 @@ void CPortalSimulator::MoveTo( const Vector &ptCenter, const QAngle &angles )
 
 extern ConVar sv_portal_new_player_trace;
 
-CEG_NOINLINE void CPortalSimulator::MovedOrResized( const Vector &ptCenter, const QAngle &qAngles, float fHalfWidth, float fHalfHeight )
+void CPortalSimulator::MovedOrResized( const Vector &ptCenter, const QAngle &qAngles, float fHalfWidth, float fHalfHeight )
 {
 	if( (fHalfWidth == 0.0f) || (fHalfHeight == 0.0f) || !ptCenter.IsValid() )
 	{
@@ -544,7 +544,7 @@ CEG_NOINLINE void CPortalSimulator::MovedOrResized( const Vector &ptCenter, cons
 			fFarDists[3] = m_InternalData.Placement.vRight.Dot( m_InternalData.Placement.ptCenter + (m_InternalData.Placement.vRight * kReallyFar) );
 
 #ifdef CLIENT_DLL
-			CEG_PROTECT_MEMBER_FUNCTION( CPortalSimulator_MovedOrResized );
+			//CEG_PROTECT_MEMBER_FUNCTION( CPortalSimulator_MovedOrResized );
 #endif
 
 			const float kInnerCarve = 0.1f;

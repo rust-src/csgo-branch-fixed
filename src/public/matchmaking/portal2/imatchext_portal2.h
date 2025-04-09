@@ -16,6 +16,12 @@
 
 #define STORAGE_COUNT_FOR_BITS( aStorageType, numBits ) ( ( (numBits) + 8*sizeof( aStorageType ) - 1 ) / ( 8* sizeof( aStorageType ) ) )
 
+struct MatchmakingData 
+{
+	short i ;
+};
+
+
 
 //
 //

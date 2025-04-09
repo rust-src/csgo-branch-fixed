@@ -82,7 +82,8 @@ void CAsyncCtxUIOnDeviceAttached::ExecuteAsync()
 	if ( m_ContainerOpenResult != ERROR_SUCCESS )
 		return;
 }
-
+#if 0 
+//theaperturecat - this will break auto dlc loading
 ConVar ui_start_dlc_time_pump( "ui_start_dlc_time_pump", "30" );
 ConVar ui_start_dlc_time_loaded( "ui_start_dlc_time_loaded", "150" );
 ConVar ui_start_dlc_time_corrupt( "ui_start_dlc_time_corrupt", "300" );
@@ -210,12 +211,12 @@ CON_COMMAND_F( ui_pump_dlc_mount_stage, "", FCVAR_DEVELOPMENTONLY )
 	// Done mounting
 	engine->ClientCmd( "ui_pump_dlc_mount_content 0" );
 }
-
+#endif
 void CAsyncCtxUIOnDeviceAttached::Completed()
 {
 	bool bDLCSearchPathMounted = false;
-	if ( GetContainerOpenResult() == ERROR_SUCCESS &&
-		 g_pFullFileSystem->IsAnyDLCPresent( &bDLCSearchPathMounted ) )
+	if ( GetContainerOpenResult() == ERROR_SUCCESS /* &&
+		 g_pFullFileSystem->IsAnyDLCPresent(&bDLCSearchPathMounted)*/)
 	{
 		if ( !( CUIGameData::Get()->SelectStorageDevicePolicy() & STORAGE_DEVICE_ASYNC ) )
 		{
@@ -227,7 +228,7 @@ void CAsyncCtxUIOnDeviceAttached::Completed()
 			// add the DLC search paths if they exist
 			// this must be done on the main thread
 			// the DLC search path mount will incur a quick synchronous hit due to zip mounting
-			g_pFullFileSystem->AddDLCSearchPaths();
+			//g_pFullFileSystem->AddDLCSearchPaths();
 
 			// new DLC data may trump prior data, so need to signal isolated system reloads
 			engine->ClientCmd( "ui_pump_dlc_mount_stage 0" );
@@ -236,7 +237,7 @@ void CAsyncCtxUIOnDeviceAttached::Completed()
 	}
 
 	// No valid DLC was discovered, check if we discovered some corrupt DLC
-	if ( g_pFullFileSystem->IsAnyCorruptDLC() )
+	if ( 0)//g_pFullFileSystem->IsAnyCorruptDLC() )
 	{
 		if ( !( CUIGameData::Get()->SelectStorageDevicePolicy() & STORAGE_DEVICE_ASYNC ) )
 		{
@@ -837,14 +838,14 @@ void CUIGameData::GameStats_ReportAction( char const *szReportAction, char const
 	kv->SetInt( "game_mapid", GameStats_GetReportMapNameIndex( szMapName ) );
 	kv->SetUint64( "game_flags", uiFlags );
 
-	IDatacenterCmdBatch *pBatch = g_pMatchFramework->GetMatchSystem()->GetDatacenter()->CreateCmdBatch();
+	IDatacenterCmdBatch *pBatch = g_pMatchFramework->GetMatchSystem()->GetDatacenter()->CreateCmdBatch(true);
 	pBatch->SetDestroyWhenFinished( true );
 	pBatch->SetRetryCmdTimeout( 30.0f );
 	pBatch->AddCommand( kv );
 
 #if !defined( _GAMECONSOLE ) && !defined( NO_STEAM )
 	// Send these stats to OGS
-	g_PortalGameStats.Event_UIEvent( xuid, szReportAction, uiFlags, szMapName );
+	//g_PortalGameStats.Event_UIEvent( xuid, szReportAction, uiFlags, szMapName ); theaperturecat
 #endif //!defined( _GAMECONSOLE )
 }
 

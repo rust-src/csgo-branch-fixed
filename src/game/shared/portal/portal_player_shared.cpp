@@ -452,7 +452,7 @@ bool CPortal_Player::TestHitboxes( const Ray_t &ray, unsigned int fContentsMask,
 			return false;
 
 		mstudiobbox_t *pbox = set->pHitbox( tr.hitbox );
-		mstudiobone_t *pBone = pStudioHdr->pBone(pbox->bone);
+		const mstudiobone_t *pBone = pStudioHdr->pBone(pbox->bone);
 		tr.surface.name = "**studio**";
 		tr.surface.flags = SURF_HITBOX;
 		tr.surface.surfaceProps = pBone->GetSurfaceProp();
@@ -2766,15 +2766,15 @@ bool CPortal_Player::IsHoldingJumpKey() const
 }
 
 
-CEG_NOINLINE bool CPortal_Player::IsTryingToSuperJump( const PaintPowerInfo_t* pInfo ) const
+bool CPortal_Player::IsTryingToSuperJump( const PaintPowerInfo_t* pInfo ) const
 {
 	if( !pInfo )
 		return false;
 
 	const int superJumpMode = sv_press_jump_to_bounce.GetInt();
-	CEG_GCV_PRE();
-	static const int CEG_SPEED_POWER = CEG_GET_CONSTANT_VALUE( PaintSpeedPower );
-	CEG_GCV_POST();
+	//CEG_GCV_PRE();
+	//static const int CEG_SPEED_POWER = CEG_GET_CONSTANT_VALUE( PaintSpeedPower );
+	//CEG_GCV_POST();
 
 	// For the trampoline bounce mode, the player can bounce if the velocity is significantly toward the surface.
 	// Note that this condition requires the player be in the air. That is because we must always detect this case
@@ -2791,7 +2791,7 @@ CEG_NOINLINE bool CPortal_Player::IsTryingToSuperJump( const PaintPowerInfo_t* p
 	const bool canTrampolineBounceOffWall = trampoline_bounce_off_walls_while_on_ground.GetBool() || isInAir;
 	const bool spaceBarActivatedTrampolineJump = IsPressingJumpKey() && jump_button_can_activate_trampoline_bounce.GetBool();
 	const bool canAutoLongJump = MaxSpeed() > bounce_auto_trigger_min_speed.GetFloat() &&
-								 !IsActivatingPower( GetPaintPower( CEG_SPEED_POWER ) ) &&
+								 !IsActivatingPower( GetPaintPower( SPEED_POWER ) ) &&
 								 !isInAir &&
 								 ( !look_dependent_auto_long_jump_enabled.GetBool() || DotProduct( Forward(), velocity.Normalized() ) >= look_dependent_auto_long_jump_min_cos_angle.GetFloat() );
 	const bool canTrampolineBounce = ( superJumpMode == TRAMPOLINE_BOUNCE ) &&
@@ -2848,7 +2848,7 @@ InAirState CPortal_Player::GetInAirState() const
 }
 
 // Extracted and noinlined to give us a standalone callsite to protect
-CEG_NOINLINE void UpdatePaintZ( Vector &velocity, float inGravity )
+void UpdatePaintZ( Vector &velocity, float inGravity )
 {
 	// Find the height the player will go at the current velocity
 	// 0 = v0 + g * t
@@ -2871,7 +2871,7 @@ CEG_NOINLINE void UpdatePaintZ( Vector &velocity, float inGravity )
 }
 
 #ifdef CLIENT_DLL
-CEG_PROTECT_FUNCTION( UpdatePaintZ );
+//CEG_PROTECT_FUNCTION( UpdatePaintZ );
 #endif
 
 bool CPortal_Player::CheckToUseBouncePower( PaintPowerInfo_t& info )

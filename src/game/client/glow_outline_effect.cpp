@@ -10,7 +10,9 @@
 #include "shaderapi/ishaderapi.h"
 #include "materialsystem/imaterialvar.h"
 #include "view_shared.h"
+#ifdef CSTRIKE15
 #include "c_cs_player.h"
+#endif
 #include "tier2/renderutils.h"
 
 #define FULL_FRAME_TEXTURE "_rt_FullFrameFB"
@@ -224,6 +226,7 @@ void CGlowObjectManager::RenderGlowModels( const CViewSetup *pSetup, int nSplitS
 		// align and render the glow-only muzzle flash model for glowing weapon fire
 		if ( vecGlowObjects[i].m_flGlowPulseOverdrive >= 0.25f )
 		{
+#ifdef CSTRIKE15
 			C_CSPlayer* localPlayer = GetLocalOrInEyeCSPlayer();
 			C_CSPlayer* tempPlayer = ToCSPlayer( vecGlowObjects[i].m_pEntity );
 			if ( tempPlayer && localPlayer && (localPlayer->GetAbsOrigin() - tempPlayer->GetAbsOrigin()).Length() > 20 )
@@ -250,6 +253,7 @@ void CGlowObjectManager::RenderGlowModels( const CViewSetup *pSetup, int nSplitS
 					}					
 				}
 			}
+#endif
 		}
 
 		// dampen overdrive here. Do this at the end, otherwise our framerate may be low enough that we don't see the effect for even one frame
@@ -633,7 +637,7 @@ void CGlowObjectManager::ApplyEntityGlowEffects( const CViewSetup *pSetup, int n
 			ShaderStencilState_t stencilState;
 			stencilState.m_bEnable = true;
 			stencilState.m_nReferenceValue = 2;
-
+#ifdef CSTRIKE15
 			C_CSPlayer* pPlayer = ToCSPlayer( m_GlowObjectDefinitions[i].m_pEntity );
 			if ( pPlayer )
 			{
@@ -641,7 +645,7 @@ void CGlowObjectManager::ApplyEntityGlowEffects( const CViewSetup *pSetup, int n
 				stencilState.m_nReferenceValue = iTempHealthBarRenderMaskIndex;
 				iTempHealthBarRenderMaskIndex ++;
 			}
-
+#endif
 			stencilState.m_CompareFunc = SHADER_STENCILFUNC_ALWAYS;
 			stencilState.m_PassOp = SHADER_STENCILOP_SET_TO_REFERENCE;
 			stencilState.m_FailOp = SHADER_STENCILOP_KEEP;
@@ -662,7 +666,7 @@ void CGlowObjectManager::ApplyEntityGlowEffects( const CViewSetup *pSetup, int n
 
 	IMaterial *pMatGlowHealthColor = NULL;
 	pMatGlowHealthColor = materials->FindMaterial( "dev/glow_health_color", TEXTURE_GROUP_OTHER, true );
-
+#ifdef CSTRIKE15
 	for ( int i = 0; i < m_GlowObjectDefinitions.Count(); ++ i )
 	{
 
@@ -754,7 +758,7 @@ void CGlowObjectManager::ApplyEntityGlowEffects( const CViewSetup *pSetup, int n
 		}
 
 	}
-
+#endif
 
 	//clear out custom render settings
 	pRenderContext->OverrideDepthEnable( false, false );

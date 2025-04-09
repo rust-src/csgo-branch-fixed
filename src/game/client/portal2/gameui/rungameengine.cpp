@@ -99,7 +99,7 @@ public:
 	}
 
 	// gets the in-game name of another user, returns NULL if that user doesn't exists
-	virtual const char *GetPlayerName(int trackerID)
+	virtual const char *GetPlayerName(int friendsID, char* name, int namelen)
 	{
 #if 0	// this code is unused, but returns a pointer to a local array - fix this if you need the function
 		// find the player by their friendsID
@@ -118,7 +118,7 @@ public:
 		return NULL;
 	}
 
-	virtual const char *GetPlayerFriendsName(int trackerID)
+	virtual const char *GetPlayerFriendsName(int friendsID, char* name, int namelen)
 	{
 #if 0	// this code is unused, but returns a pointer to a local array - fix this if you need the function
 		// find the player by their friendsID

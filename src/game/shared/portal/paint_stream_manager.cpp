@@ -12,6 +12,7 @@
 #include "fmtstr.h"
 #include "vprof.h"
 #include "paint_stream_shared.h"
+#include "particle_parse.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!

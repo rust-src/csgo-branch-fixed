@@ -6,7 +6,7 @@
 
 #include "cbase.h"
 
-#ifdef GAME_DLL
+#if 0
 
 // this gets compiled in for HL2 + Ep(X) only
 #if ( defined( HL2_DLL ) || defined( HL2_EPISODIC ) ) && ( !defined ( PORTAL ) )

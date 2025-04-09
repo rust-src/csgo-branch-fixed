@@ -22,11 +22,13 @@
 #include "dlight.h"
 #include "clientalphaproperty.h"
 #include "iinput.h"
+#ifdef CSTRIKE15
 #include "cs_shareddefs.h"
 #include "c_cs_player.h"
 
 #include "weapon_csbase.h"
 #include "weapon_basecsgrenade.h"
+#endif
 #include "iclientmode.h"
 
 #include "platforminputdevice.h"
@@ -58,7 +60,7 @@ ConVar vm_pointer_pitch_up_scale( "vm_pointer_pitch_up_scale", "0.25", FCVAR_DEV
 void PostToolMessage( HTOOLHANDLE hEntity, KeyValues *msg );
 extern float g_flMuzzleFlashScale;
 extern ConVar r_drawviewmodel;
-extern ConVar cl_righthand;
+//extern ConVar cl_righthand;
 
 ConVar mat_preview( "mat_preview", "", FCVAR_CLIENTDLL | FCVAR_CHEAT );
 
@@ -126,7 +128,7 @@ void FormatViewModelAttachment( C_BasePlayer *pPlayer, Vector &vOrigin, bool bIn
 	Vector vOut = (MainViewRight(nSlot) * vTransformed.x) + (MainViewUp(nSlot) * vTransformed.y) + (MainViewForward(nSlot) * vTransformed.z);
 	vOrigin = pViewSetup->origin + vOut;
 }
-
+#ifdef CSTRIKE15
 void Precache( void )
 {
 	PrecacheParticleSystem( MOLOTOV_PARTICLE_EFFECT_NAME );
@@ -244,7 +246,7 @@ bool C_BaseViewModel::Simulate( void )
 	BaseClass::Simulate();
 	return true;
 }
-
+#endif
 void C_BaseViewModel::FormatViewModelAttachment( int nAttachment, matrix3x4_t &attachmentToWorld )
 {
 	C_BasePlayer *pPlayer = ToBasePlayer( GetOwner() );
@@ -762,7 +764,7 @@ int C_BaseViewModel::DrawModel( int flags, const RenderableInstance_t &instance 
 		}
 	}
 
-
+#ifdef CSTRIKE15
 	if ( flags && vm_draw_addon.GetBool() 
 #ifdef IRONSIGHT
 		&& (GetScopeStencilMaskMode() == false) 
@@ -805,7 +807,7 @@ int C_BaseViewModel::DrawModel( int flags, const RenderableInstance_t &instance 
 	if ( flags )
 		SetScopeStencilMaskMode( false );
 #endif
-
+#endif
 	return ret;
 }
 
@@ -929,7 +931,7 @@ void C_BaseViewModel::GetBoneControllers(float controllers[MAXSTUDIOBONECTRLS])
 		pWeapon->GetViewmodelBoneControllers( this, controllers );
 	}
 }
-
+#ifdef CSTRIKE15
 void C_BaseViewModel::UpdateAllViewmodelAddons( void )
 {
 	C_CSPlayer *pPlayer = ToCSPlayer( GetOwner() );
@@ -1265,5 +1267,7 @@ int C_ViewmodelAttachmentModel::InternalDrawModel( int flags, const RenderableIn
 
 	return ret;
 }
+
+#endif
 
 #endif

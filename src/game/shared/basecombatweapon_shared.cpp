@@ -13,8 +13,10 @@
 #include "datacache/imdlcache.h"
 #include "tier0/vprof.h"
 #include "collisionutils.h"
-#include "econ_entity.h"
-#include "econ_item_view.h"
+#include "utlhashtable.h"
+#include "steam/isteamcontroller.h"
+//#include "econ_entity.h"
+//#include "econ_item_view.h"
 
 #if !defined( CLIENT_DLL )
 
@@ -764,12 +766,12 @@ void CBaseCombatWeapon::Precache( void )
 	if ( m_hWeaponFileInfo != GetInvalidWeaponInfoHandle() )
 	{
 		// Get the ammo indexes for the ammo's specified in the data file
-		if ( GetWpnData().GetPrimaryAmmo( GetEconItemView() )[0] )
+		if ( GetWpnData().GetPrimaryAmmo( )[0] )
 		{
-			m_iPrimaryAmmoType = GetAmmoDef()->Index( GetWpnData().GetPrimaryAmmo( GetEconItemView() ) );
+			m_iPrimaryAmmoType = GetAmmoDef()->Index( GetWpnData().GetPrimaryAmmo( ) );
 			if (m_iPrimaryAmmoType == -1)
 			{
-				Msg("ERROR: Weapon (%s) using undefined primary ammo type (%s)\n",GetClassname(), GetWpnData().GetPrimaryAmmo( GetEconItemView() ) );
+				Msg("ERROR: Weapon (%s) using undefined primary ammo type (%s)\n",GetClassname(), GetWpnData().GetPrimaryAmmo( ) );
 			}
 		}
 		if ( GetWpnData().szAmmo2[0] )
@@ -845,7 +847,7 @@ const FileWeaponInfo_t &CBaseCombatWeapon::GetWpnData( void ) const
 //-----------------------------------------------------------------------------
 const char *CBaseCombatWeapon::GetViewModel( int /*viewmodelindex = 0 -- this is ignored in the base class here*/ ) const
 {
-	return GetWpnData().GetViewModel( GetEconItemView(), (
+	return GetWpnData().GetViewModel( (
 		( GetOwner() != NULL && GetOwner()->IsPlayer() ) ? GetOwner()->GetTeamNumber() : 0
 		) );
 }
@@ -855,7 +857,7 @@ const char *CBaseCombatWeapon::GetViewModel( int /*viewmodelindex = 0 -- this is
 //-----------------------------------------------------------------------------
 const char *CBaseCombatWeapon::GetWorldModel( void ) const
 {
-	return GetWpnData().GetWorldModel( GetEconItemView(), (
+	return GetWpnData().GetWorldModel( (
 		( GetOwner() != NULL && GetOwner()->IsPlayer() ) ? GetOwner()->GetTeamNumber() : 0 
 		) );
 }
@@ -863,7 +865,7 @@ const char *CBaseCombatWeapon::GetWorldModel( void ) const
 
 const char *CBaseCombatWeapon::GetWorldDroppedModel( void ) const
 {
-	const char *szWorldDroppedModel = GetWpnData().GetWorldDroppedModel( GetEconItemView(), (
+	const char *szWorldDroppedModel = GetWpnData().GetWorldDroppedModel( (
 		( GetOwner() != NULL && GetOwner()->IsPlayer() ) ? GetOwner()->GetTeamNumber() : 0 
 		) );
 
@@ -893,9 +895,9 @@ const char *CBaseCombatWeapon::GetAnimPrefix( void ) const
 //-----------------------------------------------------------------------------
 const char *CBaseCombatWeapon::GetPrintName( void ) const
 {
-	if ( GetEconItemView( ) )
-		return GetEconItemView( )->GetItemDefinition()->GetItemBaseName();
-	else
+	//if ( GetEconItemView( ) )
+	//	return GetEconItemView( )->GetItemDefinition()->GetItemBaseName();
+	//else
 		return GetWpnData().szPrintName;
 }
 
@@ -1757,7 +1759,7 @@ void CBaseCombatWeapon::SetViewModel()
 //-----------------------------------------------------------------------------
 bool CBaseCombatWeapon::SendWeaponAnim( int iActivity )
 {
-    iActivity = TranslateViewmodelHandActivity( (Activity)iActivity );
+   // iActivity = TranslateViewmodelHandActivity( (Activity)iActivity );
 	//For now, just set the ideal activity and be done with it
 	return SetIdealActivity( (Activity) iActivity );
 }
@@ -3387,15 +3389,15 @@ END_NETWORK_TABLE()
 // 	return GetWpnData().GetAttributeBool( szAttribClassName, GetEconItemView() );
 // }
 
-const CEconItemView* CBaseCombatWeapon::GetEconItemView( void ) const
-{
-	return BaseClass::GetEconItemView();
-}
+//const CEconItemView* CBaseCombatWeapon::GetEconItemView( void ) const
+//{
+//	return BaseClass::GetEconItemView();
+//}
 
-CEconItemView* CBaseCombatWeapon::GetEconItemView( void )
-{
-	return (CEconItemView*)BaseClass::GetEconItemView();
-}
+//CEconItemView* CBaseCombatWeapon::GetEconItemView( void )
+//{
+//	return (CEconItemView*)BaseClass::GetEconItemView();
+//}
 
 int CBaseCombatWeapon::GetReserveAmmoCount( AmmoPosition_t nAmmoPosition, CBaseCombatCharacter * pForcedOwner/* = NULL*/  )
 {
@@ -3526,8 +3528,8 @@ int CBaseCombatWeapon::GetReserveAmmoMax( AmmoPosition_t nAmmoPosition ) const
 
 	switch( nAmmoPosition )
 	{
-	case AMMO_POSITION_PRIMARY: return GetWpnData().GetPrimaryReserveAmmoMax( GetEconItemView() );
-	case AMMO_POSITION_SECONDARY: return GetWpnData().GetSecondaryReserveAmmoMax( GetEconItemView() );
+	case AMMO_POSITION_PRIMARY: return GetWpnData().GetPrimaryReserveAmmoMax( );
+	case AMMO_POSITION_SECONDARY: return GetWpnData().GetSecondaryReserveAmmoMax( );
 	default: Assert(0); return 0;
 	}
 }

@@ -76,6 +76,10 @@
 #include "sixense/in_sixense.h"
 #endif
 
+#if defined( PORTAL2 )// && !defined( CLIENT_DLL )
+#include "portal2/portal_grabcontroller_shared.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -186,7 +190,7 @@ ConVar mp_usehwmmodels( "mp_usehwmmodels", "0", NULL, "Enable the use of the hw 
 extern ConVar sv_turbophysics;
 extern CMoveData *g_pMoveData;
 
-extern ConVar sv_coaching_enabled;
+//extern ConVar sv_coaching_enabled;
 
 bool UseHWMorphModels()
 {
@@ -925,7 +929,7 @@ void CBasePlayer::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, flo
 	ep.m_nSoundEntryVersion = params.m_nSoundEntryVersion;
 
 	EmitSound( filter, entindex(), ep );
-
+#ifdef CSTRIKE15
 	// Step Suit
 	if (CCSPlayer *pThisCsPlayer = dynamic_cast<CCSPlayer *>(this))
 	{
@@ -955,7 +959,7 @@ void CBasePlayer::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, flo
 	epSuitSound.m_nSoundEntryVersion = paramsSuitSound.m_nSoundEntryVersion;
 
 	EmitSound(filter, entindex(), epSuitSound);
-
+#endif
 }
 
 void CBasePlayer::UpdateButtonState( int nUserCmdButtonMask )
@@ -2443,7 +2447,9 @@ void CBasePlayer::SharedSpawn()
 	m_hUseEntity = NULL;
 
 	m_flDuckAmount = 0;
+#ifdef CSTRIKE15
 	m_flDuckSpeed = CS_PLAYER_DUCK_SPEED_IDEAL;
+#endif
 }
 
 
@@ -3202,7 +3208,6 @@ void CBasePlayer::VPhysicsShadowUpdate( IPhysicsObject *pPhysics )
 								}
 							}
 						}
-						}
 					}
 				}
 			}
@@ -3517,11 +3522,11 @@ bool CBasePlayer::IsCoach( void ) const
 
 int CBasePlayer::GetCoachingTeam( void ) const
 {
-	if ( sv_coaching_enabled.GetBool() && ( GetTeamNumber() == TEAM_SPECTATOR ) )
-	{
-		return m_iCoachingTeam;
-	}
-	else
+	//if ( sv_coaching_enabled.GetBool() && ( GetTeamNumber() == TEAM_SPECTATOR ) )
+	//{
+	//	return m_iCoachingTeam;
+	//}
+	//else
 	{ 
 		return 0;
 	}

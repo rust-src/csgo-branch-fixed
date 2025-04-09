@@ -100,13 +100,13 @@ public:
 	void	DrawHeadLabels();
 	float	GetHeadLabelOffset( void ) const;
 	void	SetHeadLabelsDisabled( bool bDisabled ) { m_bHeadLabelsDisabled = bDisabled; }
-
+#ifdef CSTRIKE15
 	// Called when the server registers a change to who this client can hear.
-	bool HandleVoiceMaskMsg(const CCSUsrMsg_VoiceMask &msg);
+	bool HandleVoiceMaskMsg(const CUsrMsg_VoiceMask &msg);
 
 	// The server sends this message initially to tell the client to send their state.
-	bool	HandleReqStateMsg(const CCSUsrMsg_RequestState &msg);
-
+	bool	HandleReqStateMsg(const CUsrMsg_RequestState &msg);
+#endif
 
 // Squelch mode functions.
 public:

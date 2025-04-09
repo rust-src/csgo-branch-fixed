@@ -25,7 +25,7 @@ QAngle C_PropWeightedCube::PreferredCarryAngles( void )
 	static QAngle s_prefAngles;
 	s_prefAngles = (m_qPreferredPlayerCarryAngles.x < FLT_MAX) ? m_qPreferredPlayerCarryAngles : vec3_angle;
 
-	CBasePlayer *pPlayer = GetPlayerHoldingEntity( this );
+	CBasePlayer* pPlayer = GetPlayerHoldingEntity( this );
 	if ( pPlayer )
 	{
 		Vector vecRight;

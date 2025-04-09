@@ -123,11 +123,11 @@ public:
 
 #if defined ( CLIENT_DLL )
 	C_ViewmodelAttachmentModel *AddViewmodelArmModel( const char *pszModel, int nSkintoneIndex = -1 );
-	C_ViewmodelAttachmentModel* FindArmModelForLoadoutPosition( loadout_positions_t nPosition ) const;
+	//C_ViewmodelAttachmentModel* FindArmModelForLoadoutPosition( loadout_positions_t nPosition ) const;
 #endif
-	void					AddViewmodelLabel( CEconItemView *pItem );
-	void					AddViewmodelStatTrak( CEconItemView *pItem, int nStatTrakType, int nWeaponID, AccountID_t holderAcctId );
-	void					AddViewmodelStickers( CEconItemView *pItem, int nWeaponID );
+	void					AddViewmodelLabel( );
+	void					AddViewmodelStatTrak( int nStatTrakType, int nWeaponID, AccountID_t holderAcctId );
+	void					AddViewmodelStickers( int nWeaponID );
 	bool					ViewmodelStickersAreValid( int nWeaponID );
 
 	void					RemoveViewmodelArmModels( void );
@@ -200,15 +200,15 @@ public:
 	virtual	bool			GetAttachment( int number, Vector &origin, QAngle &angles );
 	virtual bool			GetAttachmentVelocity( int number, Vector &originVel, Quaternion &angleVel );
 
-	virtual bool 			Simulate( void );
+	//virtual bool 			Simulate( void );
 
 private:
 	CBaseViewModel( const CBaseViewModel & ); // not defined, not accessible
 
 	void					UpdateParticles( int nSlot );
 
-	virtual void 			OnNewParticleEffect( const char *pszParticleName, CNewParticleEffect *pNewParticleEffect );
-	virtual void 			OnParticleEffectDeleted( CNewParticleEffect *pParticleEffect );
+	//virtual void 			OnNewParticleEffect( const char *pszParticleName, CNewParticleEffect *pNewParticleEffect );
+	//virtual void 			OnParticleEffectDeleted( CNewParticleEffect *pParticleEffect );
 
 	CUtlReference<CNewParticleEffect> m_viewmodelParticleEffect;
 

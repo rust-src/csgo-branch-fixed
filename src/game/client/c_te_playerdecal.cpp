@@ -1,3 +1,5 @@
+//theaperturecat - had to nuke this file, sorry
+
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
@@ -19,15 +21,16 @@
 #include "functionproxy.h"
 #include "imaterialproxydict.h"
 #include "precache_register.h"
-#include "econ/econ_item_schema.h"
+#include "fmtstr.h"
+//#include "econ/econ_item_schema.h"
 #include "tier0/vprof.h"
-#include "playerdecals_signature.h"
+//#include "playerdecals_signature.h"
 #include "tier1/callqueue.h"
 #include "engine/decal_flags.h"
 #if defined( INCLUDE_SCALEFORM )
 #include "cstrike15/Scaleform/HUD/sfhud_rosettaselector.h"
 #endif
-#include "c_cs_player.h"
+//#include "c_cs_player.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -187,7 +190,7 @@ public:
 		m_nTintID = 0;
 		m_flCreationTime = 0;
 		m_nVersion = 0;
-		V_memset( m_ubSignature, 0, sizeof( m_ubSignature ) );
+		//V_memset( m_ubSignature, 0, sizeof( m_ubSignature ) );
 
 		m_bDecalReadyToApplyToWorld = false;
 	}
@@ -242,7 +245,7 @@ public:
 	int m_nTintID;
 	float m_flCreationTime;
 	uint8 m_nVersion;
-	uint8 m_ubSignature[ PLAYERDECALS_SIGNATURE_BYTELEN ];
+	//uint8 m_ubSignature[ PLAYERDECALS_SIGNATURE_BYTELEN ];
 
 private:
 	bool m_bDecalReadyToApplyToWorld;
@@ -350,18 +353,20 @@ bool Helper_CanUseSprays( void )
 	if ( g_bEngineIsHLTV )
 		return false;
 
-	C_CSPlayer *pLocalPlayer = C_CSPlayer::GetLocalCSPlayer();
-	if ( !pLocalPlayer )
+	//C_CSPlayer *pLocalPlayer = C_CSPlayer::GetLocalCSPlayer();
+	//if ( !pLocalPlayer )
 		return false;
 
-	return pLocalPlayer->IsAlive() && ( pLocalPlayer->GetTeamNumber() == TEAM_TERRORIST || pLocalPlayer->GetTeamNumber() == TEAM_CT );
+	//return pLocalPlayer->IsAlive() && ( pLocalPlayer->GetTeamNumber() == TEAM_TERRORIST || pLocalPlayer->GetTeamNumber() == TEAM_CT );
 }
 #endif
 
 // Checks if the local player has an equipped spray and is aiming in a sprayable area with the rosetta menu up and if cooldown is ready
 // Note: rosetta menu code is using this check to determine if we're passing all the validity checks to spray. 
-bool Helper_CanShowPreviewDecal( CEconItemView **ppOutEconItemView = NULL, trace_t* pOutSprayTrace = NULL, Vector *pOutVecPlayerRight = NULL, uint32* pOutUnStickerKitID = NULL )
+bool Helper_CanShowPreviewDecal( trace_t* pOutSprayTrace = NULL, Vector *pOutVecPlayerRight = NULL, uint32* pOutUnStickerKitID = NULL )
 {
+	return false;
+#ifdef CSTRIKE15
 	if ( !Helper_CanUseSprays() )
 		return false;
 
@@ -413,23 +418,24 @@ bool Helper_CanShowPreviewDecal( CEconItemView **ppOutEconItemView = NULL, trace
 		*pOutUnStickerKitID = unStickerKitID;
 
 	return true;
+#endif
 }
 
 void UpdatePreviewDecal()
 {
-	uint32 unStickerKitID;
-	trace_t sprayTrace;
-	Vector playerRight;
-	CEconItemView *pEconItem;
-	if ( !Helper_CanShowPreviewDecal( &pEconItem, &sprayTrace, &playerRight, &unStickerKitID ) )
-		return;
+	//uint32 unStickerKitID;
+	//trace_t sprayTrace;
+	//Vector playerRight;
+	//CEconItemView *pEconItem;
+	//if ( !Helper_CanShowPreviewDecal( &pEconItem, &sprayTrace, &playerRight, &unStickerKitID ) )
+	//	return;
 
-	static CSchemaAttributeDefHandle hAttrSprayTintID( "spray tint id" );
-	uint32 unTintID = 0;
-	if ( !hAttrSprayTintID || !pEconItem->FindAttribute( hAttrSprayTintID, &unTintID ) )
-		unTintID = 0;
+	//static CSchemaAttributeDefHandle hAttrSprayTintID( "spray tint id" );
+	//uint32 unTintID = 0;
+	//if ( !hAttrSprayTintID || !pEconItem->FindAttribute( hAttrSprayTintID, &unTintID ) )
+	//	unTintID = 0;
 
-	QcCreatePreviewDecal( unStickerKitID, unTintID, sprayTrace, &playerRight );
+	//QcCreatePreviewDecal( unStickerKitID, unTintID, sprayTrace, &playerRight );
 }
 
 void OnPlayerDecalsUpdate()
@@ -454,6 +460,8 @@ void OnPlayerDecalsUpdate()
 
 bool C_FEPlayerDecal::BMakeDecalReadyToApplyToWorld()
 {
+	return false;
+#ifdef CSTRIKE15
 	VPROF( "C_FEPlayerDecal::BMakeDecalReadyToApplyToWorld" );
 
 	// Validate the signature before applying on the client
@@ -494,6 +502,7 @@ bool C_FEPlayerDecal::BMakeDecalReadyToApplyToWorld()
 	MakeDecalReady( nKey );
 
 	return true;
+#endif
 }
 
 void C_FEPlayerDecal::ApplyDecalDataToWorld()
@@ -508,7 +517,7 @@ void C_FEPlayerDecal::ApplyDecalDataToWorld()
 
 void QcCreateDecalData( int nKey, int nStickerKitDefinition, int nTintID, bool bDrips, float flCreationTime )
 {
-	const CStickerKit *pStickerKit = GetItemSchema()->GetStickerKitDefinition( nStickerKitDefinition );
+	/*const CStickerKit* pStickerKit = GetItemSchema()->GetStickerKitDefinition(nStickerKitDefinition);
 	if ( pStickerKit && !pStickerKit->sMaterialPath.IsEmpty() )
 	{
 		// TODO: We should convert this to be an async texture load once texture streaming is in.
@@ -531,7 +540,7 @@ void QcCreateDecalData( int nKey, int nStickerKitDefinition, int nTintID, bool b
 			pCQ->QueueCall( CreateDecalData, nKey, texture, pStickerKit->nRarity, nTintID, flCreationTime );
 		else
 			CreateDecalData( nKey, texture, pStickerKit->nRarity, nTintID, flCreationTime );
-	}
+	}*/
 }
 
 void QcCreatePreviewDecal( uint32 nStickerKitDefinition, uint32 nTintID, const trace_t& trace, const Vector* pRight )
@@ -549,7 +558,7 @@ void QcCreatePreviewDecal( uint32 nStickerKitDefinition, uint32 nTintID, const t
 	Vector startPos = trace.endpos + trace.plane.normal;
 
 	CLocalPlayerFilter filter;
-	QcCreateDecalData( g_nPlayerLogoProxyForPreviewKey, nStickerKitDefinition, nTintID, bHasDrips, gpGlobals->curtime - PLAYERDECALS_DURATION_APPLY );
+	//QcCreateDecalData( g_nPlayerLogoProxyForPreviewKey, nStickerKitDefinition, nTintID, bHasDrips, gpGlobals->curtime - PLAYERDECALS_DURATION_APPLY );
 	TE_PlayerDecal( filter, 0.0f, &trace.endpos, &startPos, pRight, g_nPlayerLogoProxyForPreviewKey, trace.GetEntityIndex(), trace.hitbox, EDF_IMMEDIATECLEANUP );
 }
 
@@ -564,7 +573,7 @@ IMaterial * QcCreateDecalDataForModelPreviewPanel( int nStickerKitDefinition, in
 	else
 		DeleteDecalData( g_nPlayerLogoProxyForPreviewKey );
 
-	if ( nStickerKitDefinition > 0 && GetItemSchema() && GetItemSchema()->GetStickerKitDefinition( nStickerKitDefinition ) )
+	if ( false)
 	{
 		char const *szDesiredPreviewMaterialPath = "decals/playerlogo01_modelpreview.vmt";
 		pMatStickerOverride = materials->FindMaterial( szDesiredPreviewMaterialPath, TEXTURE_GROUP_OTHER );
@@ -585,7 +594,7 @@ IMaterial * QcCreateDecalDataForModelPreviewPanel( int nStickerKitDefinition, in
 	if ( !pMatStickerOverride || pMatStickerOverride->IsErrorMaterial() )
 		return NULL;
 
-	QcCreateDecalData( g_nPlayerLogoProxyForPreviewKey, nStickerKitDefinition, nTintID, true, gpGlobals->curtime - PLAYERDECALS_DURATION_APPLY );
+	//QcCreateDecalData( g_nPlayerLogoProxyForPreviewKey, nStickerKitDefinition, nTintID, true, gpGlobals->curtime - PLAYERDECALS_DURATION_APPLY );
 
 	return pMatStickerOverride;
 }
@@ -639,7 +648,7 @@ IMPLEMENT_CLIENTCLASS_DT(C_FEPlayerDecal, DT_FEPlayerDecal, CFEPlayerDecal)
 	RecvPropInt( RECVINFO(m_nTintID)),
 	RecvPropFloat( RECVINFO( m_flCreationTime ) ),
 	RecvPropInt( RECVINFO(m_nVersion)),
-	RecvPropArray3( RECVINFO_ARRAY( m_ubSignature ), RecvPropInt( RECVINFO( m_ubSignature[0] ) ) ),
+	//RecvPropArray3( RECVINFO_ARRAY( m_ubSignature ), RecvPropInt( RECVINFO( m_ubSignature[0] ) ) ),
 END_RECV_TABLE()
 
 
@@ -922,6 +931,7 @@ void Helper_TintColorSpaceToRGBf( uint8 unHSVID, float arrFlcs[3], float flRende
 
 void CPlayerLogoProxy::OnLogoBindInternal( const DecalData_t& decalData, bool bPreviewMaterial )
 {
+	/*
 	Assert( decalData.m_pTex );
 
 	m_pBaseTextureVar->SetTextureValue( decalData.m_pTex );
@@ -943,13 +953,13 @@ void CPlayerLogoProxy::OnLogoBindInternal( const DecalData_t& decalData, bool bP
 			flRenderAlpha = fabsf( flRenderAlpha - 0.5f ); // 0.5..0..0.5..0..0.5
 			flRenderAlpha = cl_playerspray_debug_pulse_alpha_low.GetFloat() + flRenderAlpha/cl_playerspray_debug_pulse_alpha_fraction.GetFloat(); // 12.5% ... 63% opacity cycle over 0.85 sec
 		}
-		else if ( gpGlobals->curtime >= decalData.m_flCreationTime + PLAYERDECALS_DURATION_APPLY )
+		else if ( gpGlobals->curtime >= decalData.m_flCreationTime)// + PLAYERDECALS_DURATION_APPLY )
 		{
-			float flFadeStart = decalData.m_flCreationTime + PLAYERDECALS_DURATION_SOLID;
-			float flFadeEnd = flFadeStart + PLAYERDECALS_DURATION_FADE2;
-			float flFadeAlphaStart = flFadeEnd - PLAYERDECALS_DURATION_FADE1;
-			flDetailBlendFactor = RemapValClamped( flDecalTime, flFadeStart, flFadeEnd, 0.0f, 1.0f );
-			flRenderAlpha = RemapValClamped( flDecalTime, flFadeAlphaStart, flFadeEnd, 1.0f, 0.0f );
+			//float flFadeStart = decalData.m_flCreationTime + PLAYERDECALS_DURATION_SOLID;
+			//float flFadeEnd = flFadeStart + PLAYERDECALS_DURATION_FADE2;
+			//float flFadeAlphaStart = flFadeEnd - PLAYERDECALS_DURATION_FADE1;
+			//flDetailBlendFactor = RemapValClamped( flDecalTime, flFadeStart, flFadeEnd, 0.0f, 1.0f );
+			//flRenderAlpha = RemapValClamped( flDecalTime, flFadeAlphaStart, flFadeEnd, 1.0f, 0.0f );
 		}
 		else
 		{
@@ -994,6 +1004,7 @@ void CPlayerLogoProxy::OnLogoBindInternal( const DecalData_t& decalData, bool bP
 
 	m_pAlphaVar->SetFloatValue( flRenderAlpha );
 	m_pDetailBlendFactorVar->SetFloatValue( flDetailBlendFactor );
+	*/
 }
 
 IMaterial *CPlayerLogoProxy::GetMaterial()

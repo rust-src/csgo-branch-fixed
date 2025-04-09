@@ -17,8 +17,8 @@ $include "$SRCDIR\vpc_scripts\networkbasetypes_include.vpc"
 
 $CustomBuildStep "nut"
 {
-	$CommandLine	"$SRCDIR\devtools\srcsrv\perl\bin\perl.exe $SRCDIR\devtools\bin\texttoarray.pl $(InputPath) g_Script_$(InputName)> $(IntDir)\$(InputName)_nut.h" [$WINDOWS]
-	$CommandLine	"perl $SRCDIR\devtools\bin\texttoarray.pl $(InputPath) g_Script_$(InputName)> $(IntDir)\$(InputName)_nut.h" [$POSIX]
+	$CommandLine	"python $SRCDIR\devtools\bin\texttoarray.py $(InputPath) g_Script_$(InputName)> $(IntDir)\$(InputName)_nut.h" [$WINDOWS]
+	$CommandLine	"python $SRCDIR\devtools\bin\texttoarray.py $(InputPath) g_Script_$(InputName)> $(IntDir)\$(InputName)_nut.h" [$POSIX]
 	$Description	"$(InputFileName) produces $(InputName)_nut.h"
 	$Outputs		"$(IntDir)\$(InputName)_nut.h"
 }
@@ -69,6 +69,46 @@ $Project
 {
 	$Folder	"Source Files"
 	{
+
+		$File	"$SRCDIR\public\zip\XUnzip.h"
+		$File	"$SRCDIR\public\zip\XZip.h" 
+
+		$File	"$SRCDIR\public\XZip.cpp" \
+				"$SRCDIR\public\XUnzip.cpp"\
+				"$SRCDIR\tier1\fileio.cpp"\
+				"$SRCDIR\utils\common\bsplib.cpp"\
+				"$SRCDIR\public\filesystem_init.cpp"\
+				"$SRCDIR\utils\common\filesystem_tools.cpp"\
+				"$SRCDIR\utils\common\cmdlib.cpp"\
+				"$SRCDIR\utils\common\scriplib.cpp"\
+				"$SRCDIR\public\lumpfiles.cpp"\
+				"$SRCDIR\public\zip_utils.cpp"
+		{
+			$Configuration
+			{
+				$Compiler
+				{
+					$Create/UsePrecompiledHeader	"Not Using Precompiled Headers" // This file compiles into several projects, some of which don't use pch
+					// The 'force include' directive used for this project defines the time_t type and methods before 
+					// we can set the #define to force 32 bit time. Adding it here fixes that.
+					$PreprocessorDefinitions		"$BASE;_USE_32BIT_TIME_T"		[!$WIN64]
+				}
+			}
+		}
+		
+
+		$File	"$SRCDIR\common\platforminputdevice.h"
+		$File	"$SRCDIR\common\platforminputdevice.cpp"
+		{
+			$Configuration
+			{
+				$Compiler
+				{
+					$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
+				}
+			}
+		}
+
 		$File	"$SRCDIR\game\shared\achievement_saverestore.cpp"
 		$File	"$SRCDIR\game\shared\achievement_saverestore.h"
 		$File	"$SRCDIR\game\shared\achievementmgr.cpp"

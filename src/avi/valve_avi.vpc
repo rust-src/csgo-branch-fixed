@@ -49,7 +49,7 @@ $Project "valve_avi"
 	{
 		$File	"avi.h"
 		$file   "quicktime.h"
-//		$File	"$SRCDIR\BinkSDK\bink.h"
+		$File	"$SRCDIR\BinkSDK\bink.h"
 		$File	"$SRCDIR\public\pixelwriter.h"
 	}
 
@@ -68,6 +68,7 @@ $Project "valve_avi"
 		$File	"$SRCDIR\DX9SDK\lib\dsound.lib"						[$QUICKTIME_WINDOWS]
 		$File	"$SRCDIR\DX9SDK\lib\dxguid.lib"						[$QUICKTIME_WINDOWS]
 		$File	"$SRCDIR\lib\common\libSDL2_mixer.a"				[$LINUXALL]
+		$File	"$SRCDIR\lib\common\binkw32.lib"
 	}
 
 }

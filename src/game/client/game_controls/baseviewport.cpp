@@ -52,8 +52,9 @@
 
 #ifdef PORTAL2
 #include "radialmenu.h"
-#include "vgui/portal_stats_panel.h"
+//#include "vgui/portal_stats_panel.h"
 #endif // PORTAL2
+#include "c_baseentity.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

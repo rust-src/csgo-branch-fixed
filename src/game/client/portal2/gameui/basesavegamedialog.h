@@ -35,7 +35,7 @@ struct SaveGameDescription_t
 };
 
 
-int SaveReadNameAndComment( FileHandle_t f, char *name, char *comment );
+int SaveReadNameAndComment(FileHandle_t f, char* name, char* comment);
 
 
 //-----------------------------------------------------------------------------
@@ -43,28 +43,28 @@ int SaveReadNameAndComment( FileHandle_t f, char *name, char *comment );
 //-----------------------------------------------------------------------------
 class CBaseSaveGameDialog : public vgui::Frame
 {
-	DECLARE_CLASS_SIMPLE( CBaseSaveGameDialog, vgui::Frame );
+	DECLARE_CLASS_SIMPLE(CBaseSaveGameDialog, vgui::Frame);
 
 public:
-	CBaseSaveGameDialog( vgui::Panel *parent, const char *name );
-	static int __cdecl SaveGameSortFunc( const void *lhs, const void *rhs );
+	CBaseSaveGameDialog(vgui::Panel* parent, const char* name);
+	static int __cdecl SaveGameSortFunc(const void* lhs, const void* rhs);
 
 protected:
 	CUtlVector<SaveGameDescription_t> m_SaveGames;
-	vgui::PanelListPanel *m_pGameList;
+	vgui::PanelListPanel* m_pGameList;
 
 	virtual void OnScanningSaveGames() {}
 
-	void DeleteSaveGame( const char *fileName );
+	void DeleteSaveGame(const char* fileName);
 	void ScanSavedGames();
 	void CreateSavedGamesList();
 	int GetSelectedItemSaveIndex();
-	void AddSaveGameItemToList( int saveIndex );
+	void AddSaveGameItemToList(int saveIndex);
 
-	bool ParseSaveData( char const *pszFileName, char const *pszShortName, SaveGameDescription_t &save );
+	bool ParseSaveData(char const* pszFileName, char const* pszShortName, SaveGameDescription_t& save);
 
 private:
-	MESSAGE_FUNC( OnPanelSelected, "PanelSelected" );
+	MESSAGE_FUNC(OnPanelSelected, "PanelSelected");
 };
 
 

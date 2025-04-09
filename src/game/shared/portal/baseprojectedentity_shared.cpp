@@ -219,7 +219,7 @@ void CBaseProjectedEntity::RecursiveProjection( bool bShouldSpawn, CBaseProjecto
 		{
 			Vector vecForward, vecRight, vecUp;
 			AngleVectors( qModAngles,  &vecForward, &vecRight, &vecUp );
-			g_PortalGameStats.Event_TractorBeam_Project( pExitPortal->m_ptOrigin, vecForward , ToPortalPlayer( pPortalGun->GetOwner() ) );		
+			g_PortalGameStats.Event_TractorBeam_Project( pExitPortal->m_ptOrigin, vecForward, ToPortalPlayer(pPortalGun->GetOwner()));
 		}
 #endif
 	}

@@ -1525,9 +1525,9 @@ extern "C" DLL_EXPORT int LauncherMain( int argc, char **argv )
 
 #if defined (PLATFORM_OSX) || defined (WIN32)
 	// No -dxlevel or +mat_hdr_level allowed in CSGO
-	CommandLine()->RemoveParm( "-dxlevel" );
-	CommandLine()->RemoveParm( "+mat_hdr_level" );
-	CommandLine()->RemoveParm( "+mat_dxlevel" );
+	//CommandLine()->RemoveParm( "-dxlevel" );
+	//CommandLine()->RemoveParm( "+mat_hdr_level" );
+	//CommandLine()->RemoveParm( "+mat_dxlevel" );
 #endif
 
 #ifndef _PS3

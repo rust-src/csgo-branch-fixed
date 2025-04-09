@@ -664,7 +664,11 @@ void CEngineVGui::Init()
 	COM_TimestampedLog( "Loading gameui.dll" );
 
 	// load the GameUI dll
-	const char *szDllName = "GameUI";
+#ifdef PORTAL2
+	const char* szDllName = "Client";// theaperturecat (yes this is evil)
+#else
+	const char* szDllName = "GameUI";
+#endif
 	m_hStaticGameUIModule = g_pFileSystem->LoadModule(szDllName, "EXECUTABLE_PATH", true); // LoadModule() does a GetLocalCopy() call
 	m_GameUIFactory = Sys_GetFactory(m_hStaticGameUIModule);
 	if ( !m_GameUIFactory )

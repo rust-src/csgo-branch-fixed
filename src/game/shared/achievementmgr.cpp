@@ -18,7 +18,8 @@
 #ifdef CLIENT_DLL
 #include "achievement_notification_panel.h"
 #include "c_playerresource.h"
-#include "c_cs_player.h"
+//#include "c_cs_player.h"
+#include "c_baseplayer.h"
 #ifdef TF_CLIENT_DLL
 #include "item_inventory.h"
 #endif //TF_CLIENT_DLL
@@ -31,7 +32,7 @@
 #include "steam/isteamfriends.h"
 #include "steam/isteamutils.h"
 #endif
-#include "cs_gamerules.h"
+//#include "cs_gamerules.h"
 #include "tier3/tier3.h"
 #include "vgui/ILocalize.h"
 
@@ -54,8 +55,9 @@
 
 #include "matchmaking/imatchframework.h"
 #include "tier0/vprof.h"
-#include "cs_weapon_parse.h"
-#include "achievements_cs.h"
+//#include "cs_weapon_parse.h"
+//#include "achievements_cs.h"
+
 
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
@@ -187,7 +189,7 @@ bool CAchievementMgr::Init()
 #endif // _DEBUG
 
 	// register ourselves
-	engine->SetAchievementMgr( GetInstanceInterface() );
+	//engine->SetAchievementMgr( GetInstanceInterface() ); theaperturecat
 
 	// register for events
 #ifdef GAME_DLL
@@ -198,11 +200,13 @@ bool CAchievementMgr::Init()
 	ListenForGameEvent( "player_stats_updated" );
 	ListenForGameEvent( "achievement_write_failed" );
 	ListenForGameEvent( "user_data_downloaded" );
+#ifdef CSTRIKE15
 	for ( int hh = 0; hh < MAX_SPLITSCREEN_PLAYERS; ++hh )
 	{
 		ACTIVE_SPLITSCREEN_PLAYER_GUARD( hh );
-		m_UMCMsgAchievementEvent.Bind< CS_UM_AchievementEvent, CCSUsrMsg_AchievementEvent >( UtlMakeDelegate( MsgFunc_AchievementEvent ) );
+		m_UMCMsgAchievementEvent.Bind< UM_AchievementEvent, CUsrMsg_AchievementEvent >( UtlMakeDelegate( MsgFunc_AchievementEvent ) );
 	}
+#endif
 	ListenForGameEvent( "read_game_titledata" );
 	ListenForGameEvent( "write_game_titledata" );
 	ListenForGameEvent( "reset_game_titledata" ); 
@@ -820,6 +824,7 @@ void CAchievementMgr::SaveGlobalStateIfDirty( )
 
 bool CAchievementMgr::IsAchievementAllowedInGame( int iAchievementID )
 {
+#ifdef CSTRIKE15
 	// Offline modes with trivial bots disable ALL achievements
 	if ( CSGameRules() && !CSGameRules()->IsAwardsProgressAllowedForBotDifficulty() )
 		return false;
@@ -888,6 +893,8 @@ bool CAchievementMgr::IsAchievementAllowedInGame( int iAchievementID )
 		// Other achievements are valid for all game types.
 		return true;
 	}
+	#endif
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -900,11 +907,12 @@ void CAchievementMgr::AwardAchievement( int iAchievementID, int nUserSlot )
 
 #ifdef CLIENT_DLL
 	C_BasePlayer *pPlayerLocal = C_BasePlayer::GetLocalPlayer();
+#ifdef CSTRIKE15
 	C_CSPlayer* pPlayer = ToCSPlayer(pPlayerLocal);
 
 	if( ( pPlayer && pPlayer->IsControllingBot() ) ) // if we're controlling a bot, no achievements for us!
 		return;
-
+#endif
 	CBaseAchievement *pAchievement = GetAchievementByID( iAchievementID, nUserSlot );
 	Assert( pAchievement );
 	if ( !pAchievement )
@@ -1529,6 +1537,7 @@ void CAchievementMgr::PrintAchievementStatus()
 		CFailableAchievement *pFailableAchievement = dynamic_cast<CFailableAchievement *>( pAchievement );
 		if ( pAchievement->IsAchieved() )
 		{
+#ifdef CSTRIKE15
 			CCSBaseAchievement* pCSAchievement = dynamic_cast<CCSBaseAchievement*>(pAchievement);
 
 			// Assign the award date text
@@ -1540,6 +1549,7 @@ void CAchievementMgr::PrintAchievementStatus()
 				Msg( "%-30s", dateBuffer );
 			}
 			else
+#endif
 			{
 				Msg( "%-30s", "ACHIEVED" );
 			}
@@ -2151,8 +2161,8 @@ void CAchievementMgr::ResetAchievement_Internal( CBaseAchievement *pAchievement 
 }
 
 #ifdef CLIENT_DLL
-
-bool MsgFunc_AchievementEvent( const CCSUsrMsg_AchievementEvent &msg )
+#ifdef CSTRIKE15
+bool MsgFunc_AchievementEvent( const CUsrMsg_AchievementEvent &msg )
 {
 	int iAchievementID = (int) msg.achievement();
 	CAchievementMgr *pAchievementMgr = CAchievementMgr::GetInstance();
@@ -2187,7 +2197,7 @@ bool MsgFunc_AchievementEvent( const CCSUsrMsg_AchievementEvent &msg )
 
 	return true;
 }
-
+#endif
 #if ALLOW_ACHIEVEMENTS_WITH_CHEATS
 CON_COMMAND_F( achievement_reset_all, "Clears all achievements", FCVAR_DEVELOPMENTONLY )
 {

@@ -1953,13 +1953,13 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 					{
 						if ( CanEmitCaption( hash ) )
 						{
-							CCSUsrMsg_CloseCaption msg;
+							CUsrMsg_CloseCaption msg;
 							msg.set_hash( hash );
 							msg.set_duration( clamp( (int)( duration * 10.0f ), 0, 65535 ) );
 							msg.set_from_player( 0 );
 
 							// Send caption and duration hint down to client
-							SendUserMessage( filter, CS_UM_CloseCaption, msg );
+							SendUserMessage( filter, UM_CloseCaption, msg );
 						}
 					}
 				}
@@ -3580,7 +3580,7 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 	Q_strncpy( loadfile, filename, sizeof( loadfile ) );
 	// Many vcd's in CSGO have a '.' in the filename, which breaks this call
 	// We're going to assume that all filenames have the correct extension
-//	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
+	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) ); //theaperturecat
 	Q_FixSlashes( loadfile );
 
 	// binary compiled vcd

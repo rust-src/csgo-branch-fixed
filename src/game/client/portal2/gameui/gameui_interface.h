@@ -47,13 +47,24 @@ public:
 
 	virtual void SetLoadingBackgroundDialog( vgui::VPANEL panel );
 
+	// Bonus maps interfaces
+	virtual void BonusMapUnlock(const char* pchFileName = NULL, const char* pchMapName = NULL);
+	virtual void BonusMapComplete(const char* pchFileName = NULL, const char* pchMapName = NULL);
+	virtual void BonusMapChallengeUpdate(const char* pchFileName, const char* pchMapName, const char* pchChallengeName, int iBest);
+	virtual void BonusMapChallengeNames(char* pchFileName, char* pchMapName, char* pchChallengeName);
+	virtual void BonusMapChallengeObjectives(int& iBronze, int& iSilver, int& iGold);
+	virtual void BonusMapDatabaseSave(void);
+	virtual int BonusMapNumAdvancedCompleted(void);
+	virtual void BonusMapNumMedals(int piNumMedals[3]);
+
+
 	// notifications
 	virtual void OnGameUIActivated();
 	virtual void OnGameUIHidden();
 	virtual void OLD_OnConnectToServer( const char *game, int IP, int port );	// OLD: use OnConnectToServer2
 	virtual void OnConnectToServer2( const char *game, int IP, int connectionPort, int queryPort );
 	virtual void OnDisconnectFromServer( uint8 eSteamLoginFailure );
-	virtual void OnLevelLoadingStarted( const char *levelName, bool bShowProgressDialog );
+	virtual void OnLevelLoadingStarted( bool bShowProgressDialog );
 	virtual void OnLevelLoadingFinished( bool bError, const char *failureReason, const char *extendedReason );
 	virtual void OnDisconnectFromServer_OLD( uint8 eSteamLoginFailure, const char *username ) { OnDisconnectFromServer( eSteamLoginFailure ); }
 
@@ -61,6 +72,18 @@ public:
 	virtual bool UpdateProgressBar(float progress, const char *statusText);
 	// Shows progress desc, returns previous setting... (used with custom progress bars )
 	virtual bool SetShowProgressText( bool show );
+
+	virtual void ShowNewGameDialog(int chapter);
+
+	virtual void OnConfirmQuit(void);
+
+	virtual bool IsMainMenuVisible(void);
+
+	// Client DLL is providing us with a panel that it wants to replace the main menu with
+	virtual void SetMainMenuOverride(vgui::VPANEL panel);
+	// Client DLL is telling us that a main menu command was issued, probably from its custom main menu panel
+	virtual void SendMainMenuCommand(const char* pszCommand);
+
 
 	// Allows the level loading progress to show map-specific info
 	virtual void SetProgressLevelName( const char *levelName );

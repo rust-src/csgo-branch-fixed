@@ -202,30 +202,33 @@ bool IsEntityCreationAllowedInScripts( void )
 }
 
 #if defined ( PORTAL2 )
-void __MsgFunc_SetMixLayerTriggerFactor( bf_read &msg )
+bool __MsgFunc_SetMixLayerTriggerFactor( const CUsrMsg_SetMixLayerTriggerFactor &msg )
 {
-	char buf[MAX_PATH];
+//char buf[MAX_PATH];
 
-	msg.ReadString( buf, ARRAYSIZE( buf ), false );
-	int iLayerID = engine->GetMixLayerIndex( buf );
+	//msg.ReadString( buf, ARRAYSIZE( buf ), false );
+	int iLayerID = engine->GetMixLayerIndex( msg.layername().c_str() );
 	if ( iLayerID < 0 )
 	{
-		Warning( "Invalid mix layer passed to SetMixLayerTriggerFactor: '%s'\n", buf ); 
-		return;
+		Warning( "Invalid mix layer passed to SetMixLayerTriggerFactor: '%s'\n", msg.layername().c_str());
+		return true;
 	}
-	msg.ReadString( buf, ARRAYSIZE( buf ), false );
-	int iGroupID = engine->GetMixGroupIndex( buf );
+	//strcpy(buf, );
+		//.ReadString( buf, ARRAYSIZE( buf ), false );
+	int iGroupID = engine->GetMixGroupIndex(msg.mixgroupname().c_str() );
 	if ( iGroupID < 0 )
 	{
-		Warning( "Invalid mix group passed to SetMixLayerTriggerFactor: '%s'\n", buf ); 
-		return;
+		Warning( "Invalid mix group passed to SetMixLayerTriggerFactor: '%s'\n", msg.layername().c_str());
+		return true;
 	}
 
-	engine->SetMixLayerTriggerFactor( iLayerID, iGroupID, msg.ReadFloat() );
+	engine->SetMixLayerTriggerFactor( iLayerID, iGroupID, msg.factor() );
+	return true;
 }
 
 class CSetMixLayerTriggerHelper : public CAutoGameSystem 
 {
+	CUserMessageBinder m_UMCMsgSetMixLayerTriggerFactor;
 	virtual bool Init()
 	{
 		for( int i = 0; i < MAX_SPLITSCREEN_PLAYERS; ++i )

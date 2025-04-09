@@ -29,7 +29,7 @@ unsigned char	*buffer;
 char			name[ 256 ];
 const char		*currenttoken;
 int				tokencount;
-char			token[ 1204 ];
+char			token2[ 1204 ];
 
 class CEffectScriptElement
 {
@@ -130,7 +130,7 @@ private:
 //-----------------------------------------------------------------------------
 	bool IsRootCommand( void )
 	{
-		if ( !Q_stricmp( token, "effect" ) )
+		if ( !Q_stricmp( token2, "effect" ) )
 			return true;
 
 		return false;
@@ -145,7 +145,7 @@ inline bool ParseToken( void )
 		return true;
 	}
 
-	currenttoken = engine->ParseFile( currenttoken, token, sizeof( token ) );
+	currenttoken = engine->ParseFile( currenttoken, token2, sizeof( token2 ) );
 	tokencount++;
 	return currenttoken != NULL ? true : false;
 }
@@ -382,7 +382,7 @@ void CEnvEffectsScript::ParseScriptFile( void )
 	g_bUnget = false;
 	currenttoken = NULL;
 	tokencount = 0;
-	memset( token, 0, 1204 );
+	memset( token2, 0, 1204 );
 	memset( name, 0, 256 );
 
 
@@ -405,18 +405,18 @@ void CEnvEffectsScript::LoadFromBuffer( const char *scriptfile, const char *buff
 	{
 		ParseToken();
 		
-		if ( !token[0] )
+		if ( !token2[0] )
 		{
 			break;
 		}
 
-		if ( !Q_stricmp( token, "effect" ) )
+		if ( !Q_stricmp( token2, "effect" ) )
 		{
 			ParseNewEffect();
 		}
 		else
 		{
-			Warning( "CEnvEffectsScript: Unknown entry type '%s'\n", token );
+			Warning( "CEnvEffectsScript: Unknown entry type '%s'\n", token2 );
 			break;
 		}
 	}
@@ -429,7 +429,7 @@ void CEnvEffectsScript::ParseNewEffect( void )
 	
 	// Effect Group Name
 	ParseToken();
-	Q_strncpy( NewElement.m_szEffectName, token, sizeof( NewElement.m_szEffectName ) );
+	Q_strncpy( NewElement.m_szEffectName, token2, sizeof( NewElement.m_szEffectName ) );
 
 	while ( 1 )
 	{
@@ -442,81 +442,81 @@ void CEnvEffectsScript::ParseNewEffect( void )
 			break;
 		}
 
-		if ( !Q_stricmp( token, "{" ) )
+		if ( !Q_stricmp( token2, "{" ) )
 		{
 			while ( 1 )
 			{
 				ParseToken();
-				if ( !Q_stricmp( token, "}" ) )
+				if ( !Q_stricmp( token2, "}" ) )
 					break;
 
-				if ( !Q_stricmp( token, "type" ) )
+				if ( !Q_stricmp( token2, "type" ) )
 				{
 					ParseToken();
 
-					if ( !Q_stricmp( token, "trail" ) )
+					if ( !Q_stricmp( token2, "trail" ) )
 						NewElement.m_iType = EFFECT_TYPE_TRAIL;
-					else if ( !Q_stricmp( token, "sprite" ) )
+					else if ( !Q_stricmp( token2, "sprite" ) )
 						NewElement.m_iType = EFFECT_TYPE_SPRITE;
 
 					continue;
 				}
 
-				if ( !Q_stricmp( token, "material" ) )
+				if ( !Q_stricmp( token2, "material" ) )
 				{
 					ParseToken();
-					Q_strncpy( NewElement.m_szMaterial, token, sizeof( NewElement.m_szMaterial ) );
+					Q_strncpy( NewElement.m_szMaterial, token2, sizeof( NewElement.m_szMaterial ) );
 					PrecacheModel( NewElement.m_szMaterial );
 
 					continue;
 				}
 
-				if ( !Q_stricmp( token, "attachment" ) )
+				if ( !Q_stricmp( token2, "attachment" ) )
 				{
 					ParseToken();
-					Q_strncpy( NewElement.m_szAttachment, token, sizeof( NewElement.m_szAttachment ) );
+					Q_strncpy( NewElement.m_szAttachment, token2, sizeof( NewElement.m_szAttachment ) );
 
 					continue;
 				}
 
-				if ( !Q_stricmp( token, "color" ) )
+				if ( !Q_stricmp( token2, "color" ) )
 				{
 					ParseToken();
-					sscanf( token, "%i %i %i %i", &NewElement.m_iR, &NewElement.m_iG, &NewElement.m_iB, &NewElement.m_iA );
+					sscanf( token2, "%i %i %i %i", &NewElement.m_iR, &NewElement.m_iG, &NewElement.m_iB, &NewElement.m_iA );
 
 					continue;
 				}
 
-				if ( !Q_stricmp( token, "scale" ) )
+				if ( !Q_stricmp( token2, "scale" ) )
 				{
 					ParseToken();
 
-					NewElement.m_flScale = atof( token );
+					NewElement.m_flScale = atof( token2 );
 					continue;
 				}
 
-				if ( !Q_stricmp( token, "texturescale" ) )
+				if ( !Q_stricmp( token2, "texturescale" ) )
 				{
 					ParseToken();
 
-					float flTextureScale = atof( token );
+					float flTextureScale = atof( token2 );
 					NewElement.m_flTextureRes = (flTextureScale > 0.0f) ? 1.0f / flTextureScale : 0.0f;
 					continue;
 				}
 
-				if ( !Q_stricmp( token, "fadetime" ) )
+				if ( !Q_stricmp( token2, "fadetime" ) )
 				{
 					ParseToken();
 
-					NewElement.m_flFadeTime = atof( token );
+					NewElement.m_flFadeTime = atof( token2 );
 					continue;
 				}
 
-				if ( !Q_stricmp( token, "stopfollowonkill" ) )
+				if ( !Q_stricmp( token2, "stopfollowonkill" ) )
 				{
 					ParseToken();
 
-					NewElement.m_bStopFollowOnKill = !!atoi( token );
+					NewElement.m_bStopFollowOnKill = !!atoi( token2 );
 					continue;
 				}
 

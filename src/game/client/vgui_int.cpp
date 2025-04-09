@@ -529,7 +529,7 @@ void VGui_PreRender()
 
 void VGui_PostRender()
 {
-	int w, h;
+	/*int w, h;
 	CUtlVector< Panel * > list;
 	VGui_GetPanelList( list );
 	FOR_EACH_VALID_SPLITSCREEN_PLAYER( i )
@@ -540,7 +540,7 @@ void VGui_PostRender()
 		list[ i ]->SetBounds( x, y, w, h );
 
 		surface()->SetAbsPosForContext( i, x, y );
-	}
+	}*/
 }
 
 //-----------------------------------------------------------------------------

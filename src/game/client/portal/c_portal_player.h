@@ -21,6 +21,7 @@
 #include "paintable_entity.h"
 #include "portal2/portal_grabcontroller_shared.h"
 #include "portal_shareddefs.h"
+#include "c_trigger_tractorbeam.h"
 
 #if !defined( NO_STEAM ) && !defined( NO_STEAM_GAMECOORDINATOR )
 	#include "portal2_item_inventory.h"

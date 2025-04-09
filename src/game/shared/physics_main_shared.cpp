@@ -80,13 +80,13 @@ ConVar debug_touchlinks( "debug_touchlinks", "0", 0, "Spew touch link activity" 
 #define DebugTouchlinks() false
 
 #endif
-
+#ifdef CSTRIKE15
 ConVar sv_grenade_trajectory("sv_grenade_trajectory", "0", FCVAR_REPLICATED | FCVAR_RELEASE | FCVAR_CHEAT, "Shows grenade trajectory visualization in-game." );
 ConVar sv_grenade_trajectory_time("sv_grenade_trajectory_time", "20", FCVAR_REPLICATED | FCVAR_RELEASE, "Length of time grenade trajectory remains visible.", true, 0.1f, true, 20.0f );
 ConVar sv_grenade_trajectory_time_spectator("sv_grenade_trajectory_time_spectator", "4", FCVAR_REPLICATED | FCVAR_RELEASE, "Length of time grenade trajectory remains visible as a spectator.", true, 0.0f, true, 8.0f );
 ConVar sv_grenade_trajectory_thickness("sv_grenade_trajectory_thickness", "0.2", FCVAR_REPLICATED | FCVAR_RELEASE, "Visible thickness of grenade trajectory arc", true, 0.1f, true, 1.0f );
 ConVar sv_grenade_trajectory_dash("sv_grenade_trajectory_dash", "0", FCVAR_REPLICATED | FCVAR_RELEASE, "Dot-dash style grenade trajectory arc" );
-
+#endif
 //-----------------------------------------------------------------------------
 // Portal-specific hack designed to eliminate re-entrancy in touch functions
 //-----------------------------------------------------------------------------
@@ -1671,7 +1671,7 @@ void CBaseEntity::PhysicsToss( void )
 	if (IsEdictFree())
 		return;
 #endif
-	
+#ifdef CSTRIKE15
 	if ( debugoverlay && sv_grenade_trajectory.GetInt() && (GetFlags() & FL_GRENADE) )
 	{
 		QAngle angGrTrajAngles;
@@ -1690,7 +1690,7 @@ void CBaseEntity::PhysicsToss( void )
 		if (trace.fraction != 1.0f)
 			debugoverlay->AddBoxOverlay( trace.endpos, Vector( -GRENADE_DEFAULT_SIZE, -GRENADE_DEFAULT_SIZE, -GRENADE_DEFAULT_SIZE ), Vector( GRENADE_DEFAULT_SIZE, GRENADE_DEFAULT_SIZE, GRENADE_DEFAULT_SIZE ), QAngle( 0, 0, 0 ), 220, 0, 0, 190, sv_grenade_trajectory_time.GetFloat( ) );
 	}	
-
+#endif
 	if (trace.fraction != 1.0f)
 	{
 		PerformFlyCollisionResolution( trace, move );

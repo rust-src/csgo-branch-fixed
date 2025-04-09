@@ -885,7 +885,7 @@ private:
 	byte			_pinToSiblingCorner;		// the corner of the sibling panel we're pinned to
 	byte			_pinCornerToSibling;		// the corner of our panel that we're pinning to our sibling
 	PHandle			m_pinSibling;
-
+	protected:
 	CUtlString	m_sNavUpName;
 	PHandle		m_NavUp;
 
@@ -906,6 +906,9 @@ private:
 
 	CUtlString m_sNavBackName;
 	PHandle m_NavBack;
+
+protected:
+	static int s_NavLock;
 
 private:
 

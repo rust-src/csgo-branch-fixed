@@ -235,7 +235,7 @@ int CSceneFileCache::FindSceneInImage( const char *pSceneName )
 #endif
 	// Many vcd's in CSGO have a '.' in the filename, which breaks this call
 	// We're going to assume that all filenames have the correct extension
-//	V_SetExtension( szCleanName, ".vcd", sizeof( szCleanName ) );
+	V_SetExtension( szCleanName, ".vcd", sizeof( szCleanName ) ); //theaperturecat
 
 	CRC32_t crcFilename = CRC32_ProcessSingleBuffer( szCleanName, strlen( szCleanName ) );
 

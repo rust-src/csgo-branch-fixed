@@ -14,7 +14,7 @@
 #elif defined( _PS3 )
 #	include "bink_ps3/bink.h"
 #else
-#	include "bink/bink.h"
+#	include "../binksdk/bink.h"
 #endif
 #include "filesystem.h"
 #include "tier1/strtools.h"
@@ -76,8 +76,8 @@ struct PrecachedMovie_t
 };
 
 PathTypeFilter_t GetMoviePathFilter()
-{
-	static ConVarRef force_audio_english( "force_audio_english" );
+{ //theaperturecat
+	//static ConVarRef force_audio_english( "force_audio_english" );
 
 #if defined( _GAMECONSOLE )
 	if ( XBX_IsAudioLocalized() && force_audio_english.GetBool() )
@@ -86,11 +86,11 @@ PathTypeFilter_t GetMoviePathFilter()
 		return FILTER_CULLLOCALIZED_ANY;
 	}
 #else
-	if ( force_audio_english.GetBool() )
-	{
+	//if ( force_audio_english.GetBool() )
+	//{
 		// skip the localized search paths and fall through
-		return FILTER_CULLLOCALIZED_ANY;
-	}
+	//	return FILTER_CULLLOCALIZED_ANY;
+	//}
 #endif
 
 	// No movies exists inside of zips, all the movies are external

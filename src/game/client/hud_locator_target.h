@@ -11,7 +11,7 @@
 #pragma once
 #endif
 
-
+#include "steam/isteamcontroller.h"
 #include "vgui_controls/PHandle.h"
 
 

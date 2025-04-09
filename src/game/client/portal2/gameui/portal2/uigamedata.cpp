@@ -23,10 +23,10 @@
 #include "fmtstr.h"
 #include "vstdlib/random.h"
 #include "utlbuffer.h"
-#include "filesystem/IXboxInstaller.h"
+//#include "filesystem/IXboxInstaller.h"
 #include "tier1/tokenset.h"
 #include "FileSystem.h"
-#include "filesystem/IXboxInstaller.h"
+//#include "filesystem/IXboxInstaller.h"
 
 #include <time.h>
 
@@ -52,7 +52,7 @@
 #endif
 
 #include "netmessages.h"
-#include "cegclientwrapper.h"
+//#include "cegclientwrapper.h"
 
 #ifndef NO_STEAM
 #include "steam/steam_api.h"
@@ -1660,7 +1660,7 @@ bool CUIGameData::AllowSplitscreenMainMenu()
 	return false;
 }
 
-CEG_NOINLINE void CUIGameData::InitiateOnlineCoopPlay( CBaseModFrame *pCaller, char const *szType, char const *szGameMode, char const *szMapName /*= NULL*/ )
+void CUIGameData::InitiateOnlineCoopPlay( CBaseModFrame *pCaller, char const *szType, char const *szGameMode, char const *szMapName /*= NULL*/ )
 {
 	bool bShouldSetMapName = !V_stricmp( "coop_challenge", szGameMode ) || !V_stricmp( "coop_community", szGameMode );
 	if ( !Q_stricmp( szType, "quickmatch" ) )
@@ -1703,7 +1703,7 @@ CEG_NOINLINE void CUIGameData::InitiateOnlineCoopPlay( CBaseModFrame *pCaller, c
 	bOnline = true;
 #endif
 
-	CEG_PROTECT_MEMBER_FUNCTION( CUIGameData_InitiateOnlineCoopPlay );
+	//CEG_PROTECT_MEMBER_FUNCTION( CUIGameData_InitiateOnlineCoopPlay );
 
 #if !defined( _GAMECONSOLE ) && !defined( NO_STEAM )
 	if ( !( steamapicontext && steamapicontext->SteamUser() && steamapicontext->SteamMatchmaking() ) )
@@ -1767,7 +1767,7 @@ CEG_NOINLINE void CUIGameData::InitiateOnlineCoopPlay( CBaseModFrame *pCaller, c
 	g_pMatchFramework->CreateSession( pSettings );
 }
 
-CEG_NOINLINE void CUIGameData::InitiateSinglePlayerPlay( const char *pMapName, const char *pSaveName, const char *szPlayType )
+void CUIGameData::InitiateSinglePlayerPlay( const char *pMapName, const char *pSaveName, const char *szPlayType )
 {
 	// Portal 2 single player server is still driven by session
 	KeyValues *pSettings = KeyValues::FromString(
@@ -1803,7 +1803,7 @@ CEG_NOINLINE void CUIGameData::InitiateSinglePlayerPlay( const char *pMapName, c
 	KeyValues::AutoDelete autodelete( pSettings );
 	g_pMatchFramework->CreateSession( pSettings );
 	
-	CEG_PROTECT_MEMBER_FUNCTION( CUIGameData_InitiateSinglePlayerPlay );
+	//CEG_PROTECT_MEMBER_FUNCTION( CUIGameData_InitiateSinglePlayerPlay );
 
 	// Submit stats about that
 	GameStats_ReportAction( szPlayType, pMapName, 0 );
@@ -1820,9 +1820,9 @@ CEG_NOINLINE void CUIGameData::InitiateSinglePlayerPlay( const char *pMapName, c
 	}
 }
 
-CEG_NOINLINE void CUIGameData::InitiateSplitscreenPlay()
+void CUIGameData::InitiateSplitscreenPlay()
 {
-	CEG_PROTECT_MEMBER_FUNCTION( CUIGameData_InitiateSplitscreenPlay );
+	//CEG_PROTECT_MEMBER_FUNCTION( CUIGameData_InitiateSplitscreenPlay );
 
 	// Start a splitscreen game
 	KeyValues *pSettings = KeyValues::FromString(
@@ -1876,7 +1876,7 @@ CEG_NOINLINE void CUIGameData::InitiateSplitscreenPlay()
 
 CON_COMMAND_F( ui_reloadscheme, "Reloads the resource files for the active UI window", 0 )
 {
-	g_pFullFileSystem->SyncDvdDevCache();
+	//g_pFullFileSystem->SyncDvdDevCache();
 	CUIGameData::Get()->ReloadScheme();
 }
 

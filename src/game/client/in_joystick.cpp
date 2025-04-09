@@ -1550,7 +1550,7 @@ float CInput::HandleMotionControllerInputSmoothing( float flDeadZonePct, float v
 	result = isPositive ? result : result * -1.0f;
 	return result;
 }
-
+#ifdef CSTRIKE15
 //-----------------------------------------------------------------------------
 // Purpose: Apply motion controller to CUserCmd creation
 // Input  : frametime - 
@@ -1823,7 +1823,7 @@ void CInput::MotionControllerMove( float frametime, CUserCmd *cmd )
 	cmd->mousedx = deltaYaw;
 	cmd->mousedy = deltaPitch;
 }
-
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: Apply joystick to CUserCmd creation
 // Input  : frametime - 
@@ -1902,12 +1902,14 @@ void CInput::JoyStickMove( float frametime, CUserCmd *cmd )
 
 	if ( JoyStickActive() )
 	{
+#ifdef CSTRIKE15
 		// If we are using a motion controller, then we use the pointing device for updating the look direction.
 		if( inputsystem->MotionControllerActive())
 		{
 			MotionControllerMove( frametime, cmd );
 		}
 		else
+#endif
 		{
 			JoyStickTurn( cmd,
 				user.m_flPreviousJoystickYaw,

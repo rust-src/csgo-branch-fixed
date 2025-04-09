@@ -12,7 +12,7 @@
 #pragma once
 #endif
 
-#ifdef USE_BLOBULATOR
+#if 1//def USE_BLOBULATOR
 
 #include "../../common/blobulator/Implicit/ImpDefines.h"
 #include "../../common/blobulator/Implicit/ImpRenderer.h"

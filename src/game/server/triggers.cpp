@@ -37,7 +37,7 @@
 #if defined ( PORTAL2 )
 #include "portal_player.h"
 #endif
-#include "weapon_c4.h"
+//#include "weapon_c4.h"
 
 #ifdef HL2_DLL
 #include "hl2_player.h"
@@ -2699,11 +2699,11 @@ void CTriggerBombReset::Spawn(void)
 void CTriggerBombReset::Touch(CBaseEntity *pOther)
 {
 	// If the bomb touches this trigger, tell it to reset to its last known valid position.
-	CC4 *pC4 = dynamic_cast< CC4* > (pOther);
-	if (pC4)
-	{
-		pC4->ResetToLastValidPlayerHeldPosition();
-	}
+	//CC4 *pC4 = dynamic_cast< CC4* > (pOther);
+	//if (pC4)
+	//{
+	//	pC4->ResetToLastValidPlayerHeldPosition();
+	//}
 }
 
 //-----------------------------------------------------------------------------

@@ -22,8 +22,11 @@
 #ifdef TYPE_BOOL
 #undef TYPE_BOOL
 #endif
-
-#include "cstrike15_usermessages.pb.h"
+#ifdef PORTAL
+#include "portal_usermessages.pb.h"
+#else
+#include "hl2_usermessages.pb.h"
+#endif
 
 //-----------------------------------------------------------------------------
 class IUserMessageBinder;

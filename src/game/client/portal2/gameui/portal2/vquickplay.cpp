@@ -11,7 +11,9 @@
 #include "VHybridButton.h"
 #include "vgenericwaitscreen.h"
 #include "VGenericConfirmation.h"
+#ifdef PORTAL2_PUZZLEMAKER
 #include "c_community_coop.h"
+#endif
 #include "vgui/ISurface.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -25,7 +27,7 @@ using namespace BaseModUI;
 
 extern ConVar cm_community_debug_spew;
 extern Color rgbaCommunityDebug;
-
+#ifdef PORTAL2_PUZZLEMAKER
 // ============================================================================
 //
 //  Handles waiting for the quickplay enumeration to complete
@@ -920,3 +922,5 @@ void CQuickPlay::LaunchQuickPlayMap( PublishedFileId_t unFileID )
 
 	m_eState = IDLE;
 }
+
+#endif

@@ -165,7 +165,7 @@ public:
 	}
 
 	// Retrieves the indexed formula from the match system settings file. (MatchSystem.360.res)
-	virtual char const * GetFormulaAverage( int index );
+	virtual char const* GetFormulaAverage(int index);
 
 	// Called by the client to notify matchmaking that it should update matchmaking properties based
 	// on player distribution among the teams.

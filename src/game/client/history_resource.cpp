@@ -12,9 +12,11 @@
 #include <vgui/ISurface.h>
 #include "iclientmode.h"
 #include "vgui_controls/AnimationController.h"
+//#include "generated_proto/portal_usermessages.pb.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
 
 using namespace vgui;
 
@@ -204,7 +206,7 @@ void CHudHistoryResource::AddIconToHistory( int iType, int iId, C_BaseCombatWeap
 //-----------------------------------------------------------------------------
 // Purpose: Handle an item pickup event from the server
 //-----------------------------------------------------------------------------
-bool CHudHistoryResource::MsgFunc_ItemPickup( const CCSUsrMsg_ItemPickup &msg )
+bool CHudHistoryResource::MsgFunc_ItemPickup( const CUsrMsg_ItemPickup &msg )
 {
 	// Add the item to the history
 	AddToHistory( HISTSLOT_ITEM, msg.item().c_str() );
@@ -215,7 +217,7 @@ bool CHudHistoryResource::MsgFunc_ItemPickup( const CCSUsrMsg_ItemPickup &msg )
 //-----------------------------------------------------------------------------
 // Purpose: ammo denied message
 //-----------------------------------------------------------------------------
-bool CHudHistoryResource::MsgFunc_AmmoDenied( const CCSUsrMsg_AmmoDenied &msg )
+bool CHudHistoryResource::MsgFunc_AmmoDenied( const CUsrMsg_AmmoDenied &msg )
 {
 	int iAmmo = msg.ammoidx();
 

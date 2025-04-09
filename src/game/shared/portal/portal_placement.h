@@ -12,7 +12,7 @@
 
 struct CPortalCornerFitData;
 #include "portal_shareddefs.h"
-#include "CegClientWrapper.h"
+//#include "CegClientWrapper.h"
 
 #if defined( CLIENT_DLL )
 class C_Prop_Portal;

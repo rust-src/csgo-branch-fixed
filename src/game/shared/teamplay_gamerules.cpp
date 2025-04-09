@@ -391,7 +391,7 @@ bool CTeamplayRules::PlayerCanHearChat( CBasePlayer *pListener, CBasePlayer *pSp
 		if ( !pSpeaker->IsAlive() )
 		{
 			// [jason] convar allows the dead to speak/chat with the living
-			return ( ( !pListener->IsAlive() || sv_deadtalk.GetBool() ) &&
+			return ( ( !pListener->IsAlive() ) &&
 					 ( PlayerRelationship( pListener, pSpeaker ) == GR_TEAMMATE ) );
 		}
 	}

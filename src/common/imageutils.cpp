@@ -95,7 +95,7 @@ extern void longjmp( jmp_buf, int ) __attribute__((noreturn));
 	// Protobuf headers interfere with the valve min/max/malloc overrides. so we need to do all
 	// this funky wrapping to make the include happy.
 	#include <tier0/valve_minmax_off.h>
-	#include "base_gcmessages.pb.h"
+//	#include "base_gcmessages.pb.h"
 	#include <tier0/valve_minmax_on.h>
 #endif //!defined( _GAMECONSOLE )
 

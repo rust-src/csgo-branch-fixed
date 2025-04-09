@@ -311,6 +311,39 @@ void CGameUI::SetLoadingBackgroundDialog( vgui::VPANEL panel )
 	g_hLoadingBackgroundDialog = panel;
 }
 
+void CGameUI::BonusMapUnlock(const char* pchFileName, const char* pchMapName)
+{
+}
+
+void CGameUI::BonusMapComplete(const char* pchFileName, const char* pchMapName)
+{
+}
+
+void CGameUI::BonusMapChallengeUpdate(const char* pchFileName, const char* pchMapName, const char* pchChallengeName, int iBest)
+{
+}
+
+void CGameUI::BonusMapChallengeNames(char* pchFileName, char* pchMapName, char* pchChallengeName)
+{
+}
+
+void CGameUI::BonusMapChallengeObjectives(int& iBronze, int& iSilver, int& iGold)
+{
+}
+
+void CGameUI::BonusMapDatabaseSave(void)
+{
+}
+
+int CGameUI::BonusMapNumAdvancedCompleted(void)
+{
+	return 0;
+}
+
+void CGameUI::BonusMapNumMedals(int piNumMedals[3])
+{
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: connects to client interfaces
 //-----------------------------------------------------------------------------
@@ -389,7 +422,15 @@ void CGameUI::PlayGameStartupSound()
 	// did we find any?
 	if ( fileNames.Count() > 0 )
 	{
-		int index = Plat_MSTime() % fileNames.Count();
+#ifdef WIN32
+		SYSTEMTIME SystemTime;
+		GetSystemTime(&SystemTime);
+		int index = SystemTime.wMilliseconds % fileNames.Count();
+#else
+		struct timeval tm;
+		gettimeofday(&tm, NULL);
+		int index = tm.tv_usec / 1000 % fileNames.Count();
+#endif
 
 		if ( fileNames.IsValidIndex( index ) && fileNames[index] )
 		{
@@ -519,6 +560,18 @@ void CGameUI::Shutdown()
 	g_VModuleLoader.UnloadPlatformModules();
 
 	ModInfo().FreeModInfo();
+
+	// close the mutex
+	//if (g_hMutex)
+	//{
+	//	Sys_ReleaseMutex(g_hMutex);
+	//}
+	//if (g_hWaitMutex)
+	//{
+	//	Sys_ReleaseMutex(g_hWaitMutex);
+	//}
+
+	//BonusMapsDatabase()->WriteSaveData();
 	
 #ifndef NO_STEAM
 	steamapicontext->Clear();
@@ -784,11 +837,11 @@ void CGameUI::OnDisconnectFromServer( uint8 eSteamLoginFailure )
 //-----------------------------------------------------------------------------
 // Purpose: activates the loading dialog on level load start
 //-----------------------------------------------------------------------------
-void CGameUI::OnLevelLoadingStarted( const char *levelName, bool bShowProgressDialog )
+void CGameUI::OnLevelLoadingStarted(  bool bShowProgressDialog )
 {
 	g_VModuleLoader.PostMessageToAllModules( new KeyValues( "LoadingStarted" ) );
 
-	GetUiBaseModPanelClass().OnLevelLoadingStarted( levelName, bShowProgressDialog );
+	GetUiBaseModPanelClass().OnLevelLoadingStarted( bShowProgressDialog );
 	ShowLoadingBackgroundDialog();
 
 	if ( bShowProgressDialog )
@@ -867,6 +920,8 @@ bool CGameUI::ContinueProgressBar( float progressFraction )
 //-----------------------------------------------------------------------------
 void CGameUI::StopProgressBar(bool bError, const char *failureReason, const char *extendedReason)
 {
+
+
 	if (!g_hLoadingDialog.Get())
 		return;
 
@@ -993,6 +1048,16 @@ void CGameUI::SetSavedThisMenuSession( bool bState )
 }
 
 //-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CGameUI::ShowNewGameDialog(int chapter)
+{
+	//char val[32];
+	//Q_snprintf(val, sizeof(val), "%d", chapter);
+	//GetUiBaseModPanelClass().GetVPanel()->OnOpenNewGameDialog(val); theaperturecat
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: Makes the loading background dialog visible, if one has been set
 //-----------------------------------------------------------------------------
 void CGameUI::ShowLoadingBackgroundDialog()
@@ -1078,4 +1143,37 @@ bool CGameUI::IsPlayingFullScreenVideo()
 bool CGameUI::IsTransitionEffectEnabled()
 {
 	return GetUiBaseModPanelClass().IsTransitionEffectEnabled();
+}
+
+void CGameUI::OnConfirmQuit(void)
+{
+	//BasePanel()->OnOpenQuitConfirmationDialog();
+}
+
+bool CGameUI::IsMainMenuVisible(void)
+{
+	//CBasePanel* pBasePanel = BasePanel();
+	//if (pBasePanel)
+	//	return (pBasePanel->IsVisible() && pBasePanel->GetMenuAlpha() > 0);
+	return true;
+}
+
+// Client DLL is providing us with a panel that it wants to replace the main menu with
+void CGameUI::SetMainMenuOverride(vgui::VPANEL panel)
+{
+	//CBasePanel* pBasePanel = BasePanel();
+	//if (pBasePanel)
+	//{
+	//	pBasePanel->SetMainMenuOverride(panel);
+	//}
+}
+
+// Client DLL is telling us that a main menu command was issued, probably from its custom main menu panel
+void CGameUI::SendMainMenuCommand(const char* pszCommand)
+{
+	//CBasePanel* pBasePanel = BasePanel();
+	//if (pBasePanel)
+	//{
+	//	pBasePanel->RunMenuCommand(pszCommand);
+	//}
 }

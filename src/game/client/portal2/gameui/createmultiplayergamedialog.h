@@ -30,6 +30,7 @@ public:
 
 protected:
 	virtual bool OnOK(bool applyOnly);
+	virtual void OnKeyCodePressed(vgui::KeyCode code);
 
 private:
 	CCreateMultiplayerGameServerPage *m_pServerPage;

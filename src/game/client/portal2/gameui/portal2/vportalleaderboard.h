@@ -152,7 +152,7 @@ private:
 
 	CPortalHUDLeaderboard *m_pHUDLeaderboard;
 	LeaderboardType m_leaderboardType;
-	StatType_t m_statType;
+	//StatType_t m_statType;
 	int	m_nAvatarIndex;
 
 	uint64 m_nSteamID;
@@ -174,7 +174,7 @@ public:
 	~CPortalLeaderboardPanel();
 	int GetCurrentChapterNumber() { return m_nCurrentChapterNumber; }
 	int GetCurrentMapIndex() { return m_nMapIndex; }
-	void UpdateLeaderboards() { m_pLeaderboard = 0; m_bNeedsUpdate = true; }
+	//void UpdateLeaderboards() { m_pLeaderboard = 0; m_bNeedsUpdate = true; }
 	void SetMapIndex( int nMapIndex ) { m_nMapIndex = nMapIndex; }
 	virtual void	OnKeyCodePressed( vgui::KeyCode code );
 	void SelectPanel( PanelSelection_t selectedPanel, bool bForceItemSelect = false );
@@ -247,7 +247,7 @@ private:
 
 	Label				*m_pInvalidLabel;
 	Label				*m_pInvalidLabel2;
-	ImagePanel			*m_pWorkingAnim;
+	vgui::ImagePanel			*m_pWorkingAnim;
 
 	Label				*m_pEveryoneLabel;
 
@@ -262,7 +262,7 @@ private:
 	PanelSelection_t m_currentSelection;
 
 	// the current leaderboard data
-	CPortalLeaderboard* m_pLeaderboard;
+	//CPortalLeaderboard* m_pLeaderboard;
 	LeaderboardType m_CurrentLeaderboardType;
 
 	bool m_bCheated;
@@ -271,7 +271,7 @@ private:
 };
 
 
-void AddAvatarPanelItem( CPortalLeaderboard *pLeaderboard, BaseModUI::GenericPanelList *pStatLists, const PortalLeaderboardItem_t *pData, int nScore, LeaderboardType nType, int nPlayerType, int nAvatarIndex, int nHeight, int nSlot, bool bHUDElement = false );
+//void AddAvatarPanelItem( CPortalLeaderboard *pLeaderboard, BaseModUI::GenericPanelList *pStatLists, const PortalLeaderboardItem_t *pData, int nScore, LeaderboardType nType, int nPlayerType, int nAvatarIndex, int nHeight, int nSlot, bool bHUDElement = false );
 
 };
 

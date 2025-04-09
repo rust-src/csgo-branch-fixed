@@ -38,7 +38,7 @@ public:
 							
 	virtual void CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles );
 	virtual void AddViewModelBob( CBasePlayer *owner, Vector& eyePosition, QAngle& eyeAngles );
-	virtual void ApplyViewModelPitchAndDip( CBasePlayer *owner, Vector& origin, QAngle& angles );
+	//virtual void ApplyViewModelPitchAndDip( CBasePlayer *owner, Vector& origin, QAngle& angles );
 
 #if defined( CSTRIKE15 )
 	virtual void CalcViewModelView( CBasePlayer *owner, const Vector& eyePosition, const QAngle& eyeAngles );

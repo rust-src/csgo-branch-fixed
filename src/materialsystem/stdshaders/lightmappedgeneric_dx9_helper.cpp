@@ -30,6 +30,9 @@ ConVar mat_ambient_light_r( "mat_ambient_light_r", "0.0", FCVAR_CHEAT );
 ConVar mat_ambient_light_g( "mat_ambient_light_g", "0.0", FCVAR_CHEAT );
 ConVar mat_ambient_light_b( "mat_ambient_light_b", "0.0", FCVAR_CHEAT );
 
+extern ConVar r_twopasspaint;
+
+
 static void mat_phong_lightmappedgeneric_changed( IConVar *var, const char *pOldValue, float flOldValue )
 {
 	g_pMaterialSystem->ReloadMaterials( NULL );
@@ -583,6 +586,11 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 				}
 				staticCmdsBuf.BindStandardTexture( SHADER_SAMPLER1, bHDR ? TEXTURE_BINDFLAGS_NONE : TEXTURE_BINDFLAGS_SRGBREAD, TEXTURE_LIGHTMAP );
 
+				if (g_pConfig->m_bPaintInGame && !r_twopasspaint.GetBool())
+				{
+				//	staticCmdsBuf.BindStandardTexture(SHADER_SAMPLER9, bHDR ? TEXTURE_BINDFLAGS_NONE : TEXTURE_BINDFLAGS_SRGBREAD, TEXTURE_PAINT);
+				}
+
 				if ( bSeamlessMapping )
 				{
 					staticCmdsBuf.SetVertexShaderConstant4(
@@ -639,9 +647,9 @@ void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 
 				// PORTAL2 HACK for single pass paint (currently disabled)
 				// Hijack detail blend mode 9 for paint (this blend mode was previously skipped/unused in lightmappedgeneric)
-				if ( g_pConfig->m_bPaintInGame && false )
+				if ( g_pConfig->m_bPaintInGame && !r_twopasspaint.GetBool() )
 				{
-					nDetailBlendMode = DETAIL_BLEND_MODE_MASK_BASE_BY_DETAIL_ALPHA;
+				//	nDetailBlendMode = DETAIL_BLEND_MODE_MASK_BASE_BY_DETAIL_ALPHA;
 				}
 				
 				if( hasFlashlight && ( IsX360() || IsPS3() ) )
@@ -1555,6 +1563,6 @@ void DrawLightmappedGeneric_DX9_FastPath( int *dynVSIdx, int *dynPSIdx, CBaseVSS
 	SET_DYNAMIC_PIXEL_SHADER_COMBO( CASCADE_SIZE, 0 );
 	SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, lightmappedgeneric_ps30 );
 
-	*dynVSIdx = _vshIndex.GetIndex();
-	*dynPSIdx = _pshIndex.GetIndex();
+	//*dynVSIdx = _vshIndex.GetIndex(); //theaperturecat - this is going to break csm isnt it
+	//*dynPSIdx = _pshIndex.GetIndex();
 }

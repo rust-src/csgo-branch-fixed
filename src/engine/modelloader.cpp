@@ -599,6 +599,29 @@ void CMapLoadHelper::Init( model_t *pMapModel, const char *pPathName )
 	}
 
 	g_pFileSystem->Read( &s_MapHeader, sizeof( BSPHeader_t ), s_MapFileHandle );
+
+	if (s_MapHeader.ident == 30)
+	{
+		hl_BSPHeader_t hlHeader;
+		memcpy(&hlHeader, &s_MapHeader, sizeof(hl_BSPHeader_t));
+		memset(&s_MapHeader, 0, sizeof(BSPHeader_t));
+		for (int i = 0; i < 15; i++)
+		{
+			s_MapHeader.lumps[i].fileofs = hlHeader.lumps[i].fileofs;
+			s_MapHeader.lumps[i].filelen = hlHeader.lumps[i].filelen;
+		}
+		
+		s_MapHeader.m_nVersion = 10;
+		s_MapHeader.ident = IDBSPHEADER;
+		
+		
+		//s_MapHeader.lumps
+		//g_pFileSystem->Close(s_MapFileHandle);
+		//s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
+		//Warning("Experimental hl map support is being used");//theaperturecat
+		//return;
+	}
+
 	if ( s_MapHeader.ident != IDBSPHEADER )
 	{
 		g_pFileSystem->Close( s_MapFileHandle );
@@ -705,6 +728,12 @@ void CMapLoadHelper::InitFromMemory( model_t *pMapModel, const void *pData, int 
 	g_ModelLoader.m_worldBrushData.m_nBSPFileSize = nDataSize;
 
 	V_memcpy( &s_MapHeader, pData, sizeof( BSPHeader_t ) );
+
+	if (s_MapHeader.ident == 30)
+	{
+		Warning("Experimental hl map support is being used");//theaperturecat
+		return;
+	}
 
 	if ( s_MapHeader.ident != IDBSPHEADER )
 	{
@@ -4228,7 +4257,7 @@ model_t	*CModelLoader::LoadModel( model_t *mod, REFERENCETYPE *pReferencetype )
 				// PORTAL2: we aren't using per-map excludes, we just need a few textures excluded in SP
 				if ( V_stristr( m_szBaseName, "sp_" ) )
 				{
-					v_snprintf( szExcludePath, sizeof( szExcludePath ), "//MOD/maps/sp_exclude.lst" );
+					V_snprintf( szExcludePath, sizeof( szExcludePath ), "//MOD/maps/sp_exclude.lst" );
 				}
 #else
 				char szExcludePath[MAX_PATH];
@@ -6141,6 +6170,12 @@ bool CModelLoader::Map_IsValid( char const *pBaseMapName, bool bQuiet /* = false
 		memset( &header, 0, sizeof( header ) );
 		g_pFileSystem->Read( &header, sizeof( BSPHeader_t ), mapfile );
 		g_pFileSystem->Close( mapfile );
+
+		if (header.ident == 30)
+		{
+			Warning("Experimental hl map support is being used");//theaperturecat
+			return true;
+		}
 
 		if ( header.ident == IDBSPHEADER )
 		{

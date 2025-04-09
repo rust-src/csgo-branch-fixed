@@ -337,7 +337,7 @@ void CLeaderboardMapItem::NavigateTo( void )
 	}
 	SetSelected( true );
 	m_pLeaderboard->SetMapIndex( m_nMapIndex );
-	m_pLeaderboard->UpdateLeaderboards();
+	//m_pLeaderboard->UpdateLeaderboards();
 
 	BaseClass::NavigateTo();
 }
@@ -563,7 +563,7 @@ BaseClass( pParent, pPanelName ), m_autodelete_pResourceLoadConditions( (KeyValu
 	m_nCurrentChapterNumber = 1;
 	m_nMapIndex = 0;
 	m_nUnlockedSPChapters = 0;
-	m_pLeaderboard = NULL;
+	//m_pLeaderboard = NULL;
 	m_pChapterListButton = NULL;
 	m_pLeaderboardListButton = NULL;
 	m_pPortalGraph = NULL;
@@ -594,7 +594,7 @@ BaseClass( pParent, pPanelName ), m_autodelete_pResourceLoadConditions( (KeyValu
 	SetFooterEnabled( true );
 	UpdateFooter();
 
-	m_pPortalGraph = new CPortalLeaderboardGraphPanel( this, "PortalGraph", LEADERBOARD_PORTAL );
+	/*m_pPortalGraph = new CPortalLeaderboardGraphPanel(this, "PortalGraph", LEADERBOARD_PORTAL);
 	if ( m_pPortalGraph )
 	{
 		m_pPortalGraph->SetVisible( false );
@@ -606,7 +606,7 @@ BaseClass( pParent, pPanelName ), m_autodelete_pResourceLoadConditions( (KeyValu
 	{
 		m_pTimeGraph->SetVisible( false );
 		m_pTimeGraph->SetKeyBoardInputEnabled( false );
-	}
+	}*/
 }
 
 //=============================================================================
@@ -843,7 +843,7 @@ void CPortalLeaderboardPanel::OnKeyCodePressed( KeyCode code )
 			
 			if ( m_leaderboardState == STATE_MAIN_MENU )
 			{
-				PortalLeaderboardManager()->CleanupLeaderboard();
+				//PortalLeaderboardManager()->CleanupLeaderboard();
 
 				m_bCommittedAction = true;
 			}
@@ -1138,115 +1138,15 @@ void CPortalLeaderboardPanel::OnThink()
 
 			// if we need an update, clear all previous data
 			ClearStats();
-			m_pPortalGraph->ClearData();
-			m_pTimeGraph->ClearData();
-
+			//m_pPortalGraph->ClearData();
+			//m_pTimeGraph->ClearData();
+//
 			// get the leaderboard manager
-			if ( !m_pLeaderboard )
+			//if ( !m_pLeaderboard )
 			{
-				m_pLeaderboard = PortalLeaderboardManager()->GetLeaderboard( pMapName ); 
+				//m_pLeaderboard = PortalLeaderboardManager()->GetLeaderboard( pMapName ); 
 			}
 
-			if ( m_pLeaderboard )
-			{
-				if ( m_pLeaderboard->IsInvalid() || cl_leaderboard_fake_io_error.GetBool() || cl_leaderboard_fake_no_data.GetBool() )
-				{
-					if ( m_pInvalidLabel )
-					{
-						if ( m_pLeaderboard->WasIOError() || cl_leaderboard_fake_io_error.GetBool() )
-						{
-							m_pInvalidLabel->SetText( "#PORTAL2_Leaderboards_Invalid" );
-						}
-						else
-						{
-							m_pInvalidLabel->SetText( "#PORTAL2_Leaderboards_Empty" );
-						}
-
-						m_pInvalidLabel->SetVisible( true );
-
-						if( m_pInvalidLabel2 )
-						{
-							m_pInvalidLabel2->SetVisible( false );
-						}
-					}
-
-					UpdateFooter();
-					m_bNeedsUpdate = false;
-					bViewSpinner = false;
-					bHideInvalidLabels = false;
-				}
-				else if( !m_pLeaderboard->IsQuerying() )
-				{
-					SetGraphData( m_pPortalGraph, LEADERBOARD_PORTAL );
-					SetGraphData( m_pTimeGraph, LEADERBOARD_TIME );
-					SetPanelStats();
-
-					// It's time for glados to speak
-					if( m_leaderboardState == STATE_END_OF_LEVEL )
-					{
-						// If we haven't cheated, let Glados speak
-						if( !m_bCheated )
-						{
-							m_pLeaderboard->SetGladosIsAllowedToSpeak( true );
-						}
-						else
-						{
-							// If we have cheated, then fake that glados has spoken so that she won't be able to speak
-							// so long as we have this leaderboard
-							m_pLeaderboard->SetGladosHasSpoken();
-						}
-					}
-
-#ifdef BUILD_GLOBAL_LEADERBOARD_STEAM_CONFIG
-					char szBuff[ 1024 ];
-					char szFriendlyName[ 256 ];
-					CLeaderboardMapItem *pPanel = static_cast< CLeaderboardMapItem *>( m_pMapList->GetSelectedPanelItem() );
-					Label *pLabel = dynamic_cast< Label* >( pPanel->FindChildByName( "LblChapterName" ) );
-
-					for ( int i = 0; i < NUM_LEADERBOARDS; ++i )
-					{
-						pLabel->GetText( szFriendlyName, sizeof( szFriendlyName ) );
-						V_strncat( szFriendlyName, i == LEADERBOARD_PORTAL ? ": Portals" : ": Time", sizeof(szFriendlyName) );
-
-						SteamLeaderboard_t hLeaderboard = m_pLeaderboard->GetLeaderboardHandle( (LeaderboardType)i );
-						int nHandle = static_cast< int >( hLeaderboard );
-
-						V_snprintf( szBuff, sizeof(szBuff), "%i => array( 'name' => '%s', 'valueType' => '%s', 'globalLimit' => 200 ),\n", 
-									nHandle, szFriendlyName, ( i == LEADERBOARD_PORTAL ? "qty" : "time_ms" ) );
-
-						FileHandle_t hFile = g_pFullFileSystem->Open( BUILD_GLOBAL_LEADERBOARD_STEAM_CONFIG, "a" );
-						if ( hFile )
-						{
-							g_pFullFileSystem->Write( szBuff, V_strlen( szBuff ), hFile );
-							g_pFullFileSystem->Close( hFile );
-						}
-					}
-#endif // BUILD_GLOBAL_LEADERBOARD_STEAM_CONFIG
-
-					// display the improved leaderboard and force its stat update
-					if ( V_strcmp( engine->GetLevelNameShort(), m_pLeaderboard->GetMapName() ) == 0 && m_pLeaderboardListButton )
-					{
-						// If Glados is allowed to speak, and this is the end of the level, and cheats weren't detected
-						if( m_pLeaderboard->IsGladosAllowedToSpeak() && m_leaderboardState == STATE_END_OF_LEVEL && !m_bCheated )
-						{
-							char szGladosLine [256];
-							int nImprovedLeaderboardIndex;
-							m_pLeaderboard->DoGladosSpokenReaction(szGladosLine, &nImprovedLeaderboardIndex);
-							vgui::surface()->PlaySound( szGladosLine );
-
-							m_pLeaderboardListButton->SetCurrentSelectionIndex( nImprovedLeaderboardIndex );
-							m_pLeaderboardListButton->ForceCurrentSelectionCommand();
-						}
-					}
-				
-					InvalidateLayout( false );
-					m_bNeedsUpdate = false;
-					bViewSpinner = false;
-
-					UpdateFooter();
-				}
-			}
-	
 			if( bHideInvalidLabels )
 			{
 				if ( m_pInvalidLabel )
@@ -1265,8 +1165,8 @@ void CPortalLeaderboardPanel::OnThink()
 	else
 	{
 		ClearStats();
-		m_pPortalGraph->ClearData();
-		m_pTimeGraph->ClearData();
+		//m_pPortalGraph->ClearData();
+		//m_pTimeGraph->ClearData();
 
 		if ( m_pInvalidLabel )
 		{
@@ -1392,8 +1292,7 @@ void CPortalLeaderboardPanel::UpdateFooter()
 		
 
 		// set the leaderboard switching button for consoles
-		if ( !IsPC() && m_bOnline && m_pLeaderboard && !m_pLeaderboard->IsInvalid() && !m_pLeaderboard->IsQuerying()
-			&& !cl_leaderboard_fake_io_error.GetBool() && !cl_leaderboard_fake_no_data.GetBool() )
+		if ( false )
 		{
 			visibleButtons |= FB_YBUTTON;
 			const char* pLeaderboardText = m_CurrentLeaderboardType == LEADERBOARD_PORTAL ? "#PORTAL2_ViewTime" : "#PORTAL2_ViewPortals";
@@ -1418,7 +1317,7 @@ void CPortalLeaderboardPanel::UpdateFooter()
 //=============================================================================
 void CPortalLeaderboardPanel::SetMapList()
 {
-	KeyValues *pChallengeMapList = PortalLeaderboardManager()->GetChallengeMapsFromChapter( m_nCurrentChapterNumber, !m_bSinglePlayerMode );
+	KeyValues* pChallengeMapList = NULL;//PortalLeaderboardManager()->GetChallengeMapsFromChapter( m_nCurrentChapterNumber, !m_bSinglePlayerMode );
 
 	if ( !pChallengeMapList )
 		return;
@@ -1456,7 +1355,7 @@ void CPortalLeaderboardPanel::SetNextMap()
 {
 	int nCurrentChapterNumber = CBaseModPanel::GetSingleton().MapNameToChapter( engine->GetLevelNameShort(), m_bSinglePlayerMode );
 
-	KeyValues *pChallengeMapList = PortalLeaderboardManager()->GetChallengeMapsFromChapter( nCurrentChapterNumber, !m_bSinglePlayerMode );
+	KeyValues* pChallengeMapList = NULL;//PortalLeaderboardManager()->GetChallengeMapsFromChapter( nCurrentChapterNumber, !m_bSinglePlayerMode );
 	if ( pChallengeMapList )
 	{
 		int nChapter = nCurrentChapterNumber;
@@ -1475,13 +1374,13 @@ void CPortalLeaderboardPanel::SetNextMap()
 			{
 				// Next chapter
 				nChapter++;
-				pChallengeMapList = PortalLeaderboardManager()->GetChallengeMapsFromChapter( nChapter, !m_bSinglePlayerMode );
+				pChallengeMapList = NULL;//PortalLeaderboardManager()->GetChallengeMapsFromChapter( nChapter, !m_bSinglePlayerMode );
 
 				if ( !pChallengeMapList )
 				{
 					// Wrap to first chapter
 					nChapter = 1;
-					pChallengeMapList = PortalLeaderboardManager()->GetChallengeMapsFromChapter( nChapter, !m_bSinglePlayerMode );
+					pChallengeMapList = NULL;//PortalLeaderboardManager()->GetChallengeMapsFromChapter( nChapter, !m_bSinglePlayerMode );
 				}
 
 				// there should always be another map, or another (or the first) chapter
@@ -1500,7 +1399,7 @@ void CPortalLeaderboardPanel::SetNextMap()
 				{
 					// go to first map of first chapter
 					nChapter = 1;
-					pChallengeMapList = PortalLeaderboardManager()->GetChallengeMapsFromChapter( nChapter, !m_bSinglePlayerMode );
+					pChallengeMapList = NULL;//PortalLeaderboardManager()->GetChallengeMapsFromChapter( nChapter, !m_bSinglePlayerMode );
 					pNextMap = pChallengeMapList->GetFirstSubKey(); // should always be unlocked ( to be able to play in the 1st place)
 				}
 			}
@@ -1527,16 +1426,16 @@ void CPortalLeaderboardPanel::SetNextMap()
 
 void CPortalLeaderboardPanel::ResetTempScoreUpdates( void )
 {
-	const char *pMap = CPortalLeaderboardManager::GetTempScoresMap();
-	if ( pMap && pMap[ 0 ] != '\0' && V_strcmp( pMap, engine->GetLevelNameShort() ) == 0 )
-	{
+	//const char *pMap = CPortalLeaderboardManager::GetTempScoresMap();
+	//if ( pMap && pMap[ 0 ] != '\0' && V_strcmp( pMap, engine->GetLevelNameShort() ) == 0 )
+	//{
 		return;
-	}
+	//}
 
-	g_nPortalScoreTempUpdate = -1;
-	g_nTimeScoreTempUpdate = -1;
-	g_nPortalScoreTempMostRecent = -1;
-	g_nTimeScoreTempMostRecent = -1;
+	//g_nPortalScoreTempUpdate = -1;
+	//g_nTimeScoreTempUpdate = -1;
+	//g_nPortalScoreTempMostRecent = -1;
+	//g_nTimeScoreTempMostRecent = -1;
 }
 
 static void __MsgFunc_ScoreboardTempUpdate( bf_read &msg )
@@ -1558,9 +1457,9 @@ static void __MsgFunc_ScoreboardTempUpdate( bf_read &msg )
 
 	g_nTimeScoreTempMostRecent = nTimeScore;
 
-	CPortalLeaderboardManager::SetTempScoresMap( engine->GetLevelNameShort() );
+	//CPortalLeaderboardManager::SetTempScoresMap( engine->GetLevelNameShort() );
 }
-USER_MESSAGE_REGISTER( ScoreboardTempUpdate );
+//USER_MESSAGE_REGISTER( ScoreboardTempUpdate );
 
 
 static void ChallengeModeCheatsOKCallback()
@@ -1597,7 +1496,7 @@ static void __MsgFunc_ChallengeModeCheatSession( bf_read& /*msg*/ )
 
 	GameUI().ActivateGameUI();
 }
-USER_MESSAGE_REGISTER( ChallengeModeCheatSession );
+//USER_MESSAGE_REGISTER( ChallengeModeCheatSession );
 
 
 static void __MsgFunc_ChallengeModeCloseAllUI( bf_read& /*msg*/ )
@@ -1618,7 +1517,7 @@ static void __MsgFunc_ChallengeModeCloseAllUI( bf_read& /*msg*/ )
 	GameUI().HideGameUI();
 	CBaseModPanel::GetSingleton().CloseAllWindows();
 }
-USER_MESSAGE_REGISTER( ChallengeModeCloseAllUI );
+//USER_MESSAGE_REGISTER( ChallengeModeCloseAllUI );
 
 
 
@@ -1629,24 +1528,24 @@ void CPortalLeaderboardPanel::SetPanelStats()
 	{
 		if ( m_pPortalGraph )
 		{
-			m_pPortalGraph->SetVisible( true );
+			//m_pPortalGraph->SetVisible( true );
 		}
 
 		if ( m_pTimeGraph )
 		{
-			m_pTimeGraph->SetVisible( false );
+			//m_pTimeGraph->SetVisible( false );
 		}
 	}
 	else if ( m_CurrentLeaderboardType == LEADERBOARD_TIME )
 	{
 		if ( m_pTimeGraph )
 		{
-			m_pTimeGraph->SetVisible( true );
+			//m_pTimeGraph->SetVisible( true );
 		}
 
 		if ( m_pPortalGraph )
 		{
-			m_pPortalGraph->SetVisible( false );
+			//m_pPortalGraph->SetVisible( false );
 		}
 	}
 
@@ -1665,26 +1564,26 @@ void CPortalLeaderboardPanel::SetPanelStats()
 	{
 		m_pStatList->RemoveAllPanelItems();
 
-		if ( !m_pLeaderboard )
+		if ( true )
 			return;
 
-		m_pLeaderboard->UpdateXUIDs();
+		//m_pLeaderboard->UpdateXUIDs();
 
-		int nPlayerIndex = m_pLeaderboard->GetCurrentPlayerIndex( m_CurrentLeaderboardType );
+		int nPlayerIndex = 0;//m_pLeaderboard->GetCurrentPlayerIndex( m_CurrentLeaderboardType );
 		int nOldIndex = -2;
 		int nPlacementIndex = nPlayerIndex;
 		int nIndexList[ 3 ] = { 0, 1, 2 };
 
 		// get this player's score
 		const PortalLeaderboardItem_t *pPlayerData[ 2 ];
-		pPlayerData[ 0 ] = m_pLeaderboard->GetCurrentBest( m_CurrentLeaderboardType );
-		pPlayerData[ 1 ] = m_pLeaderboard->GetCurrentBest( m_CurrentLeaderboardType, 1 );
+		//pPlayerData[0] = NULL;//m_pLeaderboard->GetCurrentBest( m_CurrentLeaderboardType );
+		//pPlayerData[1] = NULL;//m_pLeaderboard->GetCurrentBest( m_CurrentLeaderboardType, 1 );
 		const PortalLeaderboardItem_t *pData;
 
 		int nSpecialScore = -1;
 		PortalLeaderboardItem_t tempUpdate;
 
-		if ( V_strcmp( engine->GetLevelNameShort(), m_pLeaderboard->GetMapName() ) == 0 )
+		if (V_strcmp(engine->GetLevelNameShort(), "") == 0)
 		{
 			if ( g_nPortalScoreTempUpdate != -1 && m_CurrentLeaderboardType == LEADERBOARD_PORTAL )
 			{
@@ -1709,18 +1608,18 @@ void CPortalLeaderboardPanel::SetPanelStats()
 			}
 #endif //#ifdef _GAMECONSOLE
 
-			if ( nSpecialScore != -1 && ( !pPlayerData[ iSlot - nOffset ] || nSpecialScore < pPlayerData[ iSlot - nOffset ]->m_iScore ) )
+			if ( false)//nSpecialScore != -1 && ( !pPlayerData[ iSlot - nOffset ] || nSpecialScore < pPlayerData[ iSlot - nOffset ]->m_iScore ) )
 			{
-				V_strncpy( tempUpdate.m_szName, "Fixme: no name", sizeof(tempUpdate.m_szName) );
+				//V_strncpy( tempUpdate.m_szName, "Fixme: no name", sizeof(tempUpdate.m_szName) );
 
 				if ( pPlayerData[ iSlot - nOffset ] )
 				{
 					tempUpdate = *(pPlayerData[ iSlot - nOffset ]);
 				}
 			
-				tempUpdate.m_iScore = nSpecialScore;
+				//tempUpdate.m_iScore = nSpecialScore;
 #if !defined( NO_STEAM )
-				tempUpdate.m_steamIDUser = 0ull;
+				//tempUpdate.m_steamIDUser = 0ull;
 #elif defined( _X360 )
 				tempUpdate.m_xuid = 0ull;
 #endif
@@ -1738,15 +1637,15 @@ void CPortalLeaderboardPanel::SetPanelStats()
 					if ( nOldIndex == -1 )
 					{
 						int nNewIndex = 0;
-						pData = m_pLeaderboard->GetPlayerAtIndex( nNewIndex, m_CurrentLeaderboardType );
+						pData = NULL;// m_pLeaderboard->GetPlayerAtIndex( nNewIndex, m_CurrentLeaderboardType );
 						// loop thru existing scores to find player's new index
 						while ( pData )
 						{
-							if ( pData->m_iScore >= pPlayerData[ iSlot - nOffset ]->m_iScore )
+							//if ( pData->m_iScore >= pPlayerData[ iSlot - nOffset ]->m_iScore )
 								break;
 
 							++nNewIndex;
-							pData = m_pLeaderboard->GetPlayerAtIndex( nNewIndex, m_CurrentLeaderboardType );
+							pData = NULL;//m_pLeaderboard->GetPlayerAtIndex( nNewIndex, m_CurrentLeaderboardType );
 						}
 						nPlayerIndex = nNewIndex;
 					}
@@ -1756,18 +1655,18 @@ void CPortalLeaderboardPanel::SetPanelStats()
 					for ( int i = nOldIndex; i >= 0; --i )
 					{
 						// get the player at each position beneath the old score's position
-						pData = m_pLeaderboard->GetPlayerAtIndex( i, m_CurrentLeaderboardType );
+						pData = NULL;// m_pLeaderboard->GetPlayerAtIndex( i, m_CurrentLeaderboardType );
 						// if the new score is better or equal to the lower position
-						if ( pData && pData->m_iScore >= pPlayerData[ iSlot - nOffset ]->m_iScore )
+						//if ( pData && pData->m_iScore >= pPlayerData[ iSlot - nOffset ]->m_iScore )
 						{
 							// set the player's new position
 							nPlayerIndex = i; 
 						}
-						else
-						{
+						//else
+						//{
 							// if we've found a better score
 							break; // go no further
-						}
+						//}
 					}
 				}
 			}
@@ -1789,14 +1688,14 @@ void CPortalLeaderboardPanel::SetPanelStats()
 			}
 			else if ( nPlayerIndex == 1 ) // if player is #1 check for a tie w/ #0
 			{
-				pData = m_pLeaderboard->GetPlayerAtIndex( 0, m_CurrentLeaderboardType );
+				pData = NULL;//m_pLeaderboard->GetPlayerAtIndex( 0, m_CurrentLeaderboardType );
 				Assert( pData );
-				if ( pPlayerData[ 0 ]->m_iScore <= pData->m_iScore )
+				//if ( pPlayerData[ 0 ]->m_iScore <= pData->m_iScore )
 				{
 					nIndexList[ 0 ] = nPlacementIndex;
 					nIndexList[ 1 ] = 0;
 				}
-				else
+				//else
 				{
 					nIndexList[ 1 ] = nPlacementIndex;
 				}
@@ -1809,24 +1708,24 @@ void CPortalLeaderboardPanel::SetPanelStats()
 			else if ( nPlayerIndex > 1 )
 			{
 				// check for a tie w/ #0
-				pData = m_pLeaderboard->GetPlayerAtIndex( 0, m_CurrentLeaderboardType );
+				pData = NULL;//m_pLeaderboard->GetPlayerAtIndex( 0, m_CurrentLeaderboardType );
 				Assert( pData );
-				if ( pPlayerData[ 0 ]->m_iScore <= pData->m_iScore )
+				//if ( pPlayerData[ 0 ]->m_iScore <= pData->m_iScore )
 				{
 					nIndexList[ 0 ] = nPlacementIndex;
 					nIndexList[ 1 ] = 0;
 					nIndexList[ 2 ] = 1;
 				}
-				else  // check for a tie w/ #1
+				//else  // check for a tie w/ #1
 				{
-					pData = m_pLeaderboard->GetPlayerAtIndex( 1, m_CurrentLeaderboardType );
+					pData = NULL;//m_pLeaderboard->GetPlayerAtIndex( 1, m_CurrentLeaderboardType );
 					Assert( pData );
-					if ( pPlayerData[ 0 ]->m_iScore <= pData->m_iScore )
+					//if ( pPlayerData[ 0 ]->m_iScore <= pData->m_iScore )
 					{
 						nIndexList[ 1 ] = nPlacementIndex;
 						nIndexList[ 2 ] = 1;
 					}
-					else  // no tie w/ #0 or #1, just do #0, target, me
+					//else  // no tie w/ #0 or #1, just do #0, target, me
 					{
 						// if we have a new score
 						if ( nOldIndex >= -1 )
@@ -1838,7 +1737,7 @@ void CPortalLeaderboardPanel::SetPanelStats()
 						}
 						else // just use the standard target
 						{
-							nIndexList[ 1 ] = m_pLeaderboard->GetNextTargetIndex( m_CurrentLeaderboardType );
+							nIndexList[1] = NULL;// m_pLeaderboard->GetNextTargetIndex( m_CurrentLeaderboardType );
 						}
 						nIndexList[ 2 ] = nPlacementIndex;
 					}
@@ -1863,17 +1762,17 @@ void CPortalLeaderboardPanel::SetPanelStats()
 
 			if ( m_CurrentLeaderboardType == LEADERBOARD_PORTAL )
 			{
-				m_pPortalGraph->SetPlayerScore( pPlayerData[ 0 ]->m_iScore );
+				//m_pPortalGraph->SetPlayerScore( pPlayerData[ 0 ]->m_iScore );
 			}
 			else
 			{
-				m_pTimeGraph->SetPlayerScore( pPlayerData[ 0 ]->m_iScore );
+				//m_pTimeGraph->SetPlayerScore( pPlayerData[ 0 ]->m_iScore );
 			}
 		}
 		else // no player data for map
 		{
 			// set second as worst
-			int nWorstRank = m_pLeaderboard->GetWorstPlayerIndex( m_CurrentLeaderboardType );
+			int nWorstRank = NULL;//m_pLeaderboard->GetWorstPlayerIndex( m_CurrentLeaderboardType );
 			if ( nWorstRank >= 0 )
 			{
 				nIndexList[ 1 ] = nWorstRank;
@@ -1891,11 +1790,11 @@ void CPortalLeaderboardPanel::SetPanelStats()
 
 			if ( m_CurrentLeaderboardType == LEADERBOARD_PORTAL )
 			{
-				m_pPortalGraph->SetPlayerScore( -1 );
+				//m_pPortalGraph->SetPlayerScore( -1 );
 			}
 			else
 			{
-				m_pTimeGraph->SetPlayerScore( -1 );
+				//m_pTimeGraph->SetPlayerScore( -1 );
 			}
 		}
 		
@@ -1925,8 +1824,8 @@ void CPortalLeaderboardPanel::SetPanelStats()
 			{
 				bUsedTarget = true; // no targets after the player
 
-				int nScore = ( pPlayerData[ 0 ] ? pPlayerData[ 0 ]->m_iScore : -1 );
-				AddAvatarPanelItem( m_pLeaderboard, m_pStatList, pPlayerData[ 0 ], nScore, m_CurrentLeaderboardType, 0, nCurrentAvatarIndex, m_nStatHeight, -1 );
+				//int nScore = ( pPlayerData[ 0 ] ? pPlayerData[ 0 ]->m_iScore : -1 );
+				//AddAvatarPanelItem( m_pLeaderboard, m_pStatList, pPlayerData[ 0 ], nScore, m_CurrentLeaderboardType, 0, nCurrentAvatarIndex, m_nStatHeight, -1 );
 				nCurrentAvatarIndex++;
 			}
 			else if ( nIndexList[ i ] != -2 )
@@ -1940,7 +1839,7 @@ void CPortalLeaderboardPanel::SetPanelStats()
 				}
 				else
 				{
-					pData = m_pLeaderboard->GetPlayerAtIndex( nIndexList[ i ], m_CurrentLeaderboardType );
+					pData = NULL;//m_pLeaderboard->GetPlayerAtIndex( nIndexList[ i ], m_CurrentLeaderboardType );
 
 					if ( i == 0 )
 					{
@@ -1958,9 +1857,9 @@ void CPortalLeaderboardPanel::SetPanelStats()
 
 				if  ( pData )
 				{
-					int nScore = ( pData ? pData->m_iScore : -1 );
+					//int nScore = ( pData ? pData->m_iScore : -1 );
 
-					AddAvatarPanelItem( m_pLeaderboard, m_pStatList, pData, nScore, m_CurrentLeaderboardType, nPlayerType, nCurrentAvatarIndex, m_nStatHeight, -1 );
+					//AddAvatarPanelItem( m_pLeaderboard, m_pStatList, pData, nScore, m_CurrentLeaderboardType, nPlayerType, nCurrentAvatarIndex, m_nStatHeight, -1 );
 					nCurrentAvatarIndex++;
 				}
 			}
@@ -1975,12 +1874,10 @@ void CPortalLeaderboardPanel::SetGraphData( CPortalLeaderboardGraphPanel *pGraph
 	if ( !pGraphPanel )
 		return;
 
-	if ( !m_pLeaderboard || m_pLeaderboard->IsInvalid() )
-	{
-		return;
-	}
 
-	pGraphPanel->UpdateGraph( m_pLeaderboard, graphType );
+		return;
+
+	//pGraphPanel->UpdateGraph( m_pLeaderboard, graphType );
 }
 
 
@@ -2070,12 +1967,12 @@ void CPortalLeaderboardPanel::ClearStats()
 	
 	if ( m_pPortalGraph )
 	{
-		m_pPortalGraph->SetVisible( false );
+		//m_pPortalGraph->SetVisible( false );
 	}
 	
 	if ( m_pTimeGraph )
 	{
-		m_pTimeGraph->SetVisible( false );
+		//m_pTimeGraph->SetVisible( false );
 	}
 	
 	if ( m_pLeaderboardListButton )
@@ -2388,7 +2285,7 @@ void CAvatarPanelItem::SetPlayerData( const PortalLeaderboardItem_t *pData, Lead
 
 	m_leaderboardType = type;
 
-	const char *pPlayerName = pData->m_szName;
+	const char* pPlayerName = NULL;//pData->m_szName;
 
 	if ( m_pGamerName )
 	{
@@ -2423,11 +2320,11 @@ void CAvatarPanelItem::SetPlayerData( const PortalLeaderboardItem_t *pData, Lead
 	// set the score
 	if ( m_pGamerScore )
 	{
-		m_pGamerScore->SetText( ScoreToString( pData->m_iScore, m_leaderboardType ) );
+		//m_pGamerScore->SetText( ScoreToString( pData->m_iScore, m_leaderboardType ) );
 	}
 
 #if !defined( NO_STEAM )
-	m_nSteamID = pData->m_steamIDUser.ConvertToUint64();
+	//m_nSteamID = pData->m_steamIDUser.ConvertToUint64();
 #elif defined( _X360 )
 	m_nXUID = pData->m_xuid;
 #endif
@@ -2509,7 +2406,7 @@ void CAvatarPanelItem::SetPlayerData( XUID playerID, int nScore, LeaderboardType
 	// set the score
 	if ( m_pGamerScore )
 	{
-		m_pGamerScore->SetText( ScoreToString( nScore, m_leaderboardType ) );
+		//m_pGamerScore->SetText( ScoreToString( nScore, m_leaderboardType ) );
 	}
 
 #if !defined( NO_STEAM )
@@ -2806,7 +2703,7 @@ void CAvatarPanelItem::SetAsHUDElement( bool bHudElement )
 	}
 }
 
-void AddAvatarPanelItem( CPortalLeaderboard *pLeaderboard, BaseModUI::GenericPanelList *pStatLists, const PortalLeaderboardItem_t *pData, int nScore, LeaderboardType nType, int nPlayerType, int nAvatarIndex, int nHeight, int nSlot, bool bHUDElement /*= false*/ )
+/*void AddAvatarPanelItem(CPortalLeaderboard* pLeaderboard, BaseModUI::GenericPanelList* pStatLists, const PortalLeaderboardItem_t* pData, int nScore, LeaderboardType nType, int nPlayerType, int nAvatarIndex, int nHeight, int nSlot, bool bHUDElement /*= false)
 {
 	CAvatarPanelItem *pItem = pStatLists->AddPanelItem< CAvatarPanelItem >( "portal_leaderboard_avatar_panel" );
 	if ( pItem )
@@ -2913,3 +2810,5 @@ void cc_leaderboard_open( const CCommand &args )
 	}
 }
 static ConCommand leaderboard_open("leaderboard_open", cc_leaderboard_open, "Activate main leaderboard");
+*/
+}

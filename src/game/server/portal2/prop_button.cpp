@@ -9,7 +9,7 @@
 
 #include "cvisibilitymonitor.h"
 
-#include "cegclientwrapper.h"
+//#include "cegclientwrapper.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -399,7 +399,7 @@ void CPropButton::OnButtonReset( void )
 	}
 	else
 	{
-		STEAMWORKS_SELFCHECK();
+		//STEAMWORKS_SELFCHECK();
 	}
 }
 

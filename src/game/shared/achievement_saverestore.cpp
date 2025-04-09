@@ -35,7 +35,7 @@ public:
 
 	void Save( ISave *pSave )
 	{
-		CAchievementMgr *pAchievementMgr = CAchievementMgr::GetInstance();
+		CAchievementMgr* pAchievementMgr = NULL;//CAchievementMgr::GetInstance();
 		if ( !pAchievementMgr )
 			return;
 
@@ -103,7 +103,7 @@ public:
 
 	void Restore( IRestore *pRestore, bool createPlayers )
 	{
-		CAchievementMgr *pAchievementMgr = CAchievementMgr::GetInstance();
+		CAchievementMgr* pAchievementMgr = NULL;//CAchievementMgr::GetInstance();
 		if ( !pAchievementMgr )
 			return;
 

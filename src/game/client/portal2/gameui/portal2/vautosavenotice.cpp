@@ -10,7 +10,7 @@
 #include "vgui_controls/ImagePanel.h"
 #include "inputsystem/iinputsystem.h"
 #include "filesystem.h"
-#include "filesystem/IXboxInstaller.h"
+//#include "filesystem/IXboxInstaller.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

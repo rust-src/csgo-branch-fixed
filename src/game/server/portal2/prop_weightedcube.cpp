@@ -265,7 +265,7 @@ bool CCubeRotationController::Enabled( void )
 	return m_bEnabled;
 }
 
-CEG_NOINLINE CCubeRotationController * CCubeRotationController::CreateRotationController( CBaseEntity *pOwner )
+CCubeRotationController * CCubeRotationController::CreateRotationController( CBaseEntity *pOwner )
 {
 	if ( pOwner == NULL )
 		return NULL;
@@ -280,7 +280,7 @@ CEG_NOINLINE CCubeRotationController * CCubeRotationController::CreateRotationCo
 	return pController;
 }
 
-CEG_PROTECT_STATIC_MEMBER_FUNCTION( CCubeRotationController_CreateRotationController, CCubeRotationController::CreateRotationController );
+//CEG_PROTECT_STATIC_MEMBER_FUNCTION( CCubeRotationController_CreateRotationController, CCubeRotationController::CreateRotationController );
 
 LINK_ENTITY_TO_CLASS( prop_weighted_cube, CPropWeightedCube );
 
@@ -353,7 +353,7 @@ CPropWeightedCube::CPropWeightedCube()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-CEG_NOINLINE void CPropWeightedCube::Spawn( void )
+void CPropWeightedCube::Spawn( void )
 {
 	// Start out with nothing
 	m_vecCarryAngles.Init(0,0,0);
@@ -368,7 +368,7 @@ CEG_NOINLINE void CPropWeightedCube::Spawn( void )
 
 	SetCubeType();
 
-	CEG_PROTECT_VIRTUAL_FUNCTION( CPropWeightedCube_Spawn );
+	//CEG_PROTECT_VIRTUAL_FUNCTION( CPropWeightedCube_Spawn );
 
 	m_nBouncyMaterialIndex = physprops->GetSurfaceIndex( "WeightedCube_Bounce" );
 	SetInteraction( PROPINTER_PHYSGUN_ALLOW_OVERHEAD );
@@ -632,7 +632,7 @@ void CPropWeightedCube::SetCubeSkin( void )
 					{
 						if( m_bActivated )
 						{
-							RANDOM_CEG_TEST_SECRET_PERIOD( 98, 106 );
+							//RANDOM_CEG_TEST_SECRET_PERIOD( 98, 106 );
 							SetSkin( CUBE_STANDARD_BOUNCE_ACTIVATED_SKIN );
 						}
 						else
@@ -958,7 +958,9 @@ QAngle CPropWeightedCube::PreferredCarryAngles( void )
 	static QAngle s_prefAngles;
 	s_prefAngles = m_vecCarryAngles;
 
-	CBasePlayer *pPlayer = GetPlayerHoldingEntity( this );
+	//theaperturecat this is already calculated
+
+	CBasePlayer* pPlayer = GetPlayerHoldingEntity( this );
 	if ( pPlayer )
 	{
 		Vector vecRight;

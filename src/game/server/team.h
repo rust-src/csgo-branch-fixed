@@ -13,7 +13,7 @@
 
 #include "shareddefs.h"
 #include "utlvector.h"
-#include "cs_player.h"
+//#include "cs_player.h"
 
 class CBasePlayer;
 class CTeamSpawnPoint;
@@ -71,9 +71,9 @@ public:
 	virtual void RemovePlayer( CBasePlayer *pPlayer );
 	virtual int  GetNumPlayers( void );
 	virtual CBasePlayer *GetPlayer( int iIndex );
-	static int TeamGGSortFunction( CCSPlayer* const *entry1, CCSPlayer* const *entry2 );
-	virtual void DetermineGGLeaderAndSort( void );
-	virtual int GetGGLeader( int nTeam );
+	//static int TeamGGSortFunction( CCSPlayer* const *entry1, CCSPlayer* const *entry2 );
+	//virtual void DetermineGGLeaderAndSort( void );
+	//virtual int GetGGLeader( int nTeam );
 
 	//-----------------------------------------------------------------------------
 	// Scoring

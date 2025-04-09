@@ -239,7 +239,7 @@ void CPropFloorButton::AnimateThink( void )
 	m_BoneFollowerManager.UpdateBoneFollowers(this);
 
 	SetNextThink( gpGlobals->curtime + 0.1f );
-	RANDOM_CEG_TEST_SECRET();
+	//RANDOM_CEG_TEST_SECRET();
 
 	// debug overlay of trigger displays if ent_bbox is used on entity
 	if ( m_debugOverlays & OVERLAY_BBOX_BIT )
@@ -298,7 +298,7 @@ const char *CPropFloorButton::GetButtonModelName()
 //-----------------------------------------------------------------------------
 // Purpose: Press the button
 //-----------------------------------------------------------------------------
-CEG_NOINLINE void CPropFloorButton::Press( CBaseEntity *pActivator )
+void CPropFloorButton::Press( CBaseEntity *pActivator )
 {
 	// play the down sequence
 	ResetSequence( m_DownSequence );
@@ -308,7 +308,7 @@ CEG_NOINLINE void CPropFloorButton::Press( CBaseEntity *pActivator )
 
 	// Change the skin
 	SetSkin( button_on_skin );
-	CEG_PROTECT_MEMBER_FUNCTION( CPropFloorButton_Press );
+	//CEG_PROTECT_MEMBER_FUNCTION( CPropFloorButton_Press );
 
 	// call the function that fires the OnPressed output
 	OnPressed( pActivator );

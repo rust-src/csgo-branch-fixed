@@ -24,6 +24,8 @@
 #include "matchmaking/portal2/imatchext_portal2.h"
 #endif
 
+#include "matchmaking/portal2/imatchext_portal2.h" //theaperturecat
+
 #if defined( CSTRIKE15 )
 #include "cs_gamerules.h"
 #include "matchmaking/cstrike15/imatchext_cstrike15.h"
@@ -872,7 +874,7 @@ bool C_GameInstructor::ReadSaveData( void )
 			continue;
 		}
 
-		TitleData3::GameInstructorData_t::LessonInfo_t li;
+		TitleData1::GameInstructorData_t::LessonInfo_t li;
 		li.u8dummy = TitleDataFieldsDescriptionGetValue<uint8>( fdKey, pPlayer );
 		
 		pLesson->SetDisplayCount( li.display );
@@ -925,7 +927,7 @@ void C_GameInstructor::KeyValueBuilder( KeyValues *pKeyValues )
 	for ( int i = 0; i < m_Lessons.Count();++i )
 	{
 		CBaseLesson *pLesson = m_Lessons[ i ];
-		TitleData3::GameInstructorData_t::LessonInfo_t li;
+		TitleData1::GameInstructorData_t::LessonInfo_t li;
 		li.u8dummy = 0;
 		li.display = pLesson->GetDisplayCount() & 0xF;
 		li.success = pLesson->GetSuccessCount() & 0xF;

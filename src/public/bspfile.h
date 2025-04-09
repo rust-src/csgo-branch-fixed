@@ -23,7 +23,7 @@
 #define IDBSPHEADER	(('P'<<24)+('S'<<16)+('B'<<8)+'V')		
 
 // MINBSPVERSION is the minimum acceptable version.  The engine will load MINBSPVERSION through BSPVERSION
-#define MINBSPVERSION 19
+#define MINBSPVERSION 10//used to be 19 theaperturecat
 #define BSPVERSION 21
 
 
@@ -385,6 +385,12 @@ struct lump_t
 	char	fourCC[4];		// default to ( char )0, ( char )0, ( char )0, ( char )0
 };
 
+struct hl_lump_t
+{
+	DECLARE_BYTESWAP_DATADESC();
+	int		fileofs, filelen;
+};
+
 struct BSPHeader_t
 {
 	DECLARE_BYTESWAP_DATADESC();
@@ -392,6 +398,13 @@ struct BSPHeader_t
 	int			m_nVersion;	
 	lump_t		lumps[HEADER_LUMPS];
 	int			mapRevision;				// the map's revision (iteration, version) number (added BSPVERSION 6)
+};
+
+struct hl_BSPHeader_t
+{
+	DECLARE_BYTESWAP_DATADESC();
+	int			version;
+	hl_lump_t		lumps[15];
 };
 
 // level feature flags

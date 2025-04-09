@@ -12,8 +12,8 @@
 //=============================================================================//
 #include "cbase.h"
 #include "basetempentity.h"
-#include "cstrike15/cs_gamerules.h"
-#include "playerdecals_signature.h"
+//#include "cstrike15/cs_gamerules.h"
+//#include "playerdecals_signature.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -73,17 +73,16 @@ public:
 		m_flCreationTime = gpGlobals->curtime;
 
 		m_nVersion = 0;
-		for ( int k = 0; k < PLAYERDECALS_SIGNATURE_BYTELEN; ++ k ) m_ubSignature.Set( k, 0 );
+		//for ( int k = 0; k < PLAYERDECALS_SIGNATURE_BYTELEN; ++ k ) m_ubSignature.Set( k, 0 );
 
 		SetThink( &CBaseEntity::SUB_Remove );
-		SetNextThink( gpGlobals->curtime + PLAYERDECALS_DURATION_SOLID + PLAYERDECALS_DURATION_FADE2 );
+		SetNextThink( gpGlobals->curtime );
 
 		// Add us to the list
 		s_arrFEPlayerDecals.AddToTail( this );
 
 		// If we have too many then force expire older ones
-		while ( s_arrFEPlayerDecals.Count() >
-			PLAYERDECALS_LIMIT_COUNT
+		while ( true
 			)
 		{
 			CFEPlayerDecal *pOther = s_arrFEPlayerDecals.Head();
@@ -119,7 +118,7 @@ public:
 	CNetworkVar( float, m_flCreationTime );
 	CNetworkVar( int, m_nTintID );
 	CNetworkVar( uint8, m_nVersion );
-	CNetworkArray( uint8, m_ubSignature, PLAYERDECALS_SIGNATURE_BYTELEN );
+	//CNetworkArray( uint8, m_ubSignature, PLAYERDECALS_SIGNATURE_BYTELEN );
 
 private:
 	static CUtlVector< CFEPlayerDecal * > s_arrFEPlayerDecals;
@@ -207,11 +206,11 @@ IMPLEMENT_SERVERCLASS_ST(CFEPlayerDecal, DT_FEPlayerDecal)
 	SendPropInt( SENDINFO( m_nTintID ), -1, SPROP_UNSIGNED ),
 	SendPropFloat( SENDINFO( m_flCreationTime ), 0, SPROP_NOSCALE ),
 	SendPropInt( SENDINFO( m_nVersion ), 3, SPROP_UNSIGNED ), // support versions 0..7 initially
-	SendPropArray3( SENDINFO_ARRAY3( m_ubSignature ), SendPropInt( SENDINFO_ARRAY( m_ubSignature ), 8, SPROP_UNSIGNED ) ),
+	//SendPropArray3( SENDINFO_ARRAY3( m_ubSignature ), SendPropInt( SENDINFO_ARRAY( m_ubSignature ), 8, SPROP_UNSIGNED ) ),
 END_SEND_TABLE()
 LINK_ENTITY_TO_CLASS( cfe_player_decal, CFEPlayerDecal );
 
-void FE_PlayerDecal( CCSGameRules::ServerPlayerDecalData_t const &data, std::string const &signature )
+/*void FE_PlayerDecal(CCSGameRules::ServerPlayerDecalData_t const& data, std::string const& signature)
 {
 	CFEPlayerDecal *pEnt = ( CFEPlayerDecal * ) CBaseEntity::Create( "cfe_player_decal", data.m_vecOrigin, vec3_angle );
 	pEnt->m_unAccountID = data.m_unAccountID;
@@ -232,7 +231,7 @@ void FE_PlayerDecal( CCSGameRules::ServerPlayerDecalData_t const &data, std::str
 		for ( int k = 0; k < PLAYERDECALS_SIGNATURE_BYTELEN; ++ k )
 			pEnt->m_ubSignature.Set( k, signature[k] );
 	}
-}
+}*/
 
 
 // Singleton to fire TEPlayerDecal objects

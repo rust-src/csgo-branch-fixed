@@ -564,7 +564,6 @@ public:
 		InstancedSet( unAccountID, unAccountInstance, eUniverse, eAccountType );
 	}
 
-
 	//-----------------------------------------------------------------------------
 	// Purpose: Constructor
 	// Input  : ulSteamID -		64-bit representation of a Steam ID
