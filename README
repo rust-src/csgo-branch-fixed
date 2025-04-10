@@ -1,15 +1,9 @@
-This project is aimed to improve the leaked CS:GO code, to make it more stable and to make it playable.
-Use resources from CS:S to get the HUD and GameUI to work properly.
+This project is an attempt to fix the csgo branch of the source engine so that it is easier to make a mod on this branch
+You can build portal 2 and hl2/ep1/ep2/ep3(partial) currently, but more games may be added
 
-Partially used code from https://github.com/SwagSoftware/Kisak-Strike (some econ stuff, weapon recoil).
+This uses a lot of code from https://github.com/EpicSentry/P2ASW, https://github.com/EpicSentry/HL2-CSGO and P2GO (when it existed)
+Thanks (:
 
-Features:
-- Removed Scaleform;
-- Filesystem from TF2 leak (less hardcoded stuff, allows for 'custom' folder, etc);
-- Some VGUI stuff and complete GameUI ported from TF2 leak;
-
-Currently known bugs:
-- sv_pure is most likely broken due to differences between CS:GO and TF2 implementations that I was
-  too lazy to fix for TF2 filesystem at 6AM, just 2 hours before going to college with no sleep;
-- Game currently crashes after shutting down (something related to g_pCVar and outputting console messages,
-  I think g_pCVar gets destructed before it is used for outputting console messages or something);
+To set the project up:
+1. copy platform and bin folders from csgo to /game (yes bin is needed even if you build the whole VS solution)
+2. copy the csgo/materials/dev folder from csgo to /game/portal2/materials (it might be in a vpk)
