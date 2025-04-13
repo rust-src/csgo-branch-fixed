@@ -4,8 +4,12 @@ You can build portal 2 and hl2/ep1/ep2/ep3(partial) currently, but more games ma
 This uses a lot of code from https://github.com/EpicSentry/P2ASW, https://github.com/EpicSentry/HL2-CSGO and P2GO (when it existed)
 Thanks (:
 
+
 To set the project up (Important!):
-1. copy the platform folder from csgo to /game
-2. copy the csgo/materials/dev folder (it might be in a vpk) from csgo to /game/portal2/materials 
-3. Create the vpc and build the project in Release mode
-4. Click run.bat
+1. Download an early version of csgo using these commands in SteamCMD:
+download_depot 730 731 7043469183016184477
+download_depot 730 732 4047004309608881181
+2. copy the platform folder to /game
+3. copy the csgo/materials/dev folder (it might be in a vpk) to /game/portal2/materials 
+4. Create the vpc and build the project in Release mode
+5. Click run.bat
