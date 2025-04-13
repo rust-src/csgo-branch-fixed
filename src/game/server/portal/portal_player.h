@@ -563,7 +563,7 @@ public: // PAINT SPECIFIC
 
 	void NetworkPortalTeleportation( CBaseEntity *pOther, CPortal_Base2D *pPortal, float fTime, bool bForcedDuck );
 
-public://private: // PAINT SPECIFIC
+private: // PAINT SPECIFIC
 	void DecayEyeOffset();
 
 	void GivePortalPlayerItems( void );

@@ -4,6 +4,8 @@ You can build portal 2 and hl2/ep1/ep2/ep3(partial) currently, but more games ma
 This uses a lot of code from https://github.com/EpicSentry/P2ASW, https://github.com/EpicSentry/HL2-CSGO and P2GO (when it existed)
 Thanks (:
 
-To set the project up:
-1. copy platform and bin folders from csgo to /game (yes bin is needed even if you build the whole VS solution)
-2. copy the csgo/materials/dev folder from csgo to /game/portal2/materials (it might be in a vpk)
+To set the project up (Important!):
+1. copy the platform folder from csgo to /game
+2. copy the csgo/materials/dev folder (it might be in a vpk) from csgo to /game/portal2/materials 
+3. Create the vpc and build the project in Release mode
+4. Click run.bat
