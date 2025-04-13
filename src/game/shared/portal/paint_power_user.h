@@ -367,6 +367,7 @@ void PaintPowerUser<BaseEntityType>::UpdatePaintPowers()
 			// Set it as the current one
 			const PaintPowerInfo_t& newPower = *i;
 			const unsigned index = newPower.m_PaintPowerType;
+
 			m_PaintPowers[index] = newPower;
 
 			// If the old power was active and roughly the same, keep it active. Otherwise, activate it.

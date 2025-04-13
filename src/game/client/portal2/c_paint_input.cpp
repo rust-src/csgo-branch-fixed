@@ -65,7 +65,7 @@ ConVar debug_pitch_limit("debug_pitch_limit", "0.f");
 //			mouse_x - 
 //			mouse_y - 
 //-----------------------------------------------------------------------------
-#define stick_cam_input_suppression_threshhold	0.8f	//ConVar stick_cam_input_suppression_threshhold("stick_cam_input_suppression_threshhold", "0.8f", FCVAR_DEVELOPMENTONLY);
+ConVar stick_cam_input_suppression_threshhold("stick_cam_input_suppression_threshhold", "0.8f", FCVAR_DEVELOPMENTONLY);
 void C_Paint_Input::ApplyMouse( int nSlot, QAngle& viewangles, CUserCmd *cmd, float mouse_x, float mouse_y )
 {
 	//PerUserInput_t &user = GetPerUser( nSlot );
@@ -86,12 +86,12 @@ void C_Paint_Input::ApplyMouse( int nSlot, QAngle& viewangles, CUserCmd *cmd, fl
 	if ( bShouldDampInput && pPlayer->GetPortalPlayerLocalData().m_nStickCameraState == STICK_CAMERA_SURFACE_TRANSITION )
 	{
 		float flProgress = pPlayer->GetReorientationProgress();
-		if( flProgress < stick_cam_input_suppression_threshhold )
+		if( flProgress < stick_cam_input_suppression_threshhold.GetFloat() )
 			flProgress = 0.f;
 		else if( flProgress < 1.f )
 		{
-			flProgress -= stick_cam_input_suppression_threshhold;
-			flProgress /= ( 1.f - stick_cam_input_suppression_threshhold );
+			flProgress -= stick_cam_input_suppression_threshhold.GetFloat();
+			flProgress /= ( 1.f - stick_cam_input_suppression_threshhold.GetFloat() );
 		}
 		mouse_y *= flProgress;
 	}

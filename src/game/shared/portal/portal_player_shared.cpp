@@ -191,17 +191,17 @@ ConVar sv_speed_paint_on_bounce_deceleration_delay("sv_speed_paint_on_bounce_dec
 ConVar sv_speed_paint_straf_accel_scale("sv_speed_paint_straf_accel_scale", "0.7f", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Scale applied to acceleration when the player is strafing on speed paint.");
 
 //stick convars
-//ConVar stick_surface_transition_delay("stick_surface_transition_delay", ".5f", FCVAR_REPLICATED | FCVAR_CHEAT, "How long to wait after transitioning to a new stick surface before the player can transition again.");
-#define player_can_unstick_by_pushing 1//ConVar player_can_unstick_by_pushing("player_can_unstick_by_pushing", "1", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Allow/disallow players to walk off a sticky surface into the air with WASD.");
+ConVar stick_surface_transition_delay("stick_surface_transition_delay", ".5f", FCVAR_REPLICATED | FCVAR_CHEAT, "How long to wait after transitioning to a new stick surface before the player can transition again.");
+ConVar player_can_unstick_by_pushing("player_can_unstick_by_pushing", "1", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Allow/disallow players to walk off a sticky surface into the air with WASD.");
 
 //stick camera
-#define stick_cam_correct_pitch							1		//ConVar stick_cam_correct_pitch("stick_cam_correct_pitch", "1", FCVAR_REPLICATED);
-#define sv_stick_input_cancel_threshold					1.f		//ConVar sv_stick_input_cancel_threshold("sv_stick_input_cancel_threshold", "1.f", FCVAR_REPLICATED | FCVAR_CHEAT, "Threshold of mouse_y input to cancel correct pitch" );
-#define stick_cam_pitch_rate							0.2f	//ConVar stick_cam_pitch_rate("stick_cam_pitch_rate", "0.2f", FCVAR_REPLICATED | FCVAR_CHEAT );
-#define stick_cam_roll_rate								0.125f	//ConVar stick_cam_roll_rate("stick_cam_roll_rate", "0.125f", FCVAR_REPLICATED | FCVAR_CHEAT );
-#define stick_cam_over_the_top_threshold				0.75f	//ConVar stick_cam_over_the_top_threshold("stick_cam_over_the_top_threshold", "0.75", FCVAR_REPLICATED, "How far up/down the player must look to trigger pitch instead of roll correction" );	// Life won't meet you half way
-#define stick_cam_pitch_vs_roll_good_angle_threshold	0.95f	//ConVar stick_cam_pitch_vs_roll_good_angle_threshold("stick_cam_pitch_vs_roll_good_angle_threshold", "0.95f", FCVAR_REPLICATED, "When not overpitched in the target orientation, how close to straight up/down we have to be looking to trigger the pitch transition" );
-#define stick_cam_min_rotation_rate						10.f	//ConVar stick_cam_min_rotation_rate("stick_cam_min_rotation_rate", "10.f", FCVAR_REPLICATED, "The rotation rate with which to rotate the player's up vector" );
+ConVar stick_cam_correct_pitch("stick_cam_correct_pitch", "1", FCVAR_REPLICATED);
+ConVar sv_stick_input_cancel_threshold("sv_stick_input_cancel_threshold", "1.f", FCVAR_REPLICATED | FCVAR_CHEAT, "Threshold of mouse_y input to cancel correct pitch" );
+ConVar stick_cam_pitch_rate("stick_cam_pitch_rate", "0.2f", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar stick_cam_roll_rate("stick_cam_roll_rate", "0.125f", FCVAR_REPLICATED | FCVAR_CHEAT );
+ConVar stick_cam_over_the_top_threshold("stick_cam_over_the_top_threshold", "0.75", FCVAR_REPLICATED, "How far up/down the player must look to trigger pitch instead of roll correction" );	// Life won't meet you half way
+ConVar stick_cam_pitch_vs_roll_good_angle_threshold("stick_cam_pitch_vs_roll_good_angle_threshold", "0.95f", FCVAR_REPLICATED, "When not overpitched in the target orientation, how close to straight up/down we have to be looking to trigger the pitch transition" );
+ConVar stick_cam_min_rotation_rate("stick_cam_min_rotation_rate", "10.f", FCVAR_REPLICATED, "The rotation rate with which to rotate the player's up vector" );
 
 ConVar sv_contact_region_thickness( "sv_contact_region_thickness", "0.2f", FCVAR_REPLICATED | FCVAR_CHEAT, "The thickness of a contact region (how much the box expands)." );
 ConVar sv_clip_contacts_to_portals( "sv_clip_contacts_to_portals", "0", FCVAR_REPLICATED | FCVAR_CHEAT, "Enable/Disable clipping contact regions to portal planes." );
@@ -3129,7 +3129,7 @@ void CPortal_Player::TryToChangeCollisionBounds( const Vector& newStandHullMin,
 		if( !trace.DidHit() )
 		{
 			// Give ourselves a punch offset, since our origin just snapped a noticeable amount
-			SetEyeOffset( GetAbsOrigin(), newAbsOrigin );
+			SetEyeOffset(GetAbsOrigin(), newAbsOrigin );
 
 #ifdef GAME_DLL
 			// Apply the changes to the abs origin
@@ -3320,7 +3320,7 @@ void CPortal_Player::PostTeleportationCameraFixup( const CPortal_Base2D *pEntere
 	}
 }
 
-//#define DEBUG_STICK_CAM
+#define DEBUG_STICK_CAM
 
 void CPortal_Player::Reorient( QAngle& viewAngles )
 {
@@ -3407,7 +3407,7 @@ void CPortal_Player::DecayQuaternionPunch()
 	QuaternionAxisAngle( qOut, vAxis, flAngle );
 
 	// Decay the angle
-	flAngle *= ExponentialDecay( stick_cam_pitch_rate, gpGlobals->frametime );
+	flAngle *= ExponentialDecay( stick_cam_pitch_rate.GetFloat(), gpGlobals->frametime);
 	// Snap to 0 if small enough
 	flAngle = fabs(flAngle) < 0.15f ? 0.f : flAngle;
 
@@ -3454,7 +3454,7 @@ void CPortal_Player::SnapCamera( StickCameraState nCameraState, bool bOverPitche
 		// Portalling: Floor->Floor and Ceiling->Ceiling
 		// Over pitched and looking within a threshold where we want to pitch rather than roll.
 		if( bOverPitched && 
-			fabs(flForwardDotLocalUp) > stick_cam_over_the_top_threshold &&
+			fabs(flForwardDotLocalUp) > stick_cam_over_the_top_threshold.GetFloat() &&
 			AlmostEqual( fabs(flUpDotAbsUp), 1.f ) )
 		{
 			correctionMethod = QUATERNION_CORRECT;
@@ -3470,8 +3470,8 @@ void CPortal_Player::SnapCamera( StickCameraState nCameraState, bool bOverPitche
 		// they're not overpitched but are still within a threshold where we want to slightly roll them (which will appear
 		// to be a yaw relative to their perspective) rather than actuall roll.
 		else if( ( bOverPitched &&
-			fabs(flForwardDotLocalUp) > stick_cam_over_the_top_threshold ) ||
-			( fabs(flForwardDotLocalUp) > stick_cam_pitch_vs_roll_good_angle_threshold ) )
+			fabs(flForwardDotLocalUp) > stick_cam_over_the_top_threshold.GetFloat() ) ||
+			( fabs(flForwardDotLocalUp) > stick_cam_pitch_vs_roll_good_angle_threshold.GetFloat() ) )
 		{
 			correctionMethod = QUATERNION_CORRECT;
 			bRollCorrect = true;
@@ -3492,6 +3492,13 @@ void CPortal_Player::SnapCamera( StickCameraState nCameraState, bool bOverPitche
 			DevMsg("Portal: Snap up");
 #endif
 		}
+	}
+
+	//theaperturecat - this is probably where the rest of the camera states were (but they are gone now)
+	if (nCameraState == STICK_CAMERA_SURFACE_TRANSITION)
+	{
+
+		correctionMethod = ROTATE_UP;
 	}
 
 	// Instantly snap the player's view into a good state, and use a quaternion view punch to offset their
@@ -3637,7 +3644,7 @@ void CPortal_Player::RotateUpVector( Vector& vForward, Vector& vUp )
 
 	const Vector vForwardInRotationPlane = vForward - ( m_PortalLocal.m_vStickRotationAxis * DotProduct(vForward,m_PortalLocal.m_vStickRotationAxis) );
 	const Vector vPreRotationRight = CrossProduct( vForwardInRotationPlane, vUp );
-	const float vRotationRate = stick_cam_roll_rate;
+	const float vRotationRate = stick_cam_roll_rate.GetFloat();
 
 	if( m_PortalLocal.m_bDoneStickInterp == false )
 	{
@@ -3661,9 +3668,9 @@ void CPortal_Player::RotateUpVector( Vector& vForward, Vector& vUp )
 
 			// Have constant rotation once the rotation rate becomes very small
 			if( gpGlobals->frametime != 0.f &&
-				( flRotationAmt / gpGlobals->frametime < stick_cam_min_rotation_rate ) )
+				( flRotationAmt / gpGlobals->frametime < stick_cam_min_rotation_rate.GetFloat() ) )
 			{
-				flRotationAmt = stick_cam_min_rotation_rate * gpGlobals->frametime;
+				flRotationAmt = stick_cam_min_rotation_rate.GetFloat() * gpGlobals->frametime;
 			}
 
 			// Slow down rotation if forward vector and up vector get very close to each other
@@ -3711,12 +3718,12 @@ void CPortal_Player::RotateUpVector( Vector& vForward, Vector& vUp )
 
 
 	// Should we bother trying to correct pitch?
-	if ( stick_cam_correct_pitch && m_PortalLocal.m_bDoneCorrectPitch == false )
+	if ( stick_cam_correct_pitch.GetBool() && m_PortalLocal.m_bDoneCorrectPitch == false)
 	{
 		// Check if we want to not correct the player's pitch because we think they're trying to correct it themselves
 		const CUserCmd *cmd = m_pCurrentCommand;
 		// If they're mousing around, don't correct pitch
-		if( cmd && abs( cmd->mousedy ) > sv_stick_input_cancel_threshold && GetReorientationProgress() > 0.9f )
+		if( cmd && abs( cmd->mousedy ) > sv_stick_input_cancel_threshold.GetFloat() && GetReorientationProgress() > 0.9f)
 		{
 			m_PortalLocal.m_bDoneCorrectPitch = true;
 			return;
@@ -4578,15 +4585,15 @@ Vector CPortal_Player::EyePosition()
 		// White Cross: Origin
 		//NDebugOverlay::Cross( GetAbsOrigin() + vUp, 5, 255, 255, 255, true, 100 );
 		// Red Cross: Eye Position
-	//	NDebugOverlay::Cross( vEyePosition , 5, 255, 0, 0, true, 100 );
+		//NDebugOverlay::Cross( vEyePosition , 5, 255, 0, 0, true, 100 );
 		// Teal Line: Eye offset
-	//	NDebugOverlay::Line( vEyePosition, vEyePosition - vEyeOffset, 0, 255, 255, true, 100 );
+		//NDebugOverlay::Line( vEyePosition, vEyePosition - vEyeOffset, 0, 255, 255, true, 100 );
 		// Green Line: View offset (orign to eye)
 		//NDebugOverlay::Line( GetAbsOrigin() + vEyeOffset, GetAbsOrigin() + vEyeOffset + vUp, 0, 255, 0, true, 100 ); 
 
-	//	Vector vOriginToCenter = (GetHullMaxs() + GetHullMins()) * 0.5f;
-	//	Vector vMoveCenter = GetAbsOrigin() + vOriginToCenter;
-	//	NDebugOverlay::Cross( GetAbsOrigin(), 5, 255, 0, 255, true, 1000.f );
+		//Vector vOriginToCenter = (GetHullMaxs() + GetHullMins()) * 0.5f;
+		//Vector vMoveCenter = GetAbsOrigin() + vOriginToCenter;
+		//NDebugOverlay::Cross( GetAbsOrigin(), 5, 255, 0, 255, true, 1000.f );
 	}
 
 	

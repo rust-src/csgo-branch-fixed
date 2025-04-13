@@ -116,7 +116,7 @@ void CProjectedWallEntity::Paint( PaintPowerType type, const Vector& worldContac
 
 void CProjectedWallEntity::CleansePaint()
 {
-	//for( int i = 0; i < m_nNumSegments; ++i )
+	for( int i = 0; i < m_nNumSegments; ++i )
 	{
 // come back to this - MTW
 		/*
@@ -129,7 +129,7 @@ void CProjectedWallEntity::CleansePaint()
 #endif
 		*/
 
-		//m_PaintPowers[i] = NO_POWER;
+		m_PaintPowers[i] = NO_POWER;
 	}
 }
 

@@ -755,7 +755,7 @@ void CPaintDatabase::SendPaintDataTo( CBasePlayer* pPlayer )
 
 	if ( pPlayer->IsConnected() )
 	{
-		engine->SendPaintmapDataToClient( pPlayer->edict() );
+		//engine->SendPaintmapDataToClient( pPlayer->edict() );
 	}
 }
 
@@ -768,7 +768,7 @@ void CPaintDatabase::SendPaintDataToEngine()
 
 	if ( m_PaintRestoreData.m_PaintmapData.Count() > 0 )
 	{
-		//engine->LoadPaintmapDataRLE( m_PaintRestoreData.m_PaintmapData );
+		engine->LoadPaintmapDataRLE( m_PaintRestoreData.m_PaintmapData );
 	}
 
 	// clean up after load

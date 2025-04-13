@@ -1313,7 +1313,7 @@ void Host_Map_Helper( const CCommand &args, EMapFlags flags )
 #else
 	// Stop demo loop
 	GetBaseLocalClient().demonum = -1;
-	if ( GetBaseLocalClient().m_nMaxClients == 0 || sv.IsDedicated() )
+	if (sv.IsSinglePlayerGame() || GetBaseLocalClient().m_nMaxClients == 0 || sv.IsDedicated() )
 #endif
 	{
 		Host_Disconnect( false );	// stop old game

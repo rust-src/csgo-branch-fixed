@@ -622,7 +622,6 @@ bool CWorld::KeyValue( const char *szKeyName, const char *szValue )
 	else if ( FStrEq(szKeyName, "maxblobcount" ) )
 	{
 		m_nMaxBlobCount = atoi( szValue );
-		PaintStreamManager.AllocatePaintBlobPool( m_nMaxBlobCount );
 	}
 #endif
 	else
@@ -667,6 +666,10 @@ CWorld::CWorld( )
 
 	// Set this in the constructor for legacy maps (sjb)
 	m_iTimeOfDay.Set( TIME_MIDNIGHT );
+
+#ifdef PORTAL2
+	m_nMaxBlobCount = 250;
+#endif
 }
 
 
@@ -740,6 +743,10 @@ void CWorld::Spawn( void )
 	Precache( );
 	GlobalEntity_Add( "is_console", STRING(gpGlobals->mapname), ( IsGameConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
 	GlobalEntity_Add( "is_pc", STRING(gpGlobals->mapname), ( !IsGameConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
+
+#ifdef PORTAL2
+	PaintStreamManager.AllocatePaintBlobPool(m_nMaxBlobCount);
+#endif
 }
 
 static const char *g_DefaultLightstyles[] =

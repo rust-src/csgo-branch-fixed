@@ -91,6 +91,38 @@ ConVar slowtime_must_refill( "slowtime_must_refill", "0" );
 ConVar slowtime_speed( "slowtime_speed", "0.1", FCVAR_REPLICATED );
 #endif // USE_SLOWTIME
 
+
+CON_COMMAND(change_stick_normal, "")
+{
+	CPortal_Player* pPortalPlayer = ToPortalPlayer(UTIL_GetLocalPlayer());
+	Vector v(atoi(args[1]), atoi(args[2]), atoi(args[3]));
+	pPortalPlayer->SetStick(v);
+}
+
+//ConVar stick_change_state("stick_change_state", "2");
+
+void CPortal_Player::SetStick(Vector &v)
+{
+	//m_PortalLocal.m_vEyeOffset = Vector(0,0,-64) + (v * 64);
+	//SetViewOffset(Vector(0, 0, -100));
+
+	m_PortalLocal.m_OldStickNormal = m_PortalLocal.m_StickNormal;
+	m_PortalLocal.m_StickNormal = v;
+	m_PortalLocal.m_Up = v;
+
+	
+	//SetStickNormal(Vector(atoi(args[1]), atoi(args[2]), atoi(args[3])));
+	//SetLocalUp(Vector(atoi(args[1]), atoi(args[2]), atoi(args[3])));
+	SnapCamera(STICK_CAMERA_SURFACE_TRANSITION, true); //theaperturecat - the real adhesion gel code for this is missing so just use the camera snapping for portals
+
+	RecomputeBoundsForOrientation();
+	
+	
+	
+	//SetViewOffset(Vector(0,0,0));
+	
+}
+
 ConVar playtest_random_death( "playtest_random_death", "0", FCVAR_NONE );
 float flNextDeathTime = 0.0f; // Used by the random death system to randomly kill a player to death
 

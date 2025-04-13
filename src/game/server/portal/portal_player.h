@@ -469,6 +469,9 @@ private:
 	bool m_bWasDroppedByOtherPlayerWhileTaunting;
 
 public: // PAINT SPECIFIC
+
+	void SetStick(Vector &v);
+
 	bool IsReorienting() const;
 	Vector GetPaintGunShootPosition();
 
@@ -560,7 +563,7 @@ public: // PAINT SPECIFIC
 
 	void NetworkPortalTeleportation( CBaseEntity *pOther, CPortal_Base2D *pPortal, float fTime, bool bForcedDuck );
 
-private: // PAINT SPECIFIC
+public://private: // PAINT SPECIFIC
 	void DecayEyeOffset();
 
 	void GivePortalPlayerItems( void );
