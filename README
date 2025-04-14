@@ -8,7 +8,6 @@ Thanks (:
 To set the project up (Important!):
 1. Download an early version of csgo using these commands in SteamCMD:
 download_depot 730 731 7043469183016184477
-download_depot 730 732 4047004309608881181
 2. copy the platform folder to /game
 3. copy the csgo/materials/dev folder (it might be in a vpk) to /game/portal2/materials 
 4. Create the vpc and build the project in Release mode

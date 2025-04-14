@@ -506,12 +506,12 @@ void *_realloc_base( void *pMem, size_t nSize )
 	return ReallocUnattributed( pMem, nSize );
 }
 
-void *_recalloc_base( void *pMem, size_t nSize )
+extern "C" void* _recalloc_base(void* pMem, size_t count, size_t nSize)
 {
-	void *pMemOut = ReallocUnattributed( pMem, nSize );
+	void *pMemOut = ReallocUnattributed( pMem, count*nSize );
 	if (!pMem)
 	{
-		memset(pMemOut, 0, nSize);
+		memset(pMemOut, 0, count*nSize);
 	}
 	return pMemOut;
 }
@@ -553,7 +553,7 @@ void * __cdecl _realloc_crt(void *ptr, size_t size)
 
 void * __cdecl _recalloc_crt(void *ptr, size_t count, size_t size)
 {
-	return _recalloc_base( ptr, size * count );
+	return _recalloc_base( ptr, count, size );
 }
 
 ALLOC_CALL void * __cdecl _recalloc ( void * memblock, size_t count, size_t size )
@@ -566,14 +566,14 @@ ALLOC_CALL void * __cdecl _recalloc ( void * memblock, size_t count, size_t size
 	return pMem;
 }
 
-size_t _msize_base( void *pMem )
+extern "C" size_t _msize_base( void *pMem ) noexcept
 {
 	return g_pMemAlloc->GetSize(pMem);
 }
 
 size_t _msize( void *pMem )
 {
-	return _msize_base(pMem);
+	return _msize_base(pMem);//theaperturecat
 }
 
 size_t msize( void *pMem )

@@ -59,7 +59,7 @@ BEGIN_DATADESC( CTriggerCatapult )
 
 END_DATADESC()
 
-//LINK_ENTITY_TO_CLASS( trigger_catapult, CTriggerCatapult );
+LINK_ENTITY_TO_CLASS( trigger_catapult, CTriggerCatapult );
 
 IMPLEMENT_SERVERCLASS_ST(CTriggerCatapult, DT_TriggerCatapult)
 	SendPropArray3( SENDINFO_ARRAY3(m_flRefireDelay), SendPropFloat(SENDINFO_ARRAY(m_flRefireDelay)) ),

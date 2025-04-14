@@ -104,6 +104,8 @@ $Group "portal2_partner"
 	"vscript"
 	"vstdlib"
 	"vtf"
+	//"vpc"
+	//"vpccrccheck"
 }
 
 $Group "portal2_partner_linux"
