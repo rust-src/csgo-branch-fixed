@@ -252,7 +252,7 @@ void Surface_DrawSpheres(IMaterial* pMaterial, float flRadius)
 		sort_particles[i].no = i;
 		sort_particles[i].dist = g_SurfaceRenderParticles[i].center.length(eye);
 	}
-	sort_particles.sort<Surface_DrawSpheres_sortParticles_t::C>();
+	//sort_particles.sort<Surface_DrawSpheres_sortParticles_t::C>(); theaperturecat this can cause crashes and i dont know the point of it
 
 	CMatRenderContextPtr pRenderContext(materials);
 

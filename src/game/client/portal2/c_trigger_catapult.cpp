@@ -8,7 +8,7 @@ IMPLEMENT_AUTO_LIST(ITriggerCatapultAutoList)
 
 #undef CTriggerCatapult
 
-IMPLEMENT_CLIENTCLASS_DT(C_TriggerCatapult, DT_TriggerCatapult,CTriggerCatapult)
+IMPLEMENT_CLIENTCLASS_DT(C_TriggerCatapult, DT_TriggerCatapult, CTriggerCatapult)
 RecvPropArray3(RECVINFO_ARRAY(m_flRefireDelay), RecvPropFloat(RECVINFO_ARRAY(m_flRefireDelay))),
 RecvPropFloat(RECVINFO(m_flPlayerVelocity)),
 RecvPropFloat(RECVINFO(m_flPhysicsVelocity)),
@@ -27,8 +27,6 @@ RecvPropEHandle(RECVINFO(m_hLaunchTarget)),
 RecvPropBool(RECVINFO(m_bPlayersPassTriggerFilters)),
 RecvPropBool(RECVINFO(m_bDirectionSuppressAirControl)),
 END_RECV_TABLE()
-
-#define CTriggerCatapult C_TriggerCatapult
 
 C_TriggerCatapult::C_TriggerCatapult()
 {

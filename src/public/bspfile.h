@@ -23,7 +23,7 @@
 #define IDBSPHEADER	(('P'<<24)+('S'<<16)+('B'<<8)+'V')		
 
 // MINBSPVERSION is the minimum acceptable version.  The engine will load MINBSPVERSION through BSPVERSION
-#define MINBSPVERSION 10//used to be 19 theaperturecat
+#define MINBSPVERSION 19
 #define BSPVERSION 21
 
 

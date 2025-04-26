@@ -71,7 +71,7 @@ _asm mov DWORD PTR var+4,edx
 
 #define EVENT_TYPE(mode) EventType##mode
 #define EVENT_MASK(mode) EventMask##mode
-
+#include <intrin.h>
 #include "ia32detect.h"    
 
 enum ProcessPriority
