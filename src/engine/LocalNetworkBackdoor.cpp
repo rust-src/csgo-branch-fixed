@@ -120,6 +120,7 @@ void CLocalNetworkBackdoor::EndEntityStateUpdate()
 					{
 						if ( m_CachedEntState[iEdict].m_pNetworkable )
 						{
+							Msg("Releasing %i",iEdict);
 							m_CachedEntState[iEdict].m_pNetworkable->Release();
 							m_CachedEntState[iEdict].m_pNetworkable = NULL;
 						}
